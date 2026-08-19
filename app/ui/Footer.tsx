@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export default function Footer(){return <footer><div><span className="eyebrow">NOMADS OF ADITYA</span><h2>Keep exploring.</h2><p>Places, people and moments — collected along the way.</p></div><div className="footer-links"><Link href="/journeys">Journeys</Link><Link href="/blog">Blog</Link><Link href="/about">About Me</Link><Link href="/contact">Contact</Link></div><small>© {new Date().getFullYear()} Aditya Valvi</small></footer>}
