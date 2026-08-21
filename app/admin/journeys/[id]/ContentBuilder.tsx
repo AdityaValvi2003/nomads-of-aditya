@@ -1,11 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import MediaPicker from "./editor/MediaPicker";
 
 type GalleryImage = {
+  mediaId?: string;
   url: string;
   alt: string;
   caption: string;
+};
+
+type MediaAsset = {
+  id: string;
+  url: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number | null;
+  altText: string | null;
+  caption: string | null;
+  location: string | null;
 };
 
 type ContentBlock = {
@@ -13,6 +26,8 @@ type ContentBlock = {
   type: string;
   position: number;
   data: Record<string, unknown>;
+  mediaId?: string | null;
+  media?: MediaAsset | null;
 };
 
 type Props = {
@@ -90,6 +105,15 @@ export default function ContentBuilder({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const [mediaPickerBlockId, setMediaPickerBlockId] =
+    useState<string | null>(null);
+
+  const [galleryPicker, setGalleryPicker] =
+    useState<{
+      blockId: string;
+      imageIndex: number;
+    } | null>(null);
 
   async function loadBlocks() {
     try {
@@ -257,7 +281,8 @@ export default function ContentBuilder({
 
   async function updateBlock(
     blockId: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
+    mediaId?: string | null
   ) {
     try {
       setSaving(true);
@@ -273,6 +298,9 @@ export default function ContentBuilder({
           body: JSON.stringify({
             blockId,
             data,
+            ...(mediaId !== undefined
+              ? { mediaId }
+              : {}),
           }),
         }
       );
@@ -292,6 +320,13 @@ export default function ContentBuilder({
             ? {
                 ...block,
                 data: result.data,
+                media:
+                  result.media ??
+                  block.media,
+                mediaId:
+                  result.media?.id ??
+                  mediaId ??
+                  block.mediaId,
               }
             : block
         )
@@ -307,7 +342,145 @@ export default function ContentBuilder({
     }
   }
 
-  async function deleteBlock(blockId: string) {
+  async function selectMedia(
+    blockId: string,
+    media: MediaAsset
+  ) {
+    const block = blocks.find(
+      (item) => item.id === blockId
+    );
+
+    if (!block) {
+      return;
+    }
+
+    const updatedData = {
+      ...block.data,
+      url: media.url,
+      alt:
+        typeof block.data.alt === "string" &&
+        block.data.alt.trim() !== ""
+          ? block.data.alt
+          : media.altText || "",
+      caption:
+        typeof block.data.caption ===
+          "string" &&
+        block.data.caption.trim() !== ""
+          ? block.data.caption
+          : media.caption || "",
+    };
+
+    await updateBlock(
+      blockId,
+      updatedData,
+      media.id
+    );
+
+    setMediaPickerBlockId(null);
+  }
+
+  async function selectGalleryMedia(
+    blockId: string,
+    imageIndex: number,
+    media: MediaAsset
+  ) {
+    const block = blocks.find(
+      (item) => item.id === blockId
+    );
+
+    if (!block) {
+      return;
+    }
+
+    const images = getGalleryImages(block);
+
+    if (!images[imageIndex]) {
+      return;
+    }
+
+    const currentImage = images[imageIndex];
+
+    const updatedImages = images.map(
+      (image, index) =>
+        index === imageIndex
+          ? {
+              ...image,
+              mediaId: media.id,
+              url: media.url,
+              alt:
+                currentImage.alt.trim() !== ""
+                  ? currentImage.alt
+                  : media.altText || "",
+              caption:
+                currentImage.caption.trim() !== ""
+                  ? currentImage.caption
+                  : media.caption || "",
+            }
+          : image
+    );
+
+    const updatedData = {
+      ...block.data,
+      images: updatedImages,
+    };
+
+    await updateBlock(
+      blockId,
+      updatedData
+    );
+
+    setGalleryPicker(null);
+  }
+
+  async function removeSelectedMedia(
+    blockId: string
+  ) {
+    const block = blocks.find(
+      (item) => item.id === blockId
+    );
+
+    if (!block) {
+      return;
+    }
+
+    const updatedData = {
+      ...block.data,
+      url: "",
+    };
+
+    await updateBlock(
+      blockId,
+      updatedData,
+      null
+    );
+  }
+
+  function removeGalleryMedia(
+    block: ContentBlock,
+    imageIndex: number
+  ) {
+    const images = getGalleryImages(block);
+
+    const updatedImages = images.map(
+      (image, index) =>
+        index === imageIndex
+          ? {
+              ...image,
+              mediaId: undefined,
+              url: "",
+            }
+          : image
+    );
+
+    updateGallery(
+      block.id,
+      updatedImages
+    );
+  }
+
+  async function deleteBlock(
+    blockId: string
+  ) {
     const confirmed = window.confirm(
       "Delete this content block?"
     );
@@ -344,7 +517,8 @@ export default function ContentBuilder({
 
       setBlocks((current) =>
         current.filter(
-          (block) => block.id !== blockId
+          (block) =>
+            block.id !== blockId
         )
       );
     } catch (error) {
@@ -385,36 +559,53 @@ export default function ContentBuilder({
       return [];
     }
 
-    return block.data.images.map((image) => {
-      if (
-        typeof image === "object" &&
-        image !== null
-      ) {
-        const item =
-          image as Record<string, unknown>;
+    return block.data.images.map(
+      (image: unknown) => {
+        if (
+          typeof image === "object" &&
+          image !== null
+        ) {
+          const item =
+            image as Record<
+              string,
+              unknown
+            >;
+
+          return {
+            mediaId:
+              typeof item.mediaId ===
+              "string"
+                ? item.mediaId
+                : undefined,
+
+            url:
+              typeof item.url ===
+              "string"
+                ? item.url
+                : "",
+
+            alt:
+              typeof item.alt ===
+              "string"
+                ? item.alt
+                : "",
+
+            caption:
+              typeof item.caption ===
+              "string"
+                ? item.caption
+                : "",
+          };
+        }
 
         return {
-          url:
-            typeof item.url === "string"
-              ? item.url
-              : "",
-          alt:
-            typeof item.alt === "string"
-              ? item.alt
-              : "",
-          caption:
-            typeof item.caption === "string"
-              ? item.caption
-              : "",
+          mediaId: undefined,
+          url: "",
+          alt: "",
+          caption: "",
         };
       }
-
-      return {
-        url: "",
-        alt: "",
-        caption: "",
-      };
-    });
+    );
   }
 
   function updateGallery(
@@ -431,23 +622,33 @@ export default function ContentBuilder({
   function addGalleryImage(
     block: ContentBlock
   ) {
-    const images = getGalleryImages(block);
+    const images =
+      getGalleryImages(block);
+
+    const newIndex = images.length;
 
     updateGallery(block.id, [
       ...images,
       {
+        mediaId: undefined,
         url: "",
         alt: "",
         caption: "",
       },
     ]);
+
+    setGalleryPicker({
+      blockId: block.id,
+      imageIndex: newIndex,
+    });
   }
 
   function removeGalleryImage(
     block: ContentBlock,
     index: number
   ) {
-    const images = getGalleryImages(block);
+    const images =
+      getGalleryImages(block);
 
     updateGallery(
       block.id,
@@ -464,17 +665,19 @@ export default function ContentBuilder({
     field: keyof GalleryImage,
     value: string
   ) {
-    const images = getGalleryImages(block);
+    const images =
+      getGalleryImages(block);
 
-    const updatedImages = images.map(
-      (image, imageIndex) =>
-        imageIndex === index
-          ? {
-              ...image,
-              [field]: value,
-            }
-          : image
-    );
+    const updatedImages =
+      images.map(
+        (image, imageIndex) =>
+          imageIndex === index
+            ? {
+                ...image,
+                [field]: value,
+              }
+            : image
+      );
 
     updateGallery(
       block.id,
@@ -503,14 +706,14 @@ export default function ContentBuilder({
           </p>
         </div>
 
-        {/* ADD BLOCK */}
-
         <div className="relative shrink-0">
 
           <button
             type="button"
             onClick={() =>
-              setShowMenu((value) => !value)
+              setShowMenu(
+                (value) => !value
+              )
             }
             disabled={saving}
             className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
@@ -521,25 +724,29 @@ export default function ContentBuilder({
           {showMenu && (
             <div className="absolute right-0 z-20 mt-3 max-h-[500px] w-80 overflow-y-auto rounded-2xl border border-white/10 bg-[#151515] p-2 shadow-2xl">
 
-              {BLOCK_TYPES.map((item) => (
-                <button
-                  key={item.type}
-                  type="button"
-                  onClick={() =>
-                    addBlock(item.type)
-                  }
-                  disabled={saving}
-                  className="w-full rounded-xl px-4 py-3 text-left transition hover:bg-white/5 disabled:opacity-50"
-                >
-                  <p className="text-sm font-medium text-white">
-                    {item.label}
-                  </p>
+              {BLOCK_TYPES.map(
+                (item) => (
+                  <button
+                    key={item.type}
+                    type="button"
+                    onClick={() =>
+                      addBlock(
+                        item.type
+                      )
+                    }
+                    disabled={saving}
+                    className="w-full rounded-xl px-4 py-3 text-left transition hover:bg-white/5 disabled:opacity-50"
+                  >
+                    <p className="text-sm font-medium text-white">
+                      {item.label}
+                    </p>
 
-                  <p className="mt-1 text-xs text-white/35">
-                    {item.description}
-                  </p>
-                </button>
-              ))}
+                    <p className="mt-1 text-xs text-white/35">
+                      {item.description}
+                    </p>
+                  </button>
+                )
+              )}
 
             </div>
           )}
@@ -570,8 +777,6 @@ export default function ContentBuilder({
 
       ) : blocks.length === 0 ? (
 
-        /* EMPTY STATE */
-
         <div className="mt-8 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-12 text-center">
 
           <p className="text-xs uppercase tracking-[0.25em] text-white/20">
@@ -591,491 +796,69 @@ export default function ContentBuilder({
 
       ) : (
 
-        /* BLOCKS */
-
         <div className="mt-8 space-y-4">
 
-          {blocks.map((block, index) => (
+          {blocks.map(
+            (block, index) => (
 
-            <div
-              key={block.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
-            >
+              <div
+                key={block.id}
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
+              >
 
-              {/* BLOCK HEADER */}
+                {/* BLOCK HEADER */}
 
-              <div className="flex items-start justify-between gap-4">
-
-                <div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/25">
-                    Block {index + 1}
-                  </p>
-
-                  <h4 className="mt-2 text-lg font-medium">
-                    {
-                      BLOCK_TYPES.find(
-                        (item) =>
-                          item.type === block.type
-                      )?.label || block.type
-                    }
-                  </h4>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    deleteBlock(block.id)
-                  }
-                  disabled={saving}
-                  className="text-sm text-red-400/70 transition hover:text-red-400 disabled:opacity-40"
-                >
-                  Delete
-                </button>
-
-              </div>
-
-              {/* HEADING */}
-
-              {block.type === "HEADING" && (
-                <div className="mt-6">
-
-                  <label className="mb-2 block text-sm text-white/50">
-                    Heading
-                  </label>
-
-                  <input
-                    type="text"
-                    value={
-                      typeof block.data.text ===
-                      "string"
-                        ? block.data.text
-                        : ""
-                    }
-                    onChange={(event) =>
-                      updateLocalBlock(
-                        block.id,
-                        "text",
-                        event.target.value
-                      )
-                    }
-                    onBlur={() =>
-                      updateBlock(
-                        block.id,
-                        block.data
-                      )
-                    }
-                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-xl text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                    placeholder="Enter heading..."
-                  />
-
-                </div>
-              )}
-
-              {/* SUBHEADING */}
-
-              {block.type === "SUBHEADING" && (
-                <div className="mt-6">
-
-                  <label className="mb-2 block text-sm text-white/50">
-                    Subheading
-                  </label>
-
-                  <input
-                    type="text"
-                    value={
-                      typeof block.data.text ===
-                      "string"
-                        ? block.data.text
-                        : ""
-                    }
-                    onChange={(event) =>
-                      updateLocalBlock(
-                        block.id,
-                        "text",
-                        event.target.value
-                      )
-                    }
-                    onBlur={() =>
-                      updateBlock(
-                        block.id,
-                        block.data
-                      )
-                    }
-                    className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-lg text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                    placeholder="Enter subheading..."
-                  />
-
-                </div>
-              )}
-
-              {/* PARAGRAPH */}
-
-              {block.type === "PARAGRAPH" && (
-                <div className="mt-6">
-
-                  <label className="mb-2 block text-sm text-white/50">
-                    Paragraph
-                  </label>
-
-                  <textarea
-                    value={
-                      typeof block.data.text ===
-                      "string"
-                        ? block.data.text
-                        : ""
-                    }
-                    onChange={(event) =>
-                      updateLocalBlock(
-                        block.id,
-                        "text",
-                        event.target.value
-                      )
-                    }
-                    onBlur={() =>
-                      updateBlock(
-                        block.id,
-                        block.data
-                      )
-                    }
-                    rows={7}
-                    className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-base leading-7 text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                    placeholder="Write your story here..."
-                  />
-
-                </div>
-              )}
-
-              {/* QUOTE */}
-
-              {block.type === "QUOTE" && (
-                <div className="mt-6 space-y-5">
+                <div className="flex items-start justify-between gap-4">
 
                   <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Quote
-                    </label>
-
-                    <textarea
-                      value={
-                        typeof block.data.text ===
-                        "string"
-                          ? block.data.text
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "text",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      rows={5}
-                      className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-lg leading-7 text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Write the quote..."
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Author
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.author ===
-                        "string"
-                          ? block.data.author
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "author",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Who said this?"
-                    />
-
-                  </div>
-
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
 
                     <p className="text-xs uppercase tracking-[0.2em] text-white/25">
-                      Preview
+                      Block {index + 1}
                     </p>
 
-                    <blockquote className="mt-4 border-l-2 border-[#D99A3D] pl-5">
-
-                      <p className="text-xl leading-8 text-white/80">
-                        “
-                        {typeof block.data.text ===
-                        "string"
-                          ? block.data.text
-                          : "Your quote goes here."}
-                        ”
-                      </p>
-
-                      {typeof block.data.author ===
-                        "string" &&
-                        block.data.author.trim() !==
-                          "" && (
-                          <p className="mt-4 text-sm text-white/40">
-                            — {block.data.author}
-                          </p>
-                        )}
-
-                    </blockquote>
+                    <h4 className="mt-2 text-lg font-medium">
+                      {
+                        BLOCK_TYPES.find(
+                          (item) =>
+                            item.type ===
+                            block.type
+                        )?.label ||
+                        block.type
+                      }
+                    </h4>
 
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      deleteBlock(
+                        block.id
+                      )
+                    }
+                    disabled={saving}
+                    className="text-sm text-red-400/70 transition hover:text-red-400 disabled:opacity-40"
+                  >
+                    Delete
+                  </button>
 
                 </div>
-              )}
 
-              {/* IMAGE */}
+                {/* HEADING */}
 
-              {block.type === "IMAGE" && (
-                <div className="mt-6 space-y-5">
-
-                  <div>
+                {block.type ===
+                  "HEADING" && (
+                  <div className="mt-6">
 
                     <label className="mb-2 block text-sm text-white/50">
-                      Image URL
+                      Heading
                     </label>
 
                     <input
                       type="text"
                       value={
-                        typeof block.data.url ===
-                        "string"
-                          ? block.data.url
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "url",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                      placeholder="https://example.com/image.jpg"
-                    />
-
-                  </div>
-
-                  {typeof block.data.url ===
-                    "string" &&
-                    block.data.url.trim() !==
-                      "" && (
-                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black/40">
-
-                        <img
-                          src={block.data.url}
-                          alt={
-                            typeof block.data.alt ===
-                            "string"
-                              ? block.data.alt
-                              : ""
-                          }
-                          className="max-h-[500px] w-full object-contain"
-                        />
-
-                      </div>
-                    )}
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Alt text
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.alt ===
-                        "string"
-                          ? block.data.alt
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "alt",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Describe the image..."
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Caption
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.caption ===
-                        "string"
-                          ? block.data.caption
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "caption",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Optional image caption..."
-                    />
-
-                  </div>
-
-                </div>
-              )}
-
-              {/* IMAGE + TEXT */}
-
-              {block.type === "IMAGE_TEXT" && (
-                <div className="mt-6 space-y-5">
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Image URL
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.url ===
-                        "string"
-                          ? block.data.url
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "url",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="https://example.com/image.jpg"
-                    />
-
-                  </div>
-
-                  {typeof block.data.url ===
-                    "string" &&
-                    block.data.url.trim() !==
-                      "" && (
-                      <div className="overflow-hidden rounded-xl border border-white/10 bg-black/40">
-
-                        <img
-                          src={block.data.url}
-                          alt={
-                            typeof block.data.alt ===
-                            "string"
-                              ? block.data.alt
-                              : ""
-                          }
-                          className="max-h-[450px] w-full object-contain"
-                        />
-
-                      </div>
-                    )}
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Alt text
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.alt ===
-                        "string"
-                          ? block.data.alt
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "alt",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Describe the image..."
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Story text
-                    </label>
-
-                    <textarea
-                      value={
-                        typeof block.data.text ===
+                        typeof block
+                          .data.text ===
                         "string"
                           ? block.data.text
                           : ""
@@ -1084,7 +867,87 @@ export default function ContentBuilder({
                         updateLocalBlock(
                           block.id,
                           "text",
-                          event.target.value
+                          event.target
+                            .value
+                        )
+                      }
+                      onBlur={() =>
+                        updateBlock(
+                          block.id,
+                          block.data
+                        )
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-xl text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
+                      placeholder="Enter heading..."
+                    />
+
+                  </div>
+                )}
+
+                {/* SUBHEADING */}
+
+                {block.type ===
+                  "SUBHEADING" && (
+                  <div className="mt-6">
+
+                    <label className="mb-2 block text-sm text-white/50">
+                      Subheading
+                    </label>
+
+                    <input
+                      type="text"
+                      value={
+                        typeof block
+                          .data.text ===
+                        "string"
+                          ? block.data.text
+                          : ""
+                      }
+                      onChange={(event) =>
+                        updateLocalBlock(
+                          block.id,
+                          "text",
+                          event.target
+                            .value
+                        )
+                      }
+                      onBlur={() =>
+                        updateBlock(
+                          block.id,
+                          block.data
+                        )
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-lg text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
+                      placeholder="Enter subheading..."
+                    />
+
+                  </div>
+                )}
+
+                {/* PARAGRAPH */}
+
+                {block.type ===
+                  "PARAGRAPH" && (
+                  <div className="mt-6">
+
+                    <label className="mb-2 block text-sm text-white/50">
+                      Paragraph
+                    </label>
+
+                    <textarea
+                      value={
+                        typeof block
+                          .data.text ===
+                        "string"
+                          ? block.data.text
+                          : ""
+                      }
+                      onChange={(event) =>
+                        updateLocalBlock(
+                          block.id,
+                          "text",
+                          event.target
+                            .value
                         )
                       }
                       onBlur={() =>
@@ -1094,624 +957,1206 @@ export default function ContentBuilder({
                         )
                       }
                       rows={7}
-                      className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm leading-7 text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Write the story that accompanies this image..."
+                      className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-base leading-7 text-white outline-none transition placeholder:text-white/20 focus:border-white/30"
+                      placeholder="Write your story here..."
                     />
 
                   </div>
+                )}
 
-                </div>
-              )}
+                {/* QUOTE */}
 
-              {/* GALLERY */}
+                {block.type ===
+                  "QUOTE" && (
+                  <div className="mt-6 space-y-5">
 
-              {block.type === "GALLERY" && (
-                <div className="mt-6 space-y-5">
+                    <div>
 
-                  {getGalleryImages(block).map(
-                    (image, imageIndex) => (
-                      <div
-                        key={imageIndex}
-                        className="rounded-2xl border border-white/10 bg-black/20 p-5"
-                      >
+                      <label className="mb-2 block text-sm text-white/50">
+                        Quote
+                      </label>
 
-                        <div className="flex items-center justify-between">
+                      <textarea
+                        value={
+                          typeof block
+                            .data.text ===
+                          "string"
+                            ? block.data.text
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "text",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        rows={5}
+                        className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-lg leading-7 text-white outline-none placeholder:text-white/20"
+                        placeholder="Write the quote..."
+                      />
 
-                          <p className="text-sm font-medium text-white/70">
-                            Image {imageIndex + 1}
+                    </div>
+
+                    <div>
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Author
+                      </label>
+
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data.author ===
+                          "string"
+                            ? block.data
+                                .author
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "author",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Who said this?"
+                      />
+
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+
+                      <p className="text-xs uppercase tracking-[0.2em] text-white/25">
+                        Preview
+                      </p>
+
+                      <blockquote className="mt-4 border-l-2 border-[#D99A3D] pl-5">
+
+                        <p className="text-xl leading-8 text-white/80">
+                          “
+                          {typeof block
+                            .data.text ===
+                          "string"
+                            ? block.data
+                                .text
+                            : "Your quote goes here."}
+                          ”
+                        </p>
+
+                        {typeof block
+                          .data.author ===
+                          "string" &&
+                          block.data.author.trim() !==
+                            "" && (
+                            <p className="mt-4 text-sm text-white/40">
+                              —{" "}
+                              {
+                                block
+                                  .data
+                                  .author
+                              }
+                            </p>
+                          )}
+
+                      </blockquote>
+
+                    </div>
+
+                  </div>
+                )}
+
+                {/* IMAGE */}
+
+                {block.type ===
+                  "IMAGE" && (
+                  <div className="mt-6 space-y-5">
+
+                    {block.media ? (
+
+                      <div className="overflow-hidden rounded-2xl border border-[#D99A3D]/30 bg-black/40">
+
+                        <img
+                          src={
+                            block.media.url
+                          }
+                          alt={
+                            block.media
+                              .altText ||
+                            "Selected image"
+                          }
+                          className="max-h-[500px] w-full object-contain"
+                        />
+
+                        <div className="border-t border-white/10 p-4">
+
+                          <p className="text-xs uppercase tracking-[0.2em] text-[#D99A3D]">
+                            Selected from Media Library
+                          </p>
+
+                          <p className="mt-2 text-sm text-white/60">
+                            {
+                              block
+                                .media
+                                .fileName
+                            }
                           </p>
 
                           <button
                             type="button"
                             onClick={() =>
-                              removeGalleryImage(
-                                block,
-                                imageIndex
+                              removeSelectedMedia(
+                                block.id
                               )
                             }
-                            className="text-xs text-red-400/70 hover:text-red-400"
+                            disabled={
+                              saving
+                            }
+                            className="mt-3 text-xs text-red-400/70 hover:text-red-400"
                           >
-                            Remove
+                            Remove image
                           </button>
 
                         </div>
 
-                        <div className="mt-4">
+                      </div>
 
-                          <label className="mb-2 block text-xs text-white/40">
-                            Image URL
-                          </label>
+                    ) : (
 
-                          <input
-                            type="text"
-                            value={image.url}
-                            onChange={(event) =>
-                              updateGalleryImage(
-                                block,
-                                imageIndex,
-                                "url",
-                                event.target.value
-                              )
-                            }
-                            onBlur={() =>
-                              updateBlock(
-                                block.id,
-                                block.data
-                              )
-                            }
-                            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                            placeholder="https://example.com/image.jpg"
-                          />
+                      <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center">
 
-                        </div>
-
-                        {image.url.trim() !==
-                          "" && (
-                          <div className="mt-4 overflow-hidden rounded-xl border border-white/10 bg-black">
-
-                            <img
-                              src={image.url}
-                              alt={image.alt}
-                              className="max-h-[350px] w-full object-contain"
-                            />
-
-                          </div>
-                        )}
-
-                        <div className="mt-4">
-
-                          <label className="mb-2 block text-xs text-white/40">
-                            Alt text
-                          </label>
-
-                          <input
-                            type="text"
-                            value={image.alt}
-                            onChange={(event) =>
-                              updateGalleryImage(
-                                block,
-                                imageIndex,
-                                "alt",
-                                event.target.value
-                              )
-                            }
-                            onBlur={() =>
-                              updateBlock(
-                                block.id,
-                                block.data
-                              )
-                            }
-                            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                            placeholder="Describe the image..."
-                          />
-
-                        </div>
-
-                        <div className="mt-4">
-
-                          <label className="mb-2 block text-xs text-white/40">
-                            Caption
-                          </label>
-
-                          <input
-                            type="text"
-                            value={image.caption}
-                            onChange={(event) =>
-                              updateGalleryImage(
-                                block,
-                                imageIndex,
-                                "caption",
-                                event.target.value
-                              )
-                            }
-                            onBlur={() =>
-                              updateBlock(
-                                block.id,
-                                block.data
-                              )
-                            }
-                            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                            placeholder="Optional caption..."
-                          />
-
-                        </div>
+                        <p className="text-sm text-white/40">
+                          No image selected
+                        </p>
 
                       </div>
-                    )
-                  )}
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addGalleryImage(block)
-                    }
-                    className="w-full rounded-xl border border-dashed border-white/15 px-4 py-4 text-sm text-white/50 transition hover:border-white/30 hover:text-white"
-                  >
-                    + Add another image
-                  </button>
+                    )}
 
-                  {getGalleryImages(block).length >
-                    0 && (
                     <button
                       type="button"
                       onClick={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
+                        setMediaPickerBlockId(
+                          block.id
                         )
                       }
                       disabled={saving}
-                      className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90 disabled:opacity-50"
+                      className="w-full rounded-xl bg-[#D99A3D] px-5 py-4 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:opacity-50"
                     >
-                      Save Gallery
+                      {block.media
+                        ? "Change Image"
+                        : "Select from Media Library"}
                     </button>
-                  )}
 
-                </div>
-              )}
+                    <div>
 
-              {/* VIDEO */}
+                      <label className="mb-2 block text-sm text-white/50">
+                        Alt text
+                      </label>
 
-              {block.type === "VIDEO" && (
-                <div className="mt-6 space-y-5">
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data.alt ===
+                          "string"
+                            ? block.data
+                                .alt
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "alt",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data,
+                            block.mediaId
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Describe the image..."
+                      />
 
-                  <div>
+                    </div>
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Video URL
-                    </label>
+                    <div>
 
-                    <input
-                      type="url"
-                      value={
-                        typeof block.data.url ===
-                        "string"
-                          ? block.data.url
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "url",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="https://www.youtube.com/watch?v=..."
-                    />
+                      <label className="mb-2 block text-sm text-white/50">
+                        Caption
+                      </label>
+
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data
+                            .caption ===
+                          "string"
+                            ? block.data
+                                .caption
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "caption",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data,
+                            block.mediaId
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Optional image caption..."
+                      />
+
+                    </div>
 
                   </div>
+                )}
 
-                  <div>
+                {/* IMAGE + TEXT */}
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Caption
-                    </label>
+                {block.type ===
+                  "IMAGE_TEXT" && (
+                  <div className="mt-6 space-y-5">
 
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.caption ===
-                        "string"
-                          ? block.data.caption
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "caption",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Optional video caption..."
-                    />
+                    {block.media ? (
 
-                  </div>
+                      <div className="overflow-hidden rounded-2xl border border-[#D99A3D]/30 bg-black/40">
 
-                  {typeof block.data.url ===
-                    "string" &&
-                    block.data.url.trim() !==
-                      "" && (
-                      <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+                        <img
+                          src={
+                            block.media.url
+                          }
+                          alt={
+                            block.media
+                              .altText ||
+                            "Selected image"
+                          }
+                          className="max-h-[450px] w-full object-contain"
+                        />
 
-                        <p className="text-xs text-white/30">
-                          Video URL saved
-                        </p>
+                        <div className="border-t border-white/10 p-4">
 
-                        <p className="mt-2 break-all text-sm text-white/50">
-                          {block.data.url}
+                          <p className="text-xs uppercase tracking-[0.2em] text-[#D99A3D]">
+                            Selected from Media Library
+                          </p>
+
+                          <p className="mt-2 text-sm text-white/60">
+                            {
+                              block
+                                .media
+                                .fileName
+                            }
+                          </p>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              removeSelectedMedia(
+                                block.id
+                              )
+                            }
+                            disabled={
+                              saving
+                            }
+                            className="mt-3 text-xs text-red-400/70 hover:text-red-400"
+                          >
+                            Remove image
+                          </button>
+
+                        </div>
+
+                      </div>
+
+                    ) : (
+
+                      <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-8 text-center">
+
+                        <p className="text-sm text-white/40">
+                          No image selected
                         </p>
 
                       </div>
+
                     )}
 
-                </div>
-              )}
-
-              {/* LOCATION */}
-
-              {block.type === "LOCATION" && (
-                <div className="mt-6 grid gap-5 md:grid-cols-2">
-
-                  <div className="md:col-span-2">
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Location name
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.name ===
-                        "string"
-                          ? block.data.name
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "name",
-                          event.target.value
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setMediaPickerBlockId(
+                          block.id
                         )
                       }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Harishchandragad"
-                    />
+                      disabled={saving}
+                      className="w-full rounded-xl bg-[#D99A3D] px-5 py-4 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:opacity-50"
+                    >
+                      {block.media
+                        ? "Change Image"
+                        : "Select from Media Library"}
+                    </button>
+
+                    <div>
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Alt text
+                      </label>
+
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data.alt ===
+                          "string"
+                            ? block.data
+                                .alt
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "alt",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data,
+                            block.mediaId
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Describe the image..."
+                      />
+
+                    </div>
+
+                    <div>
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Story text
+                      </label>
+
+                      <textarea
+                        value={
+                          typeof block
+                            .data.text ===
+                          "string"
+                            ? block.data
+                                .text
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "text",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data,
+                            block.mediaId
+                          )
+                        }
+                        rows={7}
+                        className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm leading-7 text-white outline-none placeholder:text-white/20"
+                        placeholder="Write the story that accompanies this image..."
+                      />
+
+                    </div>
 
                   </div>
+                )}
 
-                  <div className="md:col-span-2">
+                {/* GALLERY */}
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Address
-                    </label>
+                {block.type ===
+                  "GALLERY" && (
+                  <div className="mt-6 space-y-5">
 
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.address ===
-                        "string"
-                          ? block.data.address
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "address",
-                          event.target.value
+                    {getGalleryImages(
+                      block
+                    ).map(
+                      (
+                        image,
+                        imageIndex
+                      ) => (
+
+                        <div
+                          key={
+                            imageIndex
+                          }
+                          className="rounded-2xl border border-white/10 bg-black/20 p-5"
+                        >
+
+                          <div className="flex items-center justify-between">
+
+                            <p className="text-sm font-medium text-white/70">
+                              Image{" "}
+                              {
+                                imageIndex +
+                                1
+                              }
+                            </p>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeGalleryImage(
+                                  block,
+                                  imageIndex
+                                )
+                              }
+                              className="text-xs text-red-400/70 hover:text-red-400"
+                            >
+                              Remove
+                            </button>
+
+                          </div>
+
+                          {/* IMAGE PREVIEW */}
+
+                          {image.url ? (
+
+                            <div className="mt-4 overflow-hidden rounded-xl border border-[#D99A3D]/30 bg-black">
+
+                              <img
+                                src={
+                                  image.url
+                                }
+                                alt={
+                                  image.alt ||
+                                  "Gallery image"
+                                }
+                                className="max-h-[350px] w-full object-contain"
+                              />
+
+                            </div>
+
+                          ) : (
+
+                            <div className="mt-4 rounded-xl border border-dashed border-white/10 bg-black/20 p-8 text-center">
+
+                              <p className="text-sm text-white/40">
+                                No image selected
+                              </p>
+
+                            </div>
+
+                          )}
+
+                          {/* MEDIA BUTTON */}
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setGalleryPicker(
+                                {
+                                  blockId:
+                                    block.id,
+                                  imageIndex,
+                                }
+                              )
+                            }
+                            disabled={
+                              saving
+                            }
+                            className="mt-4 w-full rounded-xl bg-[#D99A3D] px-5 py-3 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:opacity-50"
+                          >
+                            {image.mediaId
+                              ? "Change Image"
+                              : "Select from Media Library"}
+                          </button>
+
+                          {/* REMOVE SELECTED IMAGE */}
+
+                          {image.mediaId && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeGalleryMedia(
+                                  block,
+                                  imageIndex
+                                )
+                              }
+                              disabled={
+                                saving
+                              }
+                              className="mt-2 w-full rounded-xl border border-red-500/20 px-4 py-3 text-xs text-red-400/70 transition hover:bg-red-500/5 hover:text-red-400 disabled:opacity-50"
+                            >
+                              Remove selected image
+                            </button>
+                          )}
+
+                          {/* ALT TEXT */}
+
+                          <div className="mt-4">
+
+                            <label className="mb-2 block text-xs text-white/40">
+                              Alt text
+                            </label>
+
+                            <input
+                              type="text"
+                              value={
+                                image.alt
+                              }
+                              onChange={(
+                                event
+                              ) =>
+                                updateGalleryImage(
+                                  block,
+                                  imageIndex,
+                                  "alt",
+                                  event
+                                    .target
+                                    .value
+                                )
+                              }
+                              onBlur={() =>
+                                updateBlock(
+                                  block.id,
+                                  {
+                                    ...block.data,
+                                    images:
+                                      getGalleryImages(
+                                        block
+                                      ),
+                                  }
+                                )
+                              }
+                              className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
+                              placeholder="Describe the image..."
+                            />
+
+                          </div>
+
+                          {/* CAPTION */}
+
+                          <div className="mt-4">
+
+                            <label className="mb-2 block text-xs text-white/40">
+                              Caption
+                            </label>
+
+                            <input
+                              type="text"
+                              value={
+                                image.caption
+                              }
+                              onChange={(
+                                event
+                              ) =>
+                                updateGalleryImage(
+                                  block,
+                                  imageIndex,
+                                  "caption",
+                                  event
+                                    .target
+                                    .value
+                                )
+                              }
+                              onBlur={() =>
+                                updateBlock(
+                                  block.id,
+                                  {
+                                    ...block.data,
+                                    images:
+                                      getGalleryImages(
+                                        block
+                                      ),
+                                  }
+                                )
+                              }
+                              className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20"
+                              placeholder="Optional caption..."
+                            />
+
+                          </div>
+
+                        </div>
+
+                      )
+                    )}
+
+                    {/* ADD IMAGE */}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addGalleryImage(
+                          block
                         )
                       }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Maharashtra, India"
-                    />
+                      disabled={saving}
+                      className="w-full rounded-xl border border-dashed border-white/15 px-4 py-4 text-sm text-white/50 transition hover:border-[#D99A3D]/50 hover:text-white disabled:opacity-50"
+                    >
+                      + Add image from Media Library
+                    </button>
+
+                    {/* SAVE GALLERY */}
+
+                    {getGalleryImages(
+                      block
+                    ).length > 0 && (
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateBlock(
+                            block.id,
+                            {
+                              ...block.data,
+                              images:
+                                getGalleryImages(
+                                  block
+                                ),
+                            }
+                          )
+                        }
+                        disabled={
+                          saving
+                        }
+                        className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90 disabled:opacity-50"
+                      >
+                        Save Gallery
+                      </button>
+
+                    )}
 
                   </div>
+                )}
 
-                  <div>
+                {/* VIDEO */}
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Latitude
-                    </label>
+                {block.type ===
+                  "VIDEO" && (
+                  <div className="mt-6 space-y-5">
 
-                    <input
-                      type="number"
-                      step="any"
-                      value={
-                        typeof block.data.latitude ===
-                        "number"
-                          ? block.data.latitude
-                          : ""
-                      }
-                      onChange={(event) => {
-                        const value =
-                          event.target.value;
+                    <div>
 
-                        updateLocalBlock(
-                          block.id,
-                          "latitude",
-                          value === ""
-                            ? null
-                            : Number(value)
-                        );
-                      }}
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="19.3887"
-                    />
+                      <label className="mb-2 block text-sm text-white/50">
+                        Video URL
+                      </label>
 
-                  </div>
+                      <input
+                        type="url"
+                        value={
+                          typeof block
+                            .data.url ===
+                          "string"
+                            ? block.data
+                                .url
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "url",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                      />
 
-                  <div>
+                    </div>
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Longitude
-                    </label>
+                    <div>
 
-                    <input
-                      type="number"
-                      step="any"
-                      value={
-                        typeof block.data.longitude ===
-                        "number"
-                          ? block.data.longitude
-                          : ""
-                      }
-                      onChange={(event) => {
-                        const value =
-                          event.target.value;
+                      <label className="mb-2 block text-sm text-white/50">
+                        Caption
+                      </label>
 
-                        updateLocalBlock(
-                          block.id,
-                          "longitude",
-                          value === ""
-                            ? null
-                            : Number(value)
-                        );
-                      }}
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="73.7720"
-                    />
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data
+                            .caption ===
+                          "string"
+                            ? block.data
+                                .caption
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "caption",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Optional video caption..."
+                      />
 
-                  </div>
+                    </div>
 
-                </div>
-              )}
+                    {typeof block
+                      .data.url ===
+                      "string" &&
+                      block.data.url.trim() !==
+                        "" && (
 
-              {/* JOURNEY INFO */}
+                        <div className="rounded-xl border border-white/10 bg-black/30 p-4">
 
-              {block.type === "JOURNEY_INFO" && (
-                <div className="mt-6 grid gap-5 md:grid-cols-3">
+                          <p className="text-xs text-white/30">
+                            Video URL saved
+                          </p>
 
-                  <div>
+                          <p className="mt-2 break-all text-sm text-white/50">
+                            {
+                              block
+                                .data
+                                .url
+                            }
+                          </p>
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Duration
-                    </label>
+                        </div>
 
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.duration ===
-                        "string"
-                          ? block.data.duration
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "duration",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="2 days"
-                    />
+                      )}
 
                   </div>
+                )}
 
-                  <div>
+                {/* LOCATION */}
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Distance
-                    </label>
+                {block.type ===
+                  "LOCATION" && (
+                  <div className="mt-6 grid gap-5 md:grid-cols-2">
 
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.distance ===
-                        "string"
-                          ? block.data.distance
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "distance",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="18 km"
-                    />
+                    <div className="md:col-span-2">
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Location name
+                      </label>
+
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data
+                            .name ===
+                          "string"
+                            ? block.data
+                                .name
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "name",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Harishchandragad"
+                      />
+
+                    </div>
+
+                    <div className="md:col-span-2">
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Address
+                      </label>
+
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data
+                            .address ===
+                          "string"
+                            ? block.data
+                                .address
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "address",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="Maharashtra, India"
+                      />
+
+                    </div>
+
+                    <div>
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Latitude
+                      </label>
+
+                      <input
+                        type="number"
+                        step="any"
+                        value={
+                          typeof block
+                            .data
+                            .latitude ===
+                          "number"
+                            ? block.data
+                                .latitude
+                            : ""
+                        }
+                        onChange={(event) => {
+                          const value =
+                            event
+                              .target
+                              .value;
+
+                          updateLocalBlock(
+                            block.id,
+                            "latitude",
+                            value === ""
+                              ? null
+                              : Number(
+                                  value
+                                )
+                          );
+                        }}
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="19.3887"
+                      />
+
+                    </div>
+
+                    <div>
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Longitude
+                      </label>
+
+                      <input
+                        type="number"
+                        step="any"
+                        value={
+                          typeof block
+                            .data
+                            .longitude ===
+                          "number"
+                            ? block.data
+                                .longitude
+                            : ""
+                        }
+                        onChange={(event) => {
+                          const value =
+                            event
+                              .target
+                              .value;
+
+                          updateLocalBlock(
+                            block.id,
+                            "longitude",
+                            value === ""
+                              ? null
+                              : Number(
+                                  value
+                                )
+                          );
+                        }}
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="73.7720"
+                      />
+
+                    </div>
 
                   </div>
+                )}
 
-                  <div>
+                {/* JOURNEY INFO */}
 
-                    <label className="mb-2 block text-sm text-white/50">
-                      Difficulty
-                    </label>
+                {block.type ===
+                  "JOURNEY_INFO" && (
+                  <div className="mt-6 grid gap-5 md:grid-cols-3">
 
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.difficulty ===
-                        "string"
-                          ? block.data.difficulty
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "difficulty",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Moderate"
-                    />
+                    {[
+                      [
+                        "duration",
+                        "Duration",
+                        "2 days",
+                      ],
+                      [
+                        "distance",
+                        "Distance",
+                        "18 km",
+                      ],
+                      [
+                        "difficulty",
+                        "Difficulty",
+                        "Moderate",
+                      ],
+                    ].map(
+                      ([
+                        field,
+                        label,
+                        placeholder,
+                      ]) => (
 
-                  </div>
+                        <div key={field}>
 
-                </div>
-              )}
+                          <label className="mb-2 block text-sm text-white/50">
+                            {label}
+                          </label>
 
-              {/* ENCOUNTER */}
+                          <input
+                            type="text"
+                            value={
+                              typeof block
+                                .data[
+                                  field
+                                ] ===
+                              "string"
+                                ? String(
+                                    block
+                                      .data[
+                                      field
+                                    ]
+                                  )
+                                : ""
+                            }
+                            onChange={(event) =>
+                              updateLocalBlock(
+                                block.id,
+                                field,
+                                event
+                                  .target
+                                  .value
+                              )
+                            }
+                            onBlur={() =>
+                              updateBlock(
+                                block.id,
+                                block.data
+                              )
+                            }
+                            className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                            placeholder={
+                              placeholder
+                            }
+                          />
 
-              {block.type === "ENCOUNTER" && (
-                <div className="mt-6 space-y-5">
+                        </div>
 
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Person / Encounter
-                    </label>
-
-                    <input
-                      type="text"
-                      value={
-                        typeof block.data.title ===
-                        "string"
-                          ? block.data.title
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "title",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="The shepherd I met on the trail"
-                    />
-
-                  </div>
-
-                  <div>
-
-                    <label className="mb-2 block text-sm text-white/50">
-                      Story
-                    </label>
-
-                    <textarea
-                      value={
-                        typeof block.data.text ===
-                        "string"
-                          ? block.data.text
-                          : ""
-                      }
-                      onChange={(event) =>
-                        updateLocalBlock(
-                          block.id,
-                          "text",
-                          event.target.value
-                        )
-                      }
-                      onBlur={() =>
-                        updateBlock(
-                          block.id,
-                          block.data
-                        )
-                      }
-                      rows={7}
-                      className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm leading-7 text-white outline-none placeholder:text-white/20 focus:border-white/30"
-                      placeholder="Tell the story of this encounter..."
-                    />
+                      )
+                    )}
 
                   </div>
+                )}
 
-                </div>
-              )}
+                {/* ENCOUNTER */}
 
-              {/* DIVIDER */}
+                {block.type ===
+                  "ENCOUNTER" && (
+                  <div className="mt-6 space-y-5">
 
-              {block.type === "DIVIDER" && (
-                <div className="mt-6">
+                    <div>
 
-                  <div className="border-t border-white/10" />
+                      <label className="mb-2 block text-sm text-white/50">
+                        Person / Encounter
+                      </label>
 
-                  <p className="mt-3 text-xs text-white/25">
-                    Visual section separator.
-                  </p>
+                      <input
+                        type="text"
+                        value={
+                          typeof block
+                            .data
+                            .title ===
+                          "string"
+                            ? block.data
+                                .title
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "title",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        className="w-full rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm text-white outline-none placeholder:text-white/20"
+                        placeholder="The shepherd I met on the trail"
+                      />
 
-                </div>
-              )}
+                    </div>
 
-            </div>
-          ))}
+                    <div>
+
+                      <label className="mb-2 block text-sm text-white/50">
+                        Story
+                      </label>
+
+                      <textarea
+                        value={
+                          typeof block
+                            .data
+                            .text ===
+                          "string"
+                            ? block.data
+                                .text
+                            : ""
+                        }
+                        onChange={(event) =>
+                          updateLocalBlock(
+                            block.id,
+                            "text",
+                            event.target
+                              .value
+                          )
+                        }
+                        onBlur={() =>
+                          updateBlock(
+                            block.id,
+                            block.data
+                          )
+                        }
+                        rows={7}
+                        className="w-full resize-y rounded-xl border border-white/10 bg-black/40 px-4 py-4 text-sm leading-7 text-white outline-none placeholder:text-white/20"
+                        placeholder="Tell the story of this encounter..."
+                      />
+
+                    </div>
+
+                  </div>
+                )}
+
+                {/* DIVIDER */}
+
+                {block.type ===
+                  "DIVIDER" && (
+                  <div className="mt-6">
+
+                    <div className="border-t border-white/10" />
+
+                    <p className="mt-3 text-xs text-white/25">
+                      Visual section separator.
+                    </p>
+
+                  </div>
+                )}
+
+              </div>
+            )
+          )}
 
         </div>
+      )}
+
+      {/* SINGLE IMAGE MEDIA PICKER */}
+
+      {mediaPickerBlockId && (
+        <MediaPicker
+          onClose={() =>
+            setMediaPickerBlockId(null)
+          }
+          onSelect={(media) =>
+            selectMedia(
+              mediaPickerBlockId,
+              media
+            )
+          }
+        />
+      )}
+
+      {/* GALLERY MEDIA PICKER */}
+
+      {galleryPicker && (
+        <MediaPicker
+          onClose={() =>
+            setGalleryPicker(null)
+          }
+          onSelect={(media) =>
+            selectGalleryMedia(
+              galleryPicker.blockId,
+              galleryPicker.imageIndex,
+              media
+            )
+          }
+        />
       )}
 
     </section>

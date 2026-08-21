@@ -37,6 +37,9 @@ export async function GET(
       orderBy: {
         position: "asc",
       },
+      include: {
+        media: true,
+      },
     });
 
     return NextResponse.json(blocks);
@@ -44,8 +47,12 @@ export async function GET(
     console.error("GET journey blocks error:", error);
 
     return NextResponse.json(
-      { error: "Failed to load content blocks." },
-      { status: 500 }
+      {
+        error: "Failed to load content blocks.",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
@@ -77,11 +84,19 @@ export async function POST(
     const type = body.type;
     const data = body.data ?? {};
     const imageDisplay = body.imageDisplay ?? null;
+    const mediaId =
+      typeof body.mediaId === "string"
+        ? body.mediaId
+        : null;
 
     if (!type) {
       return NextResponse.json(
-        { error: "Block type is required." },
-        { status: 400 }
+        {
+          error: "Block type is required.",
+        },
+        {
+          status: 400,
+        }
       );
     }
 
@@ -93,48 +108,266 @@ export async function POST(
 
     if (!journey) {
       return NextResponse.json(
-        { error: "Journey not found." },
-        { status: 404 }
+        {
+          error: "Journey not found.",
+        },
+        {
+          status: 404,
+        }
       );
     }
 
-    const lastBlock = await prisma.contentBlock.findFirst({
-      where: {
-        journeyId: id,
-      },
-      orderBy: {
-        position: "desc",
-      },
-    });
+    /*
+    |--------------------------------------------------------------------------
+    | Validate media if provided
+    |--------------------------------------------------------------------------
+    */
+
+    if (mediaId) {
+      const media = await prisma.mediaAsset.findUnique({
+        where: {
+          id: mediaId,
+        },
+      });
+
+      if (!media) {
+        return NextResponse.json(
+          {
+            error: "Selected media was not found.",
+          },
+          {
+            status: 404,
+          }
+        );
+      }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Calculate position
+    |--------------------------------------------------------------------------
+    */
+
+    const lastBlock =
+      await prisma.contentBlock.findFirst({
+        where: {
+          journeyId: id,
+        },
+        orderBy: {
+          position: "desc",
+        },
+      });
 
     const position = lastBlock
       ? lastBlock.position + 1
       : 0;
 
-    const block = await prisma.contentBlock.create({
-      data: {
-        type,
-        position,
-        data,
-        imageDisplay,
+    /*
+    |--------------------------------------------------------------------------
+    | Create block
+    |--------------------------------------------------------------------------
+    */
 
-        journey: {
-          connect: {
-            id,
+    const block =
+      await prisma.contentBlock.create({
+        data: {
+          type,
+          position,
+          data,
+          imageDisplay,
+
+          journey: {
+            connect: {
+              id,
+            },
           },
+
+          ...(mediaId
+            ? {
+                media: {
+                  connect: {
+                    id: mediaId,
+                  },
+                },
+              }
+            : {}),
         },
-      },
-    });
+
+        include: {
+          media: true,
+        },
+      });
 
     return NextResponse.json(block, {
       status: 201,
     });
   } catch (error) {
-    console.error("POST journey block error:", error);
+    console.error(
+      "POST journey block error:",
+      error
+    );
 
     return NextResponse.json(
-      { error: "Failed to create content block." },
-      { status: 500 }
+      {
+        error: "Failed to create content block.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
+/*
+|--------------------------------------------------------------------------
+| PUT
+|--------------------------------------------------------------------------
+| Update a content block.
+|--------------------------------------------------------------------------
+*/
+
+export async function PUT(
+  request: Request,
+  { params }: RouteContext
+) {
+  try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+
+    const body = await request.json();
+
+    const blockId = body.blockId;
+    const data = body.data;
+
+    const hasMediaId =
+      Object.prototype.hasOwnProperty.call(
+        body,
+        "mediaId"
+      );
+
+    const mediaId =
+      typeof body.mediaId === "string"
+        ? body.mediaId
+        : null;
+
+    if (!blockId) {
+      return NextResponse.json(
+        {
+          error: "Block ID is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const block =
+      await prisma.contentBlock.findFirst({
+        where: {
+          id: blockId,
+          journeyId: id,
+        },
+      });
+
+    if (!block) {
+      return NextResponse.json(
+        {
+          error: "Content block not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validate selected media
+    |--------------------------------------------------------------------------
+    */
+
+    if (hasMediaId && mediaId) {
+      const media =
+        await prisma.mediaAsset.findUnique({
+          where: {
+            id: mediaId,
+          },
+        });
+
+      if (!media) {
+        return NextResponse.json(
+          {
+            error: "Selected media was not found.",
+          },
+          {
+            status: 404,
+          }
+        );
+      }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update block
+    |--------------------------------------------------------------------------
+    */
+
+    const updatedBlock =
+      await prisma.contentBlock.update({
+        where: {
+          id: blockId,
+        },
+
+        data: {
+          data,
+
+          ...(hasMediaId
+            ? {
+                media:
+                  mediaId
+                    ? {
+                        connect: {
+                          id: mediaId,
+                        },
+                      }
+                    : {
+                        disconnect: true,
+                      },
+              }
+            : {}),
+        },
+
+        include: {
+          media: true,
+        },
+      });
+
+    return NextResponse.json({
+      success: true,
+      data: updatedBlock.data,
+      media: updatedBlock.media,
+    });
+  } catch (error) {
+    console.error(
+      "PUT journey block error:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        error: "Failed to update content block.",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
@@ -167,22 +400,31 @@ export async function DELETE(
 
     if (!blockId) {
       return NextResponse.json(
-        { error: "Block ID is required." },
-        { status: 400 }
+        {
+          error: "Block ID is required.",
+        },
+        {
+          status: 400,
+        }
       );
     }
 
-    const block = await prisma.contentBlock.findFirst({
-      where: {
-        id: blockId,
-        journeyId: id,
-      },
-    });
+    const block =
+      await prisma.contentBlock.findFirst({
+        where: {
+          id: blockId,
+          journeyId: id,
+        },
+      });
 
     if (!block) {
       return NextResponse.json(
-        { error: "Content block not found." },
-        { status: 404 }
+        {
+          error: "Content block not found.",
+        },
+        {
+          status: 404,
+        }
       );
     }
 
@@ -196,80 +438,18 @@ export async function DELETE(
       success: true,
     });
   } catch (error) {
-    console.error("DELETE journey block error:", error);
-
-    return NextResponse.json(
-      { error: "Failed to delete content block." },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(
-  request: Request,
-  { params }: RouteContext
-) {
-  try {
-    const session = await getSession();
-
-    if (!session) {
-      return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    const { id } = await params;
-
-    const body = await request.json();
-
-    const blockId = body.blockId;
-    const data = body.data;
-
-    if (!blockId) {
-      return NextResponse.json(
-        { error: "Block ID is required." },
-        { status: 400 }
-      );
-    }
-
-    const block = await prisma.contentBlock.findFirst({
-      where: {
-        id: blockId,
-        journeyId: id,
-      },
-    });
-
-    if (!block) {
-      return NextResponse.json(
-        { error: "Content block not found." },
-        { status: 404 }
-      );
-    }
-
-    const updatedBlock =
-      await prisma.contentBlock.update({
-        where: {
-          id: blockId,
-        },
-        data: {
-          data,
-        },
-      });
-
-    return NextResponse.json({
-      success: true,
-      data: updatedBlock.data,
-    });
-  } catch (error) {
     console.error(
-      "PUT journey block error:",
+      "DELETE journey block error:",
       error
     );
 
     return NextResponse.json(
-      { error: "Failed to update content block." },
-      { status: 500 }
+      {
+        error: "Failed to delete content block.",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
