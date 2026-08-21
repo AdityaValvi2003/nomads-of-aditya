@@ -1,131 +1,257 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 type Journey = {
-  id: number;
+  id: string;
   title: string;
+  slug: string;
   location: string;
-  type: string;
-  status: "Published" | "Draft";
-  date: string;
-  description: string;
+  country: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+  journeyDate: string | null;
+  shortIntro: string | null;
+  createdAt: string;
 };
 
-const initialJourneys: Journey[] = [
-  {
-    id: 1,
-    title: "The road is always more than the destination.",
-    location: "Maharashtra, India",
-    type: "Road Journey",
-    status: "Published",
-    date: "20 Aug 2026",
-    description:
-      "A journey through roads, mountains, rain and unexpected moments.",
-  },
-];
+type FormState = {
+  title: string;
+  slug: string;
+  location: string;
+  country: string;
+  journeyDate: string;
+  shortIntro: string;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+};
+
+const emptyForm: FormState = {
+  title: "",
+  slug: "",
+  location: "",
+  country: "India",
+  journeyDate: "",
+  shortIntro: "",
+  status: "DRAFT",
+};
 
 export default function AdminJourneys() {
-  const [journeys, setJourneys] = useState<Journey[]>(initialJourneys);
+  const [journeys, setJourneys] = useState<Journey[]>([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const [error, setError] = useState("");
 
   const [showForm, setShowForm] = useState(false);
 
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({
-    title: "",
-    location: "",
-    type: "Road Journey",
-    date: "",
-    description: "",
-    status: "Draft" as "Published" | "Draft",
-  });
+  const [form, setForm] =
+    useState<FormState>(emptyForm);
 
-  function resetForm() {
-    setForm({
-      title: "",
-      location: "",
-      type: "Road Journey",
-      date: "",
-      description: "",
-      status: "Draft",
-    });
+  useEffect(() => {
+    loadJourneys();
+  }, []);
 
-    setEditingId(null);
+  async function loadJourneys() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const response = await fetch(
+        "/api/admin/journeys"
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to load journeys."
+        );
+      }
+
+      setJourneys(data);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to load journeys."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function createSlug(title: string) {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
   }
 
   function openCreate() {
-    resetForm();
+    setForm(emptyForm);
+    setError("");
     setShowForm(true);
   }
 
-  function openEdit(journey: Journey) {
-    setForm({
-      title: journey.title,
-      location: journey.location,
-      type: journey.type,
-      date: journey.date,
-      description: journey.description,
-      status: journey.status,
-    });
-
-    setEditingId(journey.id);
-    setShowForm(true);
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!form.title.trim() || !form.location.trim()) {
-      alert("Please enter a journey title and location.");
+  function closeForm() {
+    if (saving) {
       return;
     }
 
-    if (editingId !== null) {
-      setJourneys((current) =>
-        current.map((journey) =>
-          journey.id === editingId
-            ? {
-                ...journey,
-                title: form.title,
-                location: form.location,
-                type: form.type,
-                date: form.date,
-                description: form.description,
-                status: form.status,
-              }
-            : journey
-        )
-      );
-    } else {
-      const newJourney: Journey = {
-        id: Date.now(),
-        title: form.title,
-        location: form.location,
-        type: form.type,
-        date: form.date,
-        description: form.description,
-        status: form.status,
-      };
-
-      setJourneys((current) => [...current, newJourney]);
-    }
-
-    resetForm();
     setShowForm(false);
+    setForm(emptyForm);
   }
 
-  function deleteJourney(id: number) {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this journey?"
-    );
+  function handleTitleChange(
+    value: string
+  ) {
+    setForm((current) => ({
+      ...current,
+      title: value,
+      slug:
+        current.slug ===
+        createSlug(current.title)
+          ? createSlug(value)
+          : current.slug,
+    }));
+  }
 
-    if (!confirmed) return;
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
 
-    setJourneys((current) =>
-      current.filter((journey) => journey.id !== id)
-    );
+    if (
+      !form.title.trim() ||
+      !form.slug.trim() ||
+      !form.location.trim() ||
+      !form.country.trim()
+    ) {
+      setError(
+        "Title, slug, location and country are required."
+      );
+
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+
+      const response = await fetch(
+        "/api/admin/journeys",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            title: form.title,
+            slug: form.slug,
+            location: form.location,
+            country: form.country,
+            journeyDate:
+              form.journeyDate,
+            shortIntro:
+              form.shortIntro,
+            status: form.status,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to create journey."
+        );
+      }
+
+      setJourneys((current) => [
+        data,
+        ...current,
+      ]);
+
+      setShowForm(false);
+      setForm(emptyForm);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to create journey."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function deleteJourney(
+    journey: Journey
+  ) {
+    const confirmed =
+      window.confirm(
+        `Are you sure you want to delete "${journey.title}"?`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      const response = await fetch(
+        `/api/admin/journeys/${journey.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to delete journey."
+        );
+      }
+
+      setJourneys((current) =>
+        current.filter(
+          (item) =>
+            item.id !== journey.id
+        )
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to delete journey."
+      );
+    }
+  }
+
+  function formatDate(
+    date: string | null
+  ) {
+    if (!date) {
+      return "—";
+    }
+
+    return new Date(
+      date
+    ).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   }
 
   return (
@@ -170,6 +296,7 @@ export default function AdminJourneys() {
           background: transparent;
           color: var(--text);
           cursor: pointer;
+          text-decoration: none;
         }
 
         .journey-admin-button.primary {
@@ -182,13 +309,22 @@ export default function AdminJourneys() {
           color: #15110b;
         }
 
+        .journey-error {
+          margin-bottom: 25px;
+          padding: 15px 18px;
+          border: 1px solid rgba(184, 92, 75, .4);
+          background: rgba(184, 92, 75, .08);
+          color: #d98c7c;
+          font-size: .85rem;
+        }
+
         .journey-admin-list {
           border-top: 1px solid var(--line);
         }
 
         .journey-admin-row {
           display: grid;
-          grid-template-columns: 90px 1.7fr 1fr .8fr .7fr 150px;
+          grid-template-columns: 70px 1.7fr 1fr .8fr .8fr 150px;
           gap: 25px;
           align-items: center;
           padding: 25px 0;
@@ -218,6 +354,7 @@ export default function AdminJourneys() {
           color: var(--muted);
           font-size: .88rem;
           max-width: 500px;
+          line-height: 1.6;
         }
 
         .journey-meta {
@@ -239,6 +376,10 @@ export default function AdminJourneys() {
           border-color: var(--accent);
         }
 
+        .journey-status.archived {
+          color: #999;
+        }
+
         .journey-row-actions {
           display: flex;
           gap: 8px;
@@ -254,6 +395,7 @@ export default function AdminJourneys() {
           cursor: pointer;
           background: transparent;
           color: var(--text);
+          text-decoration: none;
         }
 
         .journey-row-action:hover {
@@ -278,6 +420,13 @@ export default function AdminJourneys() {
         }
 
         .journey-empty p {
+          color: var(--muted);
+        }
+
+        .journey-loading {
+          padding: 80px 20px;
+          text-align: center;
+          border-bottom: 1px solid var(--line);
           color: var(--muted);
         }
 
@@ -407,15 +556,35 @@ export default function AdminJourneys() {
           border-color: var(--accent);
         }
 
-        @media (max-width: 1000px) {
+        .journey-form-footer button:disabled {
+          opacity: .5;
+          cursor: not-allowed;
+        }
+
+        .journey-slug-preview {
+          color: var(--muted);
+          font-size: .75rem;
+          margin-top: 3px;
+        }
+
+        @media (max-width: 1100px) {
           .journey-admin-row {
-            grid-template-columns: 60px 1.5fr 1fr .8fr;
+            grid-template-columns: 60px 1.5fr 1fr .8fr 130px;
           }
 
           .journey-admin-row.header > :nth-child(5),
-          .journey-admin-row.header > :nth-child(6),
-          .journey-admin-row > :nth-child(5),
-          .journey-admin-row > :nth-child(6) {
+          .journey-admin-row > :nth-child(5) {
+            display: none;
+          }
+        }
+
+        @media (max-width: 850px) {
+          .journey-admin-row {
+            grid-template-columns: 55px 1.5fr 1fr 130px;
+          }
+
+          .journey-admin-row.header > :nth-child(3),
+          .journey-admin-row > :nth-child(3) {
             display: none;
           }
         }
@@ -443,7 +612,8 @@ export default function AdminJourneys() {
           }
 
           .journey-admin-row > :nth-child(3),
-          .journey-admin-row > :nth-child(4) {
+          .journey-admin-row > :nth-child(4),
+          .journey-admin-row > :nth-child(5) {
             display: none;
           }
 
@@ -477,14 +647,19 @@ export default function AdminJourneys() {
         <div className="journey-admin-top">
 
           <div className="journey-admin-heading">
-            <span className="eyebrow">CONTENT MANAGER</span>
+
+            <span className="eyebrow">
+              CONTENT MANAGER
+            </span>
 
             <h1>Journeys</h1>
 
             <p>
-              Create, edit and manage the stories that appear on
+              Create, edit and manage the
+              stories that appear on
               Nomads of Aditya.
             </p>
+
           </div>
 
           <div className="journey-admin-actions">
@@ -507,6 +682,13 @@ export default function AdminJourneys() {
 
         </div>
 
+        {/* ERROR */}
+
+        {error && (
+          <div className="journey-error">
+            {error}
+          </div>
+        )}
 
         {/* JOURNEY LIST */}
 
@@ -517,26 +699,38 @@ export default function AdminJourneys() {
             <div>#</div>
             <div>Journey</div>
             <div>Location</div>
-            <div>Type</div>
+            <div>Date</div>
             <div>Status</div>
             <div>Actions</div>
 
           </div>
 
+          {loading ? (
 
-          {journeys.length === 0 ? (
+            <div className="journey-loading">
+              Loading journeys...
+            </div>
+
+          ) : journeys.length === 0 ? (
 
             <div className="journey-empty">
 
-              <h2>No journeys yet.</h2>
+              <h2>
+                No journeys yet.
+              </h2>
 
               <p>
-                Your first journey will appear here once you create it.
+                Your first journey will
+                appear here once you
+                create it.
               </p>
 
               <button
                 className="journey-admin-button primary"
                 onClick={openCreate}
+                style={{
+                  marginTop: "25px",
+                }}
               >
                 Create First Journey
               </button>
@@ -545,79 +739,95 @@ export default function AdminJourneys() {
 
           ) : (
 
-            journeys.map((journey, index) => (
+            journeys.map(
+              (journey, index) => (
 
-              <div
-                className="journey-admin-row"
-                key={journey.id}
-              >
+                <div
+                  className="journey-admin-row"
+                  key={journey.id}
+                >
 
-                <div className="journey-number">
-                  {String(index + 1).padStart(2, "0")}
-                </div>
-
-                <div>
-
-                  <div className="journey-title">
-                    {journey.title}
+                  <div className="journey-number">
+                    {String(
+                      index + 1
+                    ).padStart(2, "0")}
                   </div>
 
-                  <div className="journey-description">
-                    {journey.description}
+                  <div>
+
+                    <div className="journey-title">
+                      {journey.title}
+                    </div>
+
+                    <div className="journey-description">
+                      {journey.shortIntro ||
+                        "No introduction yet."}
+                    </div>
+
+                  </div>
+
+                  <div className="journey-meta">
+                    {journey.location}
+                    <br />
+                    {journey.country}
+                  </div>
+
+                  <div className="journey-meta">
+                    {formatDate(
+                      journey.journeyDate
+                    )}
+                  </div>
+
+                  <div>
+
+                    <span
+                      className={`journey-status ${
+                        journey.status ===
+                        "PUBLISHED"
+                          ? "published"
+                          : journey.status ===
+                            "ARCHIVED"
+                          ? "archived"
+                          : ""
+                      }`}
+                    >
+                      {journey.status}
+                    </span>
+
+                  </div>
+
+                  <div className="journey-row-actions">
+
+                    <Link
+                      href={`/admin/journeys/${journey.id}`}
+                      className="journey-row-action"
+                    >
+                      Edit
+                    </Link>
+
+                    <button
+                      className="journey-row-action delete"
+                      onClick={() =>
+                        deleteJourney(
+                          journey
+                        )
+                      }
+                    >
+                      Delete
+                    </button>
+
                   </div>
 
                 </div>
 
-                <div className="journey-meta">
-                  {journey.location}
-                </div>
-
-                <div className="journey-meta">
-                  {journey.type}
-                </div>
-
-                <div>
-
-                  <span
-                    className={`journey-status ${
-                      journey.status === "Published"
-                        ? "published"
-                        : ""
-                    }`}
-                  >
-                    {journey.status}
-                  </span>
-
-                </div>
-
-                <div className="journey-row-actions">
-
-                  <button
-                    className="journey-row-action"
-                    onClick={() => openEdit(journey)}
-                  >
-                    Edit
-                  </button>
-
-                  <button
-                    className="journey-row-action delete"
-                    onClick={() => deleteJourney(journey.id)}
-                  >
-                    Delete
-                  </button>
-
-                </div>
-
-              </div>
-
-            ))
+              )
+            )
 
           )}
 
         </div>
 
-
-        {/* CREATE / EDIT FORM */}
+        {/* CREATE FORM */}
 
         {showForm && (
 
@@ -625,7 +835,9 @@ export default function AdminJourneys() {
 
             <form
               className="journey-form"
-              onSubmit={handleSubmit}
+              onSubmit={
+                handleSubmit
+              }
             >
 
               <div className="journey-form-header">
@@ -633,18 +845,16 @@ export default function AdminJourneys() {
                 <div>
 
                   <span className="eyebrow">
-                    {editingId ? "EDIT JOURNEY" : "NEW JOURNEY"}
+                    NEW JOURNEY
                   </span>
 
                   <h2>
-                    {editingId
-                      ? "Edit journey."
-                      : "Create a journey."}
+                    Create a journey.
                   </h2>
 
                   <p>
-                    Start with the basic information. We'll build
-                    the complete story editor next.
+                    Add the basic information
+                    for your new journey.
                   </p>
 
                 </div>
@@ -652,16 +862,15 @@ export default function AdminJourneys() {
                 <button
                   type="button"
                   className="journey-close"
-                  onClick={() => {
-                    setShowForm(false);
-                    resetForm();
-                  }}
+                  onClick={
+                    closeForm
+                  }
+                  disabled={saving}
                 >
                   ×
                 </button>
 
               </div>
-
 
               <div className="journey-form-grid">
 
@@ -670,115 +879,148 @@ export default function AdminJourneys() {
                 <div className="journey-form-field full">
 
                   <label>
-                    Journey title
+                    Journey title *
                   </label>
 
                   <input
                     type="text"
+                    required
                     placeholder="The road is always more than the destination."
-                    value={form.title}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        title: e.target.value,
-                      })
+                    value={
+                      form.title
+                    }
+                    onChange={(event) =>
+                      handleTitleChange(
+                        event.target.value
+                      )
                     }
                   />
 
                 </div>
 
+                {/* SLUG */}
+
+                <div className="journey-form-field full">
+
+                  <label>
+                    Slug *
+                  </label>
+
+                  <input
+                    type="text"
+                    required
+                    placeholder="the-road-is-always-more-than-the-destination"
+                    value={
+                      form.slug
+                    }
+                    onChange={(event) =>
+                      setForm(
+                        (current) => ({
+                          ...current,
+                          slug:
+                            event.target.value
+                              .toLowerCase()
+                              .replace(
+                                /\s+/g,
+                                "-"
+                              ),
+                        })
+                      )
+                    }
+                  />
+
+                  <div className="journey-slug-preview">
+                    /journeys/
+                    {form.slug ||
+                      "your-journey-slug"}
+                  </div>
+
+                </div>
 
                 {/* LOCATION */}
 
                 <div className="journey-form-field">
 
                   <label>
-                    Location
+                    Location *
                   </label>
 
                   <input
                     type="text"
-                    placeholder="Maharashtra, India"
-                    value={form.location}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        location: e.target.value,
-                      })
+                    required
+                    placeholder="Maharashtra"
+                    value={
+                      form.location
+                    }
+                    onChange={(event) =>
+                      setForm(
+                        (current) => ({
+                          ...current,
+                          location:
+                            event.target
+                              .value,
+                        })
+                      )
                     }
                   />
 
                 </div>
 
-
-                {/* TYPE */}
+                {/* COUNTRY */}
 
                 <div className="journey-form-field">
 
                   <label>
-                    Journey type
+                    Country *
                   </label>
 
-                  <select
-                    value={form.type}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        type: e.target.value,
-                      })
+                  <input
+                    type="text"
+                    required
+                    placeholder="India"
+                    value={
+                      form.country
                     }
-                  >
-
-                    <option>
-                      Road Journey
-                    </option>
-
-                    <option>
-                      Trek
-                    </option>
-
-                    <option>
-                      Backpacking
-                    </option>
-
-                    <option>
-                      Weekend Escape
-                    </option>
-
-                    <option>
-                      Solo Journey
-                    </option>
-
-                    <option>
-                      Other
-                    </option>
-
-                  </select>
+                    onChange={(event) =>
+                      setForm(
+                        (current) => ({
+                          ...current,
+                          country:
+                            event.target
+                              .value,
+                        })
+                      )
+                    }
+                  />
 
                 </div>
-
 
                 {/* DATE */}
 
                 <div className="journey-form-field">
 
                   <label>
-                    Date
+                    Journey date
                   </label>
 
                   <input
                     type="date"
-                    value={form.date}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        date: e.target.value,
-                      })
+                    value={
+                      form.journeyDate
+                    }
+                    onChange={(event) =>
+                      setForm(
+                        (current) => ({
+                          ...current,
+                          journeyDate:
+                            event.target
+                              .value,
+                        })
+                      )
                     }
                   />
 
                 </div>
-
 
                 {/* STATUS */}
 
@@ -789,46 +1031,62 @@ export default function AdminJourneys() {
                   </label>
 
                   <select
-                    value={form.status}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        status: e.target.value as
-                          | "Published"
-                          | "Draft",
-                      })
+                    value={
+                      form.status
+                    }
+                    onChange={(event) =>
+                      setForm(
+                        (current) => ({
+                          ...current,
+                          status:
+                            event.target
+                              .value as
+                              | "DRAFT"
+                              | "PUBLISHED"
+                              | "ARCHIVED",
+                        })
+                      )
                     }
                   >
 
-                    <option value="Draft">
+                    <option value="DRAFT">
                       Draft
                     </option>
 
-                    <option value="Published">
+                    <option value="PUBLISHED">
                       Published
+                    </option>
+
+                    <option value="ARCHIVED">
+                      Archived
                     </option>
 
                   </select>
 
                 </div>
 
-
-                {/* DESCRIPTION */}
+                {/* INTRO */}
 
                 <div className="journey-form-field full">
 
                   <label>
-                    Short description
+                    Short introduction
                   </label>
 
                   <textarea
                     placeholder="A short introduction to this journey..."
-                    value={form.description}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        description: e.target.value,
-                      })
+                    value={
+                      form.shortIntro
+                    }
+                    onChange={(event) =>
+                      setForm(
+                        (current) => ({
+                          ...current,
+                          shortIntro:
+                            event.target
+                              .value,
+                        })
+                      )
                     }
                   />
 
@@ -836,17 +1094,16 @@ export default function AdminJourneys() {
 
               </div>
 
-
-              {/* FORM FOOTER */}
+              {/* FOOTER */}
 
               <div className="journey-form-footer">
 
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowForm(false);
-                    resetForm();
-                  }}
+                  onClick={
+                    closeForm
+                  }
+                  disabled={saving}
                 >
                   Cancel
                 </button>
@@ -854,9 +1111,10 @@ export default function AdminJourneys() {
                 <button
                   type="submit"
                   className="primary"
+                  disabled={saving}
                 >
-                  {editingId
-                    ? "Save Changes"
+                  {saving
+                    ? "Creating..."
                     : "Create Journey"}
                 </button>
 
