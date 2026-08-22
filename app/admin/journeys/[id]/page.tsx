@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "../../../../src/lib/prisma";
 import { getSession } from "../../../../src/lib/auth";
 import ContentBuilder from "./ContentBuilder";
+import CoverImageField from "./CoverImageField";
 
 type PageProps = {
   params: Promise<{
@@ -10,7 +11,10 @@ type PageProps = {
   }>;
 };
 
-async function updateJourney(id: string, formData: FormData) {
+async function updateJourney(
+  id: string,
+  formData: FormData
+) {
   "use server";
 
   const session = await getSession();
@@ -19,10 +23,25 @@ async function updateJourney(id: string, formData: FormData) {
     redirect("/admin/login");
   }
 
-  const title = String(formData.get("title") || "").trim();
-  const slug = String(formData.get("slug") || "").trim();
-  const location = String(formData.get("location") || "").trim();
-  const country = String(formData.get("country") || "").trim();
+  const title = String(
+    formData.get("title") || ""
+  ).trim();
+
+  const slug = String(
+    formData.get("slug") || ""
+  ).trim();
+
+  const location = String(
+    formData.get("location") || ""
+  ).trim();
+
+  const country = String(
+    formData.get("country") || ""
+  ).trim();
+
+  const coverImage = String(
+    formData.get("coverImage") || ""
+  ).trim();
 
   const shortIntro = String(
     formData.get("shortIntro") || ""
@@ -56,7 +75,8 @@ async function updateJourney(id: string, formData: FormData) {
     formData.get("status") || "DRAFT"
   );
 
-  const isFeatured = formData.get("isFeatured") === "on";
+  const isFeatured =
+    formData.get("isFeatured") === "on";
 
   const seoTitle = String(
     formData.get("seoTitle") || ""
@@ -78,34 +98,54 @@ async function updateJourney(id: string, formData: FormData) {
     formData.get("ogDescription") || ""
   ).trim();
 
-  const noIndex = formData.get("noIndex") === "on";
+  const noIndex =
+    formData.get("noIndex") === "on";
 
-  const noFollow = formData.get("noFollow") === "on";
+  const noFollow =
+    formData.get("noFollow") === "on";
 
-  if (!title || !slug || !location || !country) {
-    throw new Error("Title, slug, location and country are required.");
+  if (
+    !title ||
+    !slug ||
+    !location ||
+    !country
+  ) {
+    throw new Error(
+      "Title, slug, location and country are required."
+    );
   }
 
-  const existingJourney = await prisma.journey.findFirst({
-    where: {
-      slug,
-      NOT: {
-        id,
+  const existingJourney =
+    await prisma.journey.findFirst({
+      where: {
+        slug,
+        NOT: {
+          id,
+        },
       },
-    },
-  });
+    });
 
   if (existingJourney) {
-    throw new Error("Another journey already uses this slug.");
+    throw new Error(
+      "Another journey already uses this slug."
+    );
   }
 
   let journeyDate: Date | null = null;
 
   if (journeyDateValue) {
-    journeyDate = new Date(`${journeyDateValue}T00:00:00`);
+    journeyDate = new Date(
+      `${journeyDateValue}T00:00:00`
+    );
 
-    if (Number.isNaN(journeyDate.getTime())) {
-      throw new Error("Invalid journey date.");
+    if (
+      Number.isNaN(
+        journeyDate.getTime()
+      )
+    ) {
+      throw new Error(
+        "Invalid journey date."
+      );
     }
   }
 
@@ -120,15 +160,34 @@ async function updateJourney(id: string, formData: FormData) {
       location,
       country,
 
-      shortIntro: shortIntro || null,
+      /*
+       * COVER IMAGE
+       *
+       * Empty string becomes null so that
+       * removing a cover image actually removes
+       * it from the database.
+       */
+      coverImage: coverImage || null,
+
+      shortIntro:
+        shortIntro || null,
 
       journeyDate,
 
-      duration: duration || null,
-      distance: distance || null,
-      difficulty: difficulty || null,
-      companions: companions || null,
-      placesVisited: placesVisited || null,
+      duration:
+        duration || null,
+
+      distance:
+        distance || null,
+
+      difficulty:
+        difficulty || null,
+
+      companions:
+        companions || null,
+
+      placesVisited:
+        placesVisited || null,
 
       status: status as
         | "DRAFT"
@@ -137,12 +196,20 @@ async function updateJourney(id: string, formData: FormData) {
 
       isFeatured,
 
-      seoTitle: seoTitle || null,
-      seoDescription: seoDescription || null,
-      canonicalUrl: canonicalUrl || null,
+      seoTitle:
+        seoTitle || null,
 
-      ogTitle: ogTitle || null,
-      ogDescription: ogDescription || null,
+      seoDescription:
+        seoDescription || null,
+
+      canonicalUrl:
+        canonicalUrl || null,
+
+      ogTitle:
+        ogTitle || null,
+
+      ogDescription:
+        ogDescription || null,
 
       noIndex,
       noFollow,
@@ -154,7 +221,9 @@ async function updateJourney(id: string, formData: FormData) {
     },
   });
 
-  redirect(`/admin/journeys/${id}`);
+  redirect(
+    `/admin/journeys/${id}`
+  );
 }
 
 export default async function EditJourneyPage({
@@ -162,28 +231,37 @@ export default async function EditJourneyPage({
 }: PageProps) {
   const { id } = await params;
 
-  const journey = await prisma.journey.findUnique({
-    where: {
-      id,
-    },
-  });
+  const journey =
+    await prisma.journey.findUnique({
+      where: {
+        id,
+      },
+    });
 
   if (!journey) {
     notFound();
   }
 
-  const journeyDate = journey.journeyDate
-    ? journey.journeyDate.toISOString().split("T")[0]
-    : "";
+  const journeyDate =
+    journey.journeyDate
+      ? journey.journeyDate
+          .toISOString()
+          .split("T")[0]
+      : "";
 
   return (
     <main className="min-h-screen bg-[#0b0b0b] text-white">
+
       <div className="flex min-h-screen">
 
-        {/* Sidebar */}
+        {/* =====================================================
+            SIDEBAR
+        ====================================================== */}
+
         <aside className="hidden w-64 border-r border-white/10 bg-[#0f0f0f] p-6 md:block">
 
           <div className="mb-10">
+
             <p className="text-xs uppercase tracking-[0.3em] text-white/35">
               Nomads of Aditya
             </p>
@@ -191,6 +269,7 @@ export default async function EditJourneyPage({
             <h1 className="mt-3 text-xl font-semibold">
               Admin
             </h1>
+
           </div>
 
           <nav className="space-y-2">
@@ -210,7 +289,7 @@ export default async function EditJourneyPage({
             </Link>
 
             <Link
-              href="/admin/blogs"
+              href="/admin/blog"
               className="block rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
             >
               Blogs
@@ -254,27 +333,43 @@ export default async function EditJourneyPage({
           </nav>
 
           <div className="mt-10">
-            <form action="/api/auth/logout" method="POST">
+
+            <form
+              action="/api/auth/logout"
+              method="POST"
+            >
+
               <button
                 type="submit"
                 className="w-full rounded-lg px-4 py-3 text-left text-sm text-white/40 transition hover:bg-white/5 hover:text-white"
               >
                 Log out
               </button>
+
             </form>
+
           </div>
 
         </aside>
 
-        {/* Main */}
+
+        {/* =====================================================
+            MAIN
+        ====================================================== */}
+
         <section className="flex-1">
 
-          {/* Header */}
+
+          {/* ===================================================
+              HEADER
+          ==================================================== */}
+
           <header className="border-b border-white/10 px-6 py-5 md:px-10">
 
             <div className="flex items-center justify-between">
 
               <div>
+
                 <Link
                   href="/admin/journeys"
                   className="text-sm text-white/40 transition hover:text-white"
@@ -289,34 +384,67 @@ export default async function EditJourneyPage({
                 <h2 className="mt-1 text-2xl font-semibold">
                   Edit Journey
                 </h2>
+
               </div>
 
-              <div className="hidden text-right sm:block">
-                <p className="text-sm text-white/50">
-                  {journey.status}
-                </p>
 
-                <p className="mt-1 text-xs text-white/25">
-                  /{journey.slug}
-                </p>
+              <div className="flex items-center gap-4">
+
+                {journey.status ===
+                  "PUBLISHED" && (
+                  <Link
+                    href={`/journeys/${journey.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden rounded-xl border border-[#D99A3D]/40 px-4 py-2.5 text-sm text-[#D99A3D] transition hover:border-[#D99A3D] hover:bg-[#D99A3D]/10 sm:block"
+                  >
+                    View Public Journey ↗
+                  </Link>
+                )}
+
+                <div className="hidden text-right sm:block">
+
+                  <p className="text-sm text-white/50">
+                    {journey.status}
+                  </p>
+
+                  <p className="mt-1 text-xs text-white/25">
+                    /journeys/
+                    {journey.slug}
+                  </p>
+
+                </div>
+
               </div>
 
             </div>
 
           </header>
 
-          {/* Form */}
+
+          {/* ===================================================
+              FORM
+          ==================================================== */}
+
           <div className="p-6 md:p-10">
 
             <form
-              action={updateJourney.bind(null, journey.id)}
+              action={updateJourney.bind(
+                null,
+                journey.id
+              )}
               className="mx-auto max-w-5xl space-y-8"
             >
 
-              {/* Basic information */}
+
+              {/* =================================================
+                  STEP 1 — BASIC INFORMATION
+              ================================================== */}
+
               <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
                 <div>
+
                   <p className="text-xs uppercase tracking-[0.25em] text-white/25">
                     Step 1
                   </p>
@@ -328,12 +456,17 @@ export default async function EditJourneyPage({
                   <p className="mt-2 text-sm text-white/40">
                     The basic information visitors will see about this journey.
                   </p>
+
                 </div>
+
 
                 <div className="mt-8 space-y-6">
 
-                  {/* Title */}
+
+                  {/* TITLE */}
+
                   <div>
+
                     <label
                       htmlFor="title"
                       className="mb-2 block text-sm text-white/60"
@@ -345,14 +478,20 @@ export default async function EditJourneyPage({
                       id="title"
                       name="title"
                       type="text"
-                      defaultValue={journey.title}
+                      defaultValue={
+                        journey.title
+                      }
                       required
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* Slug */}
+
+                  {/* SLUG */}
+
                   <div>
+
                     <label
                       htmlFor="slug"
                       className="mb-2 block text-sm text-white/60"
@@ -364,20 +503,27 @@ export default async function EditJourneyPage({
                       id="slug"
                       name="slug"
                       type="text"
-                      defaultValue={journey.slug}
+                      defaultValue={
+                        journey.slug
+                      }
                       required
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
                     />
 
                     <p className="mt-2 text-xs text-white/30">
-                      Example: /journeys/harishchandragad
+                      Example:
+                      /journeys/harishchandragad
                     </p>
+
                   </div>
 
-                  {/* Location */}
+
+                  {/* LOCATION / COUNTRY */}
+
                   <div className="grid gap-6 md:grid-cols-2">
 
                     <div>
+
                       <label
                         htmlFor="location"
                         className="mb-2 block text-sm text-white/60"
@@ -389,13 +535,18 @@ export default async function EditJourneyPage({
                         id="location"
                         name="location"
                         type="text"
-                        defaultValue={journey.location}
+                        defaultValue={
+                          journey.location
+                        }
                         required
                         className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
                       />
+
                     </div>
 
+
                     <div>
+
                       <label
                         htmlFor="country"
                         className="mb-2 block text-sm text-white/60"
@@ -407,16 +558,22 @@ export default async function EditJourneyPage({
                         id="country"
                         name="country"
                         type="text"
-                        defaultValue={journey.country}
+                        defaultValue={
+                          journey.country
+                        }
                         required
                         className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
                       />
+
                     </div>
 
                   </div>
 
-                  {/* Intro */}
+
+                  {/* SHORT INTRO */}
+
                   <div>
+
                     <label
                       htmlFor="shortIntro"
                       className="mb-2 block text-sm text-white/60"
@@ -428,21 +585,66 @@ export default async function EditJourneyPage({
                       id="shortIntro"
                       name="shortIntro"
                       rows={4}
-                      defaultValue={journey.shortIntro ?? ""}
+                      defaultValue={
+                        journey.shortIntro ??
+                        ""
+                      }
                       className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
                     />
+
                   </div>
 
                 </div>
 
               </section>
 
-              {/* Journey details */}
+
+              {/* =================================================
+                  COVER IMAGE — NEW
+              ================================================== */}
+
               <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
                 <div>
+
                   <p className="text-xs uppercase tracking-[0.25em] text-white/25">
                     Step 2
+                  </p>
+
+                  <h3 className="mt-2 text-xl font-medium">
+                    Cover image
+                  </h3>
+
+                  <p className="mt-2 text-sm text-white/40">
+                    Choose the main photograph for this journey.
+                    This image will be used as the journey cover.
+                  </p>
+
+                </div>
+
+                <div className="mt-8">
+
+                  <CoverImageField
+                    initialImage={
+                      journey.coverImage
+                    }
+                  />
+
+                </div>
+
+              </section>
+
+
+              {/* =================================================
+                  JOURNEY DETAILS
+              ================================================== */}
+
+              <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
+
+                <div>
+
+                  <p className="text-xs uppercase tracking-[0.25em] text-white/25">
+                    Step 3
                   </p>
 
                   <h3 className="mt-2 text-xl font-medium">
@@ -452,12 +654,17 @@ export default async function EditJourneyPage({
                   <p className="mt-2 text-sm text-white/40">
                     Information about the actual trip.
                   </p>
+
                 </div>
+
 
                 <div className="mt-8 grid gap-6 md:grid-cols-2">
 
-                  {/* Date */}
+
+                  {/* DATE */}
+
                   <div>
+
                     <label
                       htmlFor="journeyDate"
                       className="mb-2 block text-sm text-white/60"
@@ -469,13 +676,19 @@ export default async function EditJourneyPage({
                       id="journeyDate"
                       name="journeyDate"
                       type="date"
-                      defaultValue={journeyDate}
+                      defaultValue={
+                        journeyDate
+                      }
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* Duration */}
+
+                  {/* DURATION */}
+
                   <div>
+
                     <label
                       htmlFor="duration"
                       className="mb-2 block text-sm text-white/60"
@@ -487,14 +700,21 @@ export default async function EditJourneyPage({
                       id="duration"
                       name="duration"
                       type="text"
-                      defaultValue={journey.duration ?? ""}
+                      defaultValue={
+                        journey.duration ??
+                        ""
+                      }
                       placeholder="1 day"
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* Distance */}
+
+                  {/* DISTANCE */}
+
                   <div>
+
                     <label
                       htmlFor="distance"
                       className="mb-2 block text-sm text-white/60"
@@ -506,14 +726,21 @@ export default async function EditJourneyPage({
                       id="distance"
                       name="distance"
                       type="text"
-                      defaultValue={journey.distance ?? ""}
+                      defaultValue={
+                        journey.distance ??
+                        ""
+                      }
                       placeholder="14 km"
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* Difficulty */}
+
+                  {/* DIFFICULTY */}
+
                   <div>
+
                     <label
                       htmlFor="difficulty"
                       className="mb-2 block text-sm text-white/60"
@@ -525,14 +752,21 @@ export default async function EditJourneyPage({
                       id="difficulty"
                       name="difficulty"
                       type="text"
-                      defaultValue={journey.difficulty ?? ""}
+                      defaultValue={
+                        journey.difficulty ??
+                        ""
+                      }
                       placeholder="Moderate"
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* Companions */}
+
+                  {/* COMPANIONS */}
+
                   <div>
+
                     <label
                       htmlFor="companions"
                       className="mb-2 block text-sm text-white/60"
@@ -544,14 +778,21 @@ export default async function EditJourneyPage({
                       id="companions"
                       name="companions"
                       type="text"
-                      defaultValue={journey.companions ?? ""}
+                      defaultValue={
+                        journey.companions ??
+                        ""
+                      }
                       placeholder="Friends, solo, family..."
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
+
                   </div>
 
-                  {/* Places visited */}
+
+                  {/* PLACES */}
+
                   <div>
+
                     <label
                       htmlFor="placesVisited"
                       className="mb-2 block text-sm text-white/60"
@@ -563,33 +804,47 @@ export default async function EditJourneyPage({
                       id="placesVisited"
                       name="placesVisited"
                       type="text"
-                      defaultValue={journey.placesVisited ?? ""}
+                      defaultValue={
+                        journey.placesVisited ??
+                        ""
+                      }
                       placeholder="Fort, Kokan Kada, Tolar Khind"
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
+
                   </div>
 
                 </div>
 
               </section>
 
-              {/* Publishing */}
+
+              {/* =================================================
+                  PUBLISHING
+              ================================================== */}
+
               <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
                 <div>
+
                   <p className="text-xs uppercase tracking-[0.25em] text-white/25">
-                    Step 3
+                    Step 4
                   </p>
 
                   <h3 className="mt-2 text-xl font-medium">
                     Publishing
                   </h3>
+
                 </div>
+
 
                 <div className="mt-8 space-y-6">
 
-                  {/* Status */}
+
+                  {/* STATUS */}
+
                   <div>
+
                     <label
                       htmlFor="status"
                       className="mb-2 block text-sm text-white/60"
@@ -600,9 +855,12 @@ export default async function EditJourneyPage({
                     <select
                       id="status"
                       name="status"
-                      defaultValue={journey.status}
+                      defaultValue={
+                        journey.status
+                      }
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none focus:border-white/30"
                     >
+
                       <option value="DRAFT">
                         Draft
                       </option>
@@ -614,20 +872,27 @@ export default async function EditJourneyPage({
                       <option value="ARCHIVED">
                         Archived
                       </option>
+
                     </select>
+
                   </div>
 
-                  {/* Featured */}
+
+                  {/* FEATURED */}
+
                   <label className="flex cursor-pointer items-center gap-3">
 
                     <input
                       type="checkbox"
                       name="isFeatured"
-                      defaultChecked={journey.isFeatured}
+                      defaultChecked={
+                        journey.isFeatured
+                      }
                       className="h-4 w-4 accent-[#D99A3D]"
                     />
 
                     <span>
+
                       <span className="block text-sm text-white/70">
                         Feature this journey
                       </span>
@@ -635,6 +900,7 @@ export default async function EditJourneyPage({
                       <span className="mt-1 block text-xs text-white/30">
                         Show this journey in featured sections of the website.
                       </span>
+
                     </span>
 
                   </label>
@@ -643,12 +909,17 @@ export default async function EditJourneyPage({
 
               </section>
 
-              {/* SEO */}
+
+              {/* =================================================
+                  SEO
+              ================================================== */}
+
               <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
                 <div>
+
                   <p className="text-xs uppercase tracking-[0.25em] text-white/25">
-                    Step 4
+                    Step 5
                   </p>
 
                   <h3 className="mt-2 text-xl font-medium">
@@ -658,12 +929,17 @@ export default async function EditJourneyPage({
                   <p className="mt-2 text-sm text-white/40">
                     Search engine and social sharing settings.
                   </p>
+
                 </div>
+
 
                 <div className="mt-8 space-y-6">
 
-                  {/* SEO title */}
+
+                  {/* SEO TITLE */}
+
                   <div>
+
                     <label
                       htmlFor="seoTitle"
                       className="mb-2 block text-sm text-white/60"
@@ -675,14 +951,21 @@ export default async function EditJourneyPage({
                       id="seoTitle"
                       name="seoTitle"
                       type="text"
-                      defaultValue={journey.seoTitle ?? ""}
+                      defaultValue={
+                        journey.seoTitle ??
+                        ""
+                      }
                       placeholder="Harishchandragad Trek - Nomads of Aditya"
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* SEO description */}
+
+                  {/* SEO DESCRIPTION */}
+
                   <div>
+
                     <label
                       htmlFor="seoDescription"
                       className="mb-2 block text-sm text-white/60"
@@ -694,14 +977,21 @@ export default async function EditJourneyPage({
                       id="seoDescription"
                       name="seoDescription"
                       rows={3}
-                      defaultValue={journey.seoDescription ?? ""}
+                      defaultValue={
+                        journey.seoDescription ??
+                        ""
+                      }
                       placeholder="Explore my journey through Harishchandragad..."
-                      className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
+
                   </div>
 
-                  {/* Canonical */}
+
+                  {/* CANONICAL */}
+
                   <div>
+
                     <label
                       htmlFor="canonicalUrl"
                       className="mb-2 block text-sm text-white/60"
@@ -713,14 +1003,21 @@ export default async function EditJourneyPage({
                       id="canonicalUrl"
                       name="canonicalUrl"
                       type="url"
-                      defaultValue={journey.canonicalUrl ?? ""}
+                      defaultValue={
+                        journey.canonicalUrl ??
+                        ""
+                      }
                       placeholder="https://..."
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
+
                   </div>
 
-                  {/* OG title */}
+
+                  {/* OG TITLE */}
+
                   <div>
+
                     <label
                       htmlFor="ogTitle"
                       className="mb-2 block text-sm text-white/60"
@@ -732,13 +1029,20 @@ export default async function EditJourneyPage({
                       id="ogTitle"
                       name="ogTitle"
                       type="text"
-                      defaultValue={journey.ogTitle ?? ""}
+                      defaultValue={
+                        journey.ogTitle ??
+                        ""
+                      }
                       className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* OG description */}
+
+                  {/* OG DESCRIPTION */}
+
                   <div>
+
                     <label
                       htmlFor="ogDescription"
                       className="mb-2 block text-sm text-white/60"
@@ -750,12 +1054,18 @@ export default async function EditJourneyPage({
                       id="ogDescription"
                       name="ogDescription"
                       rows={3}
-                      defaultValue={journey.ogDescription ?? ""}
+                      defaultValue={
+                        journey.ogDescription ??
+                        ""
+                      }
                       className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
                     />
+
                   </div>
 
-                  {/* Robots */}
+
+                  {/* ROBOTS */}
+
                   <div className="space-y-4 border-t border-white/10 pt-6">
 
                     <label className="flex cursor-pointer items-center gap-3">
@@ -763,7 +1073,9 @@ export default async function EditJourneyPage({
                       <input
                         type="checkbox"
                         name="noIndex"
-                        defaultChecked={journey.noIndex}
+                        defaultChecked={
+                          journey.noIndex
+                        }
                         className="h-4 w-4 accent-[#D99A3D]"
                       />
 
@@ -773,12 +1085,15 @@ export default async function EditJourneyPage({
 
                     </label>
 
+
                     <label className="flex cursor-pointer items-center gap-3">
 
                       <input
                         type="checkbox"
                         name="noFollow"
-                        defaultChecked={journey.noFollow}
+                        defaultChecked={
+                          journey.noFollow
+                        }
                         className="h-4 w-4 accent-[#D99A3D]"
                       />
 
@@ -794,7 +1109,11 @@ export default async function EditJourneyPage({
 
               </section>
 
-              {/* Actions */}
+
+              {/* =================================================
+                  ACTIONS
+              ================================================== */}
+
               <div className="flex items-center justify-end gap-3 pb-10">
 
                 <Link
@@ -814,13 +1133,26 @@ export default async function EditJourneyPage({
               </div>
 
             </form>
-            <ContentBuilder journeyId={journey.id} />
+
+
+            {/* =================================================
+                CONTENT BUILDER
+            ================================================== */}
+
+            <div className="mx-auto max-w-5xl">
+
+              <ContentBuilder
+                journeyId={journey.id}
+              />
+
+            </div>
 
           </div>
 
         </section>
 
       </div>
+
     </main>
   );
 }

@@ -13,12 +13,14 @@ type ReorderItem = {
   position: number;
 };
 
-/*
-|--------------------------------------------------------------------------
-| GET
-|--------------------------------------------------------------------------
-| Get all content blocks for a journey.
-*/
+async function getJourney(id: string) {
+  return prisma.journey.findUnique({
+    where: {
+      id,
+    },
+  });
+}
+
 export async function GET(
   _request: Request,
   { params }: RouteContext
@@ -35,17 +37,18 @@ export async function GET(
 
     const { id } = await params;
 
-    const blocks = await prisma.contentBlock.findMany({
-      where: {
-        journeyId: id,
-      },
-      orderBy: {
-        position: "asc",
-      },
-      include: {
-        media: true,
-      },
-    });
+    const blocks =
+      await prisma.contentBlock.findMany({
+        where: {
+          journeyId: id,
+        },
+        orderBy: {
+          position: "asc",
+        },
+        include: {
+          media: true,
+        },
+      });
 
     return NextResponse.json(blocks);
   } catch (error) {
@@ -56,7 +59,8 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: "Failed to load content blocks.",
+        error:
+          "Failed to load content blocks.",
       },
       {
         status: 500,
@@ -69,7 +73,7 @@ export async function GET(
 |--------------------------------------------------------------------------
 | POST
 |--------------------------------------------------------------------------
-| Create a new content block.
+| Create a normal block OR duplicate an existing block.
 */
 export async function POST(
   request: Request,
@@ -86,53 +90,10 @@ export async function POST(
     }
 
     const { id } = await params;
-
     const body = await request.json();
 
-    const type =
-      typeof body.type === "string"
-        ? body.type
-        : "";
-
-    const data =
-      body.data &&
-      typeof body.data === "object"
-        ? body.data
-        : {};
-
-    const imageDisplay =
-      typeof body.imageDisplay === "string"
-        ? body.imageDisplay
-        : null;
-
-    const mediaId =
-      typeof body.mediaId === "string"
-        ? body.mediaId
-        : null;
-
-    if (!type) {
-      return NextResponse.json(
-        {
-          error: "Block type is required.",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Check journey
-    |--------------------------------------------------------------------------
-    */
-
     const journey =
-      await prisma.journey.findUnique({
-        where: {
-          id,
-        },
-      });
+      await getJourney(id);
 
     if (!journey) {
       return NextResponse.json(
@@ -147,9 +108,241 @@ export async function POST(
 
     /*
     |--------------------------------------------------------------------------
-    | Validate media
+    | DUPLICATE
     |--------------------------------------------------------------------------
     */
+
+    if (
+      typeof body.duplicateOfBlockId ===
+        "string" &&
+      body.duplicateOfBlockId.trim() !== ""
+    ) {
+      const sourceBlockId =
+        body.duplicateOfBlockId.trim();
+
+      const sourceBlock =
+        await prisma.contentBlock.findFirst({
+          where: {
+            id: sourceBlockId,
+            journeyId: id,
+          },
+          include: {
+            media: true,
+          },
+        });
+
+      if (!sourceBlock) {
+        return NextResponse.json(
+          {
+            error:
+              "Block to duplicate was not found.",
+          },
+          {
+            status: 404,
+          }
+        );
+      }
+
+      const duplicatedBlock =
+        await prisma.$transaction(
+          async (transaction) => {
+            const journeyBlocks =
+              await transaction.contentBlock.findMany({
+                where: {
+                  journeyId: id,
+                },
+                orderBy: {
+                  position: "asc",
+                },
+              });
+
+            const sourceIndex =
+              journeyBlocks.findIndex(
+                (block) =>
+                  block.id ===
+                  sourceBlockId
+              );
+
+            if (sourceIndex === -1) {
+              throw new Error(
+                "Source block not found."
+              );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Temporarily move all positions negative.
+            |--------------------------------------------------------------------------
+            */
+
+            for (
+              let index = 0;
+              index <
+              journeyBlocks.length;
+              index++
+            ) {
+              await transaction.contentBlock.update({
+                where: {
+                  id:
+                    journeyBlocks[
+                      index
+                    ].id,
+                },
+                data: {
+                  position:
+                    -(index + 1),
+                },
+              });
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create duplicate.
+            |--------------------------------------------------------------------------
+            */
+
+            const created =
+              await transaction.contentBlock.create({
+                data: {
+                  type: sourceBlock.type,
+                  position: 0,
+                  data:
+                    sourceBlock.data as any,
+                  imageDisplay:
+                    sourceBlock.imageDisplay,
+
+                  journey: {
+                    connect: {
+                      id,
+                    },
+                  },
+
+                  ...(sourceBlock.mediaId
+                    ? {
+                        media: {
+                          connect: {
+                            id: sourceBlock.mediaId,
+                          },
+                        },
+                      }
+                    : {}),
+                },
+              });
+
+            /*
+            |--------------------------------------------------------------------------
+            | Insert duplicate immediately after source.
+            |--------------------------------------------------------------------------
+            */
+
+            const orderedIds: string[] =
+              [];
+
+            for (
+              let index = 0;
+              index <
+              journeyBlocks.length;
+              index++
+            ) {
+              orderedIds.push(
+                journeyBlocks[index].id
+              );
+
+              if (
+                index === sourceIndex
+              ) {
+                orderedIds.push(
+                  created.id
+                );
+              }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Normalize final positions.
+            |--------------------------------------------------------------------------
+            */
+
+            for (
+              let index = 0;
+              index <
+              orderedIds.length;
+              index++
+            ) {
+              await transaction.contentBlock.update({
+                where: {
+                  id:
+                    orderedIds[
+                      index
+                    ],
+                },
+                data: {
+                  position: index,
+                },
+              });
+            }
+
+            return created;
+          }
+        );
+
+      const result =
+        await prisma.contentBlock.findUnique({
+          where: {
+            id: duplicatedBlock.id,
+          },
+          include: {
+            media: true,
+          },
+        });
+
+      return NextResponse.json(
+        result,
+        {
+          status: 201,
+        }
+      );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | NORMAL CREATE
+    |--------------------------------------------------------------------------
+    */
+
+    const type =
+      typeof body.type === "string"
+        ? body.type.trim()
+        : "";
+
+    const data =
+      body.data &&
+      typeof body.data === "object"
+        ? body.data
+        : {};
+
+    const imageDisplay =
+      typeof body.imageDisplay ===
+      "string"
+        ? body.imageDisplay
+        : null;
+
+    const mediaId =
+      typeof body.mediaId === "string"
+        ? body.mediaId
+        : null;
+
+    if (!type) {
+      return NextResponse.json(
+        {
+          error:
+            "Block type is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     if (mediaId) {
       const media =
@@ -162,7 +355,8 @@ export async function POST(
       if (!media) {
         return NextResponse.json(
           {
-            error: "Selected media was not found.",
+            error:
+              "Selected media was not found.",
           },
           {
             status: 404,
@@ -173,7 +367,7 @@ export async function POST(
 
     /*
     |--------------------------------------------------------------------------
-    | Calculate position
+    | Calculate next position.
     |--------------------------------------------------------------------------
     */
 
@@ -190,12 +384,6 @@ export async function POST(
     const position = lastBlock
       ? lastBlock.position + 1
       : 0;
-
-    /*
-    |--------------------------------------------------------------------------
-    | Create block
-    |--------------------------------------------------------------------------
-    */
 
     const block =
       await prisma.contentBlock.create({
@@ -227,9 +415,12 @@ export async function POST(
         },
       });
 
-    return NextResponse.json(block, {
-      status: 201,
-    });
+    return NextResponse.json(
+      block,
+      {
+        status: 201,
+      }
+    );
   } catch (error) {
     console.error(
       "POST journey block error:",
@@ -238,7 +429,8 @@ export async function POST(
 
     return NextResponse.json(
       {
-        error: "Failed to create content block.",
+        error:
+          "Failed to create content block.",
       },
       {
         status: 500,
@@ -251,14 +443,8 @@ export async function POST(
 |--------------------------------------------------------------------------
 | PUT
 |--------------------------------------------------------------------------
-| Handles:
-|
-| 1. Normal content block update
-| 2. Media selection/removal
-| 3. Block reordering
-|--------------------------------------------------------------------------
+| Normal update OR reorder.
 */
-
 export async function PUT(
   request: Request,
   { params }: RouteContext
@@ -274,22 +460,37 @@ export async function PUT(
     }
 
     const { id } = await params;
-
     const body = await request.json();
+
+    const journey =
+      await getJourney(id);
+
+    if (!journey) {
+      return NextResponse.json(
+        {
+          error: "Journey not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
     /*
     |--------------------------------------------------------------------------
-    | REORDER BLOCKS
+    | REORDER
     |--------------------------------------------------------------------------
     */
 
     if (body.reorder === true) {
-      const rawBlocks: unknown = body.blocks;
+      const rawBlocks: unknown =
+        body.blocks;
 
       if (!Array.isArray(rawBlocks)) {
         return NextResponse.json(
           {
-            error: "Blocks array is required for reordering.",
+            error:
+              "Blocks array is required for reordering.",
           },
           {
             status: 400,
@@ -300,7 +501,9 @@ export async function PUT(
       const reorderItems: ReorderItem[] =
         rawBlocks
           .filter(
-            (item: unknown): item is Record<
+            (
+              item: unknown
+            ): item is Record<
               string,
               unknown
             > =>
@@ -309,10 +512,14 @@ export async function PUT(
           )
           .map(
             (
-              item: Record<string, unknown>
-            ): ReorderItem => ({
+              item: Record<
+                string,
+                unknown
+              >
+            ) => ({
               id:
-                typeof item.id === "string"
+                typeof item.id ===
+                "string"
                   ? item.id
                   : "",
               position:
@@ -323,17 +530,19 @@ export async function PUT(
             })
           )
           .filter(
-            (
-              item: ReorderItem
-            ) =>
+            (item) =>
               item.id !== "" &&
+              Number.isInteger(
+                item.position
+              ) &&
               item.position >= 0
           );
 
       if (reorderItems.length === 0) {
         return NextResponse.json(
           {
-            error: "No valid blocks supplied for reordering.",
+            error:
+              "No valid blocks supplied for reordering.",
           },
           {
             status: 400,
@@ -341,25 +550,9 @@ export async function PUT(
         );
       }
 
-      /*
-      |--------------------------------------------------------------------------
-      | Make sure all blocks belong to this journey
-      |--------------------------------------------------------------------------
-      */
-
-      const blockIds: string[] =
-        reorderItems.map(
-          (
-            item: ReorderItem
-          ) => item.id
-        );
-
       const existingBlocks =
         await prisma.contentBlock.findMany({
           where: {
-            id: {
-              in: blockIds,
-            },
             journeyId: id,
           },
           select: {
@@ -367,28 +560,34 @@ export async function PUT(
           },
         });
 
-      const existingBlockIds =
-        new Set<string>(
+      const existingIds =
+        new Set(
           existingBlocks.map(
             (block) => block.id
           )
         );
 
-      const invalidBlock =
-        reorderItems.find(
-          (
-            item: ReorderItem
-          ) =>
-            !existingBlockIds.has(
-              item.id
-            )
+      const suppliedIds =
+        new Set(
+          reorderItems.map(
+            (item) => item.id
+          )
         );
 
-      if (invalidBlock) {
+      /*
+      |--------------------------------------------------------------------------
+      | Prevent duplicate IDs.
+      |--------------------------------------------------------------------------
+      */
+
+      if (
+        suppliedIds.size !==
+        reorderItems.length
+      ) {
         return NextResponse.json(
           {
             error:
-              "One or more blocks do not belong to this journey.",
+              "Duplicate block IDs were supplied.",
           },
           {
             status: 400,
@@ -398,63 +597,161 @@ export async function PUT(
 
       /*
       |--------------------------------------------------------------------------
-      | Save order in a transaction
+      | Every block must be included.
       |--------------------------------------------------------------------------
-      |
-      | First give every block a temporary negative
-      | position. This prevents collisions if position
-      | has a unique constraint.
-      |
+      */
+
+      if (
+        suppliedIds.size !==
+        existingIds.size
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "The complete block list is required for reordering.",
+          },
+          {
+            status: 400,
+          }
+        );
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | All IDs must belong to this journey.
+      |--------------------------------------------------------------------------
+      */
+
+      for (const item of reorderItems) {
+        if (
+          !existingIds.has(
+            item.id
+          )
+        ) {
+          return NextResponse.json(
+            {
+              error:
+                "One or more blocks do not belong to this journey.",
+            },
+            {
+              status: 400,
+            }
+          );
+        }
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Positions must be unique and contiguous.
+      |--------------------------------------------------------------------------
+      */
+
+      const positions =
+        reorderItems.map(
+          (item) =>
+            item.position
+        );
+
+      const uniquePositions =
+        new Set(positions);
+
+      if (
+        uniquePositions.size !==
+        positions.length
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Block positions must be unique.",
+          },
+          {
+            status: 400,
+          }
+        );
+      }
+
+      const ordered =
+        [...reorderItems].sort(
+          (a, b) =>
+            a.position -
+            b.position
+        );
+
+      for (
+        let index = 0;
+        index < ordered.length;
+        index++
+      ) {
+        if (
+          ordered[index]
+            .position !== index
+        ) {
+          return NextResponse.json(
+            {
+              error:
+                "Block positions must start at 0 and be contiguous.",
+            },
+            {
+              status: 400,
+            }
+          );
+        }
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Transaction
+      |--------------------------------------------------------------------------
       */
 
       await prisma.$transaction(
         async (transaction) => {
-          await Promise.all(
-            reorderItems.map(
-              (
-                item: ReorderItem,
-                index: number
-              ) =>
-                transaction.contentBlock.update(
-                  {
-                    where: {
-                      id: item.id,
-                    },
-                    data: {
-                      position:
-                        -(index + 1),
-                    },
-                  }
-                )
-            )
-          );
+          /*
+          |--------------------------------------------------------------------------
+          | Temporary negative positions.
+          |--------------------------------------------------------------------------
+          */
 
-          await Promise.all(
-            reorderItems.map(
-              (
-                item: ReorderItem
-              ) =>
-                transaction.contentBlock.update(
-                  {
-                    where: {
-                      id: item.id,
-                    },
-                    data: {
-                      position:
-                        item.position,
-                    },
-                  }
-                )
-            )
-          );
+          for (
+            let index = 0;
+            index < ordered.length;
+            index++
+          ) {
+            await transaction.contentBlock.update({
+              where: {
+                id:
+                  ordered[index].id,
+              },
+              data: {
+                position:
+                  -(index + 1),
+              },
+            });
+          }
+
+          /*
+          |--------------------------------------------------------------------------
+          | Final positions.
+          |--------------------------------------------------------------------------
+          */
+
+          for (
+            let index = 0;
+            index < ordered.length;
+            index++
+          ) {
+            await transaction.contentBlock.update({
+              where: {
+                id:
+                  ordered[index].id,
+              },
+              data: {
+                position: index,
+              },
+            });
+          }
         }
       );
-
-      /*
-      |--------------------------------------------------------------------------
-      | Return updated blocks
-      |--------------------------------------------------------------------------
-      */
 
       const updatedBlocks =
         await prisma.contentBlock.findMany({
@@ -477,13 +774,13 @@ export async function PUT(
 
     /*
     |--------------------------------------------------------------------------
-    | NORMAL BLOCK UPDATE
+    | NORMAL UPDATE
     |--------------------------------------------------------------------------
     */
 
     const blockId =
       typeof body.blockId === "string"
-        ? body.blockId
+        ? body.blockId.trim()
         : "";
 
     const data =
@@ -506,19 +803,14 @@ export async function PUT(
     if (!blockId) {
       return NextResponse.json(
         {
-          error: "Block ID is required.",
+          error:
+            "Block ID is required.",
         },
         {
           status: 400,
         }
       );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Find block
-    |--------------------------------------------------------------------------
-    */
 
     const block =
       await prisma.contentBlock.findFirst({
@@ -531,7 +823,8 @@ export async function PUT(
     if (!block) {
       return NextResponse.json(
         {
-          error: "Content block not found.",
+          error:
+            "Content block not found.",
         },
         {
           status: 404,
@@ -541,7 +834,7 @@ export async function PUT(
 
     /*
     |--------------------------------------------------------------------------
-    | Validate selected media
+    | Validate media ownership/existence.
     |--------------------------------------------------------------------------
     */
 
@@ -556,7 +849,8 @@ export async function PUT(
       if (!media) {
         return NextResponse.json(
           {
-            error: "Selected media was not found.",
+            error:
+              "Selected media was not found.",
           },
           {
             status: 404,
@@ -564,12 +858,6 @@ export async function PUT(
         );
       }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Update block
-    |--------------------------------------------------------------------------
-    */
 
     const updatedBlock =
       await prisma.contentBlock.update({
@@ -604,6 +892,9 @@ export async function PUT(
       success: true,
       data: updatedBlock.data,
       media: updatedBlock.media,
+      mediaId:
+        updatedBlock.media?.id ??
+        null,
     });
   } catch (error) {
     console.error(
@@ -613,7 +904,8 @@ export async function PUT(
 
     return NextResponse.json(
       {
-        error: "Failed to update content block.",
+        error:
+          "Failed to update content block.",
       },
       {
         status: 500,
@@ -626,10 +918,7 @@ export async function PUT(
 |--------------------------------------------------------------------------
 | DELETE
 |--------------------------------------------------------------------------
-| Delete a content block and normalize positions.
-|--------------------------------------------------------------------------
 */
-
 export async function DELETE(
   request: Request,
   { params }: RouteContext
@@ -645,30 +934,24 @@ export async function DELETE(
     }
 
     const { id } = await params;
-
     const body = await request.json();
 
     const blockId =
       typeof body.blockId === "string"
-        ? body.blockId
+        ? body.blockId.trim()
         : "";
 
     if (!blockId) {
       return NextResponse.json(
         {
-          error: "Block ID is required.",
+          error:
+            "Block ID is required.",
         },
         {
           status: 400,
         }
       );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Find block
-    |--------------------------------------------------------------------------
-    */
 
     const block =
       await prisma.contentBlock.findFirst({
@@ -681,19 +964,14 @@ export async function DELETE(
     if (!block) {
       return NextResponse.json(
         {
-          error: "Content block not found.",
+          error:
+            "Content block not found.",
         },
         {
           status: 404,
         }
       );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delete and normalize positions
-    |--------------------------------------------------------------------------
-    */
 
     await prisma.$transaction(
       async (transaction) => {
@@ -703,7 +981,7 @@ export async function DELETE(
           },
         });
 
-        const remainingBlocks =
+        const remaining =
           await transaction.contentBlock.findMany({
             where: {
               journeyId: id,
@@ -717,59 +995,49 @@ export async function DELETE(
           });
 
         /*
-        |--------------------------------------------------------------
-        | Temporary positions
-        |--------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Temporary negative positions.
+        |--------------------------------------------------------------------------
         */
 
-        await Promise.all(
-          remainingBlocks.map(
-            (
-              remainingBlock: {
-                id: string;
-              },
-              index: number
-            ) =>
-              transaction.contentBlock.update(
-                {
-                  where: {
-                    id: remainingBlock.id,
-                  },
-                  data: {
-                    position:
-                      -(index + 1),
-                  },
-                }
-              )
-          )
-        );
+        for (
+          let index = 0;
+          index < remaining.length;
+          index++
+        ) {
+          await transaction.contentBlock.update({
+            where: {
+              id:
+                remaining[index].id,
+            },
+            data: {
+              position:
+                -(index + 1),
+            },
+          });
+        }
 
         /*
-        |--------------------------------------------------------------
-        | Normalize positions to 0,1,2,3...
-        |--------------------------------------------------------------
+        |--------------------------------------------------------------------------
+        | Normalize positions.
+        |--------------------------------------------------------------------------
         */
 
-        await Promise.all(
-          remainingBlocks.map(
-            (
-              remainingBlock: {
-                id: string;
-              },
-              index: number
-            ) =>
-              transaction.contentBlock.update(
-                {
-                  where: {
-                    id: remainingBlock.id,
-                  },
-                  data: {
-                    position: index,
-                  },
-                }
-              )
-          )
-        );
+        for (
+          let index = 0;
+          index < remaining.length;
+          index++
+        ) {
+          await transaction.contentBlock.update({
+            where: {
+              id:
+                remaining[index].id,
+            },
+            data: {
+              position: index,
+            },
+          });
+        }
       }
     );
 
@@ -784,7 +1052,8 @@ export async function DELETE(
 
     return NextResponse.json(
       {
-        error: "Failed to delete content block.",
+        error:
+          "Failed to delete content block.",
       },
       {
         status: 500,

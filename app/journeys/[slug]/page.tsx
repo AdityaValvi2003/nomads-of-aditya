@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "../../../src/lib/prisma";
 
@@ -8,10 +9,85 @@ type PageProps = {
 };
 
 type GalleryImage = {
+  mediaId?: string;
   url: string;
   alt?: string;
   caption?: string;
 };
+
+type MediaAsset = {
+  id: string;
+  url: string;
+  fileName: string;
+  altText: string | null;
+  caption: string | null;
+};
+
+type ContentBlock = {
+  id: string;
+  type: string;
+  data: unknown;
+  imageDisplay: string | null;
+  media: MediaAsset | null;
+};
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const journey = await prisma.journey.findUnique({
+    where: {
+      slug,
+    },
+  });
+
+  if (!journey || journey.status !== "PUBLISHED") {
+    return {};
+  }
+
+  const title =
+    journey.seoTitle?.trim() ||
+    journey.title;
+
+  const description =
+    journey.seoDescription?.trim() ||
+    journey.shortIntro ||
+    `Explore ${journey.title} with Nomads of Aditya.`;
+
+  const metadata: Metadata = {
+    title,
+    description,
+    alternates: journey.canonicalUrl
+      ? {
+          canonical: journey.canonicalUrl,
+        }
+      : undefined,
+    robots: {
+      index: !journey.noIndex,
+      follow: !journey.noFollow,
+    },
+    openGraph: {
+      title:
+        journey.ogTitle?.trim() ||
+        title,
+      description:
+        journey.ogDescription?.trim() ||
+        description,
+      type: "article",
+      images: journey.coverImage
+        ? [
+            {
+              url: journey.coverImage,
+              alt: journey.title,
+            },
+          ]
+        : undefined,
+    },
+  };
+
+  return metadata;
+}
 
 export default async function JourneyPage({
   params,
@@ -27,6 +103,9 @@ export default async function JourneyPage({
         orderBy: {
           position: "asc",
         },
+        include: {
+          media: true,
+        },
       },
       encounters: {
         include: {
@@ -40,7 +119,12 @@ export default async function JourneyPage({
     notFound();
   }
 
-  // Draft journeys should not be publicly visible.
+  /*
+  |--------------------------------------------------------------------------
+  | PUBLIC VISIBILITY
+  |--------------------------------------------------------------------------
+  */
+
   if (journey.status !== "PUBLISHED") {
     notFound();
   }
@@ -48,7 +132,9 @@ export default async function JourneyPage({
   return (
     <main className="min-h-screen bg-[#0b0b0b] text-white">
 
-      {/* HERO */}
+      {/* =========================================================
+          HERO
+      ========================================================= */}
 
       <section className="relative">
 
@@ -70,7 +156,8 @@ export default async function JourneyPage({
               <div className="mx-auto w-full max-w-6xl px-6 pb-16 md:px-10 md:pb-20">
 
                 <p className="text-sm uppercase tracking-[0.3em] text-white/60">
-                  {journey.location}, {journey.country}
+                  {journey.location},{" "}
+                  {journey.country}
                 </p>
 
                 <h1 className="mt-4 max-w-4xl text-4xl font-semibold tracking-tight md:text-6xl lg:text-7xl">
@@ -92,7 +179,8 @@ export default async function JourneyPage({
           <div className="mx-auto max-w-6xl px-6 pb-10 pt-20 md:px-10 md:pt-28">
 
             <p className="text-sm uppercase tracking-[0.3em] text-white/40">
-              {journey.location}, {journey.country}
+              {journey.location},{" "}
+              {journey.country}
             </p>
 
             <h1 className="mt-4 max-w-4xl text-5xl font-semibold tracking-tight md:text-7xl">
@@ -110,7 +198,9 @@ export default async function JourneyPage({
 
       </section>
 
-      {/* JOURNEY INFO */}
+      {/* =========================================================
+          JOURNEY INFO
+      ========================================================= */}
 
       {(journey.journeyDate ||
         journey.duration ||
@@ -118,7 +208,6 @@ export default async function JourneyPage({
         journey.difficulty ||
         journey.companions ||
         journey.placesVisited) && (
-
         <section className="border-y border-white/10">
 
           <div className="mx-auto grid max-w-6xl gap-px bg-white/10 md:grid-cols-3 lg:grid-cols-6">
@@ -126,7 +215,9 @@ export default async function JourneyPage({
             {journey.journeyDate && (
               <InfoItem
                 label="Date"
-                value={formatDate(journey.journeyDate)}
+                value={formatDate(
+                  journey.journeyDate
+                )}
               />
             )}
 
@@ -170,24 +261,30 @@ export default async function JourneyPage({
         </section>
       )}
 
-      {/* STORY */}
+      {/* =========================================================
+          STORY
+      ========================================================= */}
 
       <article className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-24">
 
         <div className="space-y-16">
 
-          {journey.contentBlocks.map((block) => (
-            <ContentBlockRenderer
-              key={block.id}
-              block={block}
-            />
-          ))}
+          {journey.contentBlocks.map(
+            (block) => (
+              <ContentBlockRenderer
+                key={block.id}
+                block={block}
+              />
+            )
+          )}
 
         </div>
 
       </article>
 
-      {/* ENCOUNTERS */}
+      {/* =========================================================
+          ENCOUNTERS
+      ========================================================= */}
 
       {journey.encounters.length > 0 && (
         <section className="border-t border-white/10">
@@ -204,41 +301,46 @@ export default async function JourneyPage({
 
             <div className="mt-10 grid gap-8 md:grid-cols-2">
 
-              {journey.encounters.map((encounter) => (
+              {journey.encounters.map(
+                (encounter) => (
+                  <div
+                    key={encounter.id}
+                    className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                  >
 
-                <div
-                  key={encounter.id}
-                  className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
-                >
-
-                  {encounter.media?.url && (
-                    <img
-                      src={encounter.media.url}
-                      alt={
-                        encounter.media.altText ||
-                        encounter.title
-                      }
-                      className="h-80 w-full object-cover"
-                    />
-                  )}
-
-                  <div className="p-6">
-
-                    <h3 className="text-xl font-medium">
-                      {encounter.title}
-                    </h3>
-
-                    {encounter.shortIntro && (
-                      <p className="mt-3 text-sm leading-6 text-white/50">
-                        {encounter.shortIntro}
-                      </p>
+                    {encounter.media?.url && (
+                      <img
+                        src={
+                          encounter.media.url
+                        }
+                        alt={
+                          encounter.media
+                            .altText ||
+                          encounter.title
+                        }
+                        className="h-80 w-full object-cover"
+                      />
                     )}
 
+                    <div className="p-6">
+
+                      <h3 className="text-xl font-medium">
+                        {encounter.title}
+                      </h3>
+
+                      {encounter.shortIntro && (
+                        <p className="mt-3 text-sm leading-6 text-white/50">
+                          {
+                            encounter.shortIntro
+                          }
+                        </p>
+                      )}
+
+                    </div>
+
                   </div>
-
-                </div>
-
-              ))}
+                )
+              )}
 
             </div>
 
@@ -247,7 +349,9 @@ export default async function JourneyPage({
         </section>
       )}
 
-      {/* FOOTER STORY END */}
+      {/* =========================================================
+          FOOTER
+      ========================================================= */}
 
       <section className="border-t border-white/10 px-6 py-20 text-center">
 
@@ -273,22 +377,22 @@ export default async function JourneyPage({
 function ContentBlockRenderer({
   block,
 }: {
-  block: {
-    id: string;
-    type: string;
-    data: unknown;
-    imageDisplay: string | null;
-  };
+  block: ContentBlock;
 }) {
   const data =
     block.data &&
     typeof block.data === "object"
-      ? (block.data as Record<string, unknown>)
+      ? (block.data as Record<
+          string,
+          unknown
+        >)
       : {};
 
   switch (block.type) {
 
-    /* HEADING */
+    /* ---------------------------------------------------------
+       HEADING
+    --------------------------------------------------------- */
 
     case "HEADING": {
       const text = getString(data.text);
@@ -297,16 +401,16 @@ function ContentBlockRenderer({
 
       return (
         <section>
-
           <h2 className="text-3xl font-semibold tracking-tight md:text-5xl">
             {text}
           </h2>
-
         </section>
       );
     }
 
-    /* SUBHEADING */
+    /* ---------------------------------------------------------
+       SUBHEADING
+    --------------------------------------------------------- */
 
     case "SUBHEADING": {
       const text = getString(data.text);
@@ -315,16 +419,16 @@ function ContentBlockRenderer({
 
       return (
         <section>
-
           <h3 className="text-2xl font-medium md:text-3xl">
             {text}
           </h3>
-
         </section>
       );
     }
 
-    /* PARAGRAPH */
+    /* ---------------------------------------------------------
+       PARAGRAPH
+    --------------------------------------------------------- */
 
     case "PARAGRAPH": {
       const text = getString(data.text);
@@ -333,16 +437,16 @@ function ContentBlockRenderer({
 
       return (
         <section>
-
           <div className="max-w-3xl whitespace-pre-line text-lg leading-9 text-white/70 md:text-xl md:leading-10">
             {text}
           </div>
-
         </section>
       );
     }
 
-    /* QUOTE */
+    /* ---------------------------------------------------------
+       QUOTE
+    --------------------------------------------------------- */
 
     case "QUOTE": {
       const text = getString(data.text);
@@ -371,7 +475,9 @@ function ContentBlockRenderer({
       );
     }
 
-    /* DIVIDER */
+    /* ---------------------------------------------------------
+       DIVIDER
+    --------------------------------------------------------- */
 
     case "DIVIDER":
 
@@ -381,20 +487,35 @@ function ContentBlockRenderer({
         </div>
       );
 
-    /* IMAGE */
+    /* ---------------------------------------------------------
+       IMAGE
+    --------------------------------------------------------- */
 
     case "IMAGE": {
-      const url = getString(data.url);
-      const alt = getString(data.alt);
-      const caption = getString(data.caption);
+      const mediaUrl =
+        block.media?.url ||
+        getString(data.url);
 
-      if (!url) return null;
+      const alt =
+        getString(data.alt) ||
+        block.media?.altText ||
+        block.media?.fileName ||
+        "Journey image";
+
+      const caption =
+        getString(data.caption) ||
+        block.media?.caption ||
+        "";
+
+      if (!mediaUrl) {
+        return null;
+      }
 
       return (
         <figure>
 
           <img
-            src={url}
+            src={mediaUrl}
             alt={alt}
             className="max-h-[750px] w-full rounded-2xl object-cover"
           />
@@ -409,19 +530,30 @@ function ContentBlockRenderer({
       );
     }
 
-    /* IMAGE + TEXT */
+    /* ---------------------------------------------------------
+       IMAGE + TEXT
+    --------------------------------------------------------- */
 
     case "IMAGE_TEXT": {
-      const url = getString(data.url);
-      const alt = getString(data.alt);
-      const text = getString(data.text);
+      const mediaUrl =
+        block.media?.url ||
+        getString(data.url);
+
+      const alt =
+        getString(data.alt) ||
+        block.media?.altText ||
+        block.media?.fileName ||
+        "Journey image";
+
+      const text =
+        getString(data.text);
 
       return (
         <section className="grid gap-8 md:grid-cols-2 md:items-center">
 
-          {url ? (
+          {mediaUrl ? (
             <img
-              src={url}
+              src={mediaUrl}
               alt={alt}
               className="w-full rounded-2xl object-cover"
             />
@@ -443,45 +575,64 @@ function ContentBlockRenderer({
       );
     }
 
-    /* GALLERY */
+    /* ---------------------------------------------------------
+       GALLERY
+    --------------------------------------------------------- */
 
     case "GALLERY": {
-      const images = getGalleryImages(data.images);
+      const images =
+        getGalleryImages(
+          data.images
+        );
 
-      if (images.length === 0) return null;
+      if (images.length === 0) {
+        return null;
+      }
 
       return (
         <section>
 
           <div className="grid gap-4 sm:grid-cols-2">
 
-            {images.map((image, index) => (
+            {images.map(
+              (image, index) => {
 
-              <figure
-                key={`${image.url}-${index}`}
-                className={
-                  index === 0 &&
-                  images.length > 2
-                    ? "sm:col-span-2"
-                    : ""
+                if (!image.url) {
+                  return null;
                 }
-              >
 
-                <img
-                  src={image.url}
-                  alt={image.alt}
-                  className="h-full max-h-[650px] min-h-[250px] w-full rounded-2xl object-cover"
-                />
+                return (
+                  <figure
+                    key={`gallery-${index}-${image.mediaId || image.url}`}
+                    className={
+                      index === 0 &&
+                      images.length > 2
+                        ? "sm:col-span-2"
+                        : ""
+                    }
+                  >
 
-                {image.caption && (
-                  <figcaption className="mt-2 text-sm text-white/35">
-                    {image.caption}
-                  </figcaption>
-                )}
+                    <img
+                      src={image.url}
+                      alt={
+                        image.alt ||
+                        "Gallery image"
+                      }
+                      className="h-full max-h-[650px] min-h-[250px] w-full rounded-2xl object-cover"
+                    />
 
-              </figure>
+                    {image.caption && (
+                      <figcaption className="mt-2 text-sm text-white/35">
+                        {
+                          image.caption
+                        }
+                      </figcaption>
+                    )}
 
-            ))}
+                  </figure>
+                );
+              }
+            )}
 
           </div>
 
@@ -489,7 +640,9 @@ function ContentBlockRenderer({
       );
     }
 
-    /* VIDEO */
+    /* ---------------------------------------------------------
+       VIDEO
+    --------------------------------------------------------- */
 
     case "VIDEO": {
       const url = getString(data.url);
@@ -521,15 +674,24 @@ function ContentBlockRenderer({
       );
     }
 
-    /* LOCATION */
+    /* ---------------------------------------------------------
+       LOCATION
+    --------------------------------------------------------- */
 
     case "LOCATION": {
       const name = getString(data.name);
-      const address = getString(data.address);
-      const latitude = getNumber(data.latitude);
-      const longitude = getNumber(data.longitude);
+      const address =
+        getString(data.address);
 
-      if (!name && !address) return null;
+      const latitude =
+        getNumber(data.latitude);
+
+      const longitude =
+        getNumber(data.longitude);
+
+      if (!name && !address) {
+        return null;
+      }
 
       return (
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
@@ -561,12 +723,27 @@ function ContentBlockRenderer({
       );
     }
 
-    /* JOURNEY INFO */
+    /* ---------------------------------------------------------
+       JOURNEY INFO
+    --------------------------------------------------------- */
 
     case "JOURNEY_INFO": {
-      const duration = getString(data.duration);
-      const distance = getString(data.distance);
-      const difficulty = getString(data.difficulty);
+      const duration =
+        getString(data.duration);
+
+      const distance =
+        getString(data.distance);
+
+      const difficulty =
+        getString(data.difficulty);
+
+      if (
+        !duration &&
+        !distance &&
+        !difficulty
+      ) {
+        return null;
+      }
 
       return (
         <section>
@@ -594,13 +771,20 @@ function ContentBlockRenderer({
       );
     }
 
-    /* ENCOUNTER */
+    /* ---------------------------------------------------------
+       ENCOUNTER
+    --------------------------------------------------------- */
 
     case "ENCOUNTER": {
-      const title = getString(data.title);
-      const text = getString(data.text);
+      const title =
+        getString(data.title);
 
-      if (!title && !text) return null;
+      const text =
+        getString(data.text);
+
+      if (!title && !text) {
+        return null;
+      }
 
       return (
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
@@ -666,15 +850,30 @@ function getGalleryImages(
     )
     .map((item) => {
       const image =
-        item as Record<string, unknown>;
+        item as Record<
+          string,
+          unknown
+        >;
 
       return {
+        mediaId:
+          getString(image.mediaId) ||
+          undefined,
+
         url: getString(image.url),
+
         alt: getString(image.alt),
-        caption: getString(image.caption),
+
+        caption:
+          getString(
+            image.caption
+          ),
       };
     })
-    .filter((image) => image.url !== "");
+    .filter(
+      (image) =>
+        image.url !== ""
+    );
 }
 
 function formatDate(

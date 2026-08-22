@@ -1580,3 +1580,531 @@ footer h2 {
     flex-wrap: wrap;
   }
 }
+
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.admin-page {
+  min-height: 100vh;
+  background: #0b0b0a;
+  color: #f4f0e8;
+  padding-top: 100px;
+}
+
+.admin-header {
+  padding: 70px 7vw 50px;
+  border-bottom: 1px solid #2a2823;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.admin-eyebrow {
+  display: block;
+  color: #d99a3d;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.admin-header h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3.5rem, 6vw, 6rem);
+  font-weight: normal;
+  line-height: 0.95;
+  margin: 15px 0 0;
+}
+
+.admin-header-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.admin-view-site {
+  border: 1px solid #2a2823;
+  padding: 11px 18px;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: 0.25s ease;
+}
+
+.admin-view-site:hover {
+  border-color: #d99a3d;
+  color: #d99a3d;
+}
+
+.admin-avatar {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #d99a3d;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #d99a3d;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.admin-navigation {
+  padding: 18px 7vw;
+  border-bottom: 1px solid #2a2823;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.admin-navigation a {
+  white-space: nowrap;
+  padding: 10px 16px;
+  color: #aaa39a;
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  transition: 0.2s ease;
+}
+
+.admin-navigation a:hover {
+  color: #f4f0e8;
+}
+
+.admin-navigation a.active {
+  background: #d99a3d;
+  color: #15110b;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.admin-content {
+  padding: 80px 7vw 120px;
+  max-width: 1500px;
+  margin: auto;
+}
+
+.admin-intro {
+  margin-bottom: 50px;
+}
+
+.admin-intro h2 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  font-weight: normal;
+  line-height: 1;
+  margin: 12px 0 20px;
+}
+
+.admin-intro p {
+  color: #aaa39a;
+  max-width: 600px;
+  font-size: 1rem;
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-bottom: 100px;
+}
+
+.admin-stat {
+  background: #141310;
+  border: 1px solid #2a2823;
+  padding: 28px;
+}
+
+.admin-stat > span {
+  color: #aaa39a;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-stat strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 4rem;
+  font-weight: normal;
+  line-height: 1;
+  margin: 25px 0 12px;
+}
+
+.admin-stat p {
+  color: #aaa39a;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+
+/* =========================================================
+   SECTIONS
+========================================================= */
+
+.admin-section {
+  margin-top: 80px;
+}
+
+.admin-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.admin-section-header h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.3rem;
+  font-weight: normal;
+  margin: 10px 0 0;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.admin-button {
+  display: inline-block;
+  border: 1px solid #2a2823;
+  padding: 12px 18px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  transition: 0.25s ease;
+}
+
+.admin-button:hover {
+  border-color: #d99a3d;
+  color: #d99a3d;
+}
+
+.admin-button.primary {
+  background: #d99a3d;
+  border-color: #d99a3d;
+  color: #15110b;
+}
+
+.admin-button.primary:hover {
+  color: #15110b;
+  background: #f0b35a;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.admin-table {
+  border-top: 1px solid #2a2823;
+}
+
+.admin-table-header,
+.admin-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.8fr 0.8fr;
+  gap: 25px;
+  padding: 22px 10px;
+  border-bottom: 1px solid #2a2823;
+  align-items: center;
+}
+
+.admin-table-header {
+  color: #aaa39a;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-table-row {
+  font-size: 0.85rem;
+}
+
+.admin-table-row strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: normal;
+  line-height: 1.3;
+}
+
+.admin-table-row > span {
+  color: #aaa39a;
+}
+
+.admin-table-description {
+  color: #77736d;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin-top: 6px;
+  max-width: 500px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  color: #d99a3d !important;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.status.draft {
+  color: #aaa39a !important;
+}
+
+.admin-row-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-row-actions a {
+  border: 1px solid #2a2823;
+  padding: 8px 12px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: 0.2s ease;
+}
+
+.admin-row-actions a:hover {
+  border-color: #d99a3d;
+  color: #d99a3d;
+}
+
+
+/* =========================================================
+   JOURNEY SUMMARY
+========================================================= */
+
+.journey-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.journey-summary-item {
+  background: #141310;
+  border: 1px solid #2a2823;
+  padding: 30px;
+}
+
+.journey-summary-item > span {
+  color: #d99a3d;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+}
+
+.journey-summary-item strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 3.5rem;
+  font-weight: normal;
+  margin-top: 20px;
+}
+
+.journey-summary-item p {
+  color: #aaa39a;
+  font-size: 0.8rem;
+  margin-top: 8px;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.quick-action {
+  display: block;
+  text-align: left;
+  border: 1px solid #2a2823;
+  background: #141310;
+  padding: 30px;
+  transition: 0.25s ease;
+}
+
+.quick-action:hover {
+  border-color: #d99a3d;
+  transform: translateY(-3px);
+}
+
+.quick-action > span {
+  color: #d99a3d;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+.quick-action strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.7rem;
+  font-weight: normal;
+  margin: 25px 0 8px;
+}
+
+.quick-action small {
+  color: #aaa39a;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-content {
+  min-height: 300px;
+  border: 1px dashed #2a2823;
+  padding: 55px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.empty-content h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 4rem);
+  font-weight: normal;
+  margin: 15px 0;
+}
+
+.empty-content p {
+  color: #aaa39a;
+  max-width: 550px;
+  margin-bottom: 25px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.admin-footer {
+  border-top: 1px solid #2a2823;
+  padding: 35px 7vw;
+  display: flex;
+  justify-content: space-between;
+  color: #aaa39a;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .admin-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .journey-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-table-header,
+  .admin-table-row {
+    grid-template-columns:
+      minmax(280px, 2fr)
+      minmax(150px, 1fr)
+      minmax(100px, 0.8fr)
+      minmax(130px, 0.8fr);
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .admin-page {
+    padding-top: 75px;
+  }
+
+  .admin-header {
+    padding: 50px 7vw 35px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .admin-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .admin-content {
+    padding: 55px 7vw 80px;
+  }
+
+  .admin-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-section-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-table {
+    overflow-x: auto;
+  }
+
+  .admin-table-header,
+  .admin-table-row {
+    min-width: 850px;
+  }
+
+  .admin-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+
+  .admin-header h1 {
+    font-size: 3.5rem;
+  }
+
+  .admin-stat strong {
+    font-size: 3rem;
+  }
+
+  .admin-intro h2 {
+    font-size: 3rem;
+  }
+
+  .admin-section-header h3 {
+    font-size: 2rem;
+  }
+
+}
