@@ -104,7 +104,14 @@ export default function ContentBuilder({
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
   const [error, setError] = useState("");
+
+  const [draggedBlockId, setDraggedBlockId] =
+    useState<string | null>(null);
+
+  const [dragOverBlockId, setDragOverBlockId] =
+    useState<string | null>(null);
 
   const [mediaPickerBlockId, setMediaPickerBlockId] =
     useState<string | null>(null);
@@ -455,7 +462,7 @@ export default function ContentBuilder({
     );
   }
 
-  function removeGalleryMedia(
+  async function removeGalleryMedia(
     block: ContentBlock,
     imageIndex: number
   ) {
@@ -472,9 +479,12 @@ export default function ContentBuilder({
           : image
     );
 
-    updateGallery(
+    await updateBlock(
       block.id,
-      updatedImages
+      {
+        ...block.data,
+        images: updatedImages,
+      }
     );
   }
 
@@ -685,6 +695,185 @@ export default function ContentBuilder({
     );
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | DRAG AND DROP
+  |--------------------------------------------------------------------------
+  */
+
+  function handleDragStart(
+    event: React.DragEvent<HTMLDivElement>,
+    blockId: string
+  ) {
+    setDraggedBlockId(blockId);
+
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData(
+      "text/plain",
+      blockId
+    );
+  }
+
+  function handleDragOver(
+    event: React.DragEvent<HTMLDivElement>,
+    blockId: string
+  ) {
+    event.preventDefault();
+
+    event.dataTransfer.dropEffect = "move";
+
+    if (
+      draggedBlockId &&
+      draggedBlockId !== blockId
+    ) {
+      setDragOverBlockId(blockId);
+    }
+  }
+
+  function handleDragLeave(
+    event: React.DragEvent<HTMLDivElement>
+  ) {
+    const currentTarget =
+      event.currentTarget;
+
+    const relatedTarget =
+      event.relatedTarget as Node | null;
+
+    if (
+      relatedTarget &&
+      currentTarget.contains(relatedTarget)
+    ) {
+      return;
+    }
+
+    setDragOverBlockId(null);
+  }
+
+  async function handleDrop(
+    event: React.DragEvent<HTMLDivElement>,
+    targetBlockId: string
+  ) {
+    event.preventDefault();
+
+    const sourceBlockId =
+      event.dataTransfer.getData(
+        "text/plain"
+      ) || draggedBlockId;
+
+    setDragOverBlockId(null);
+    setDraggedBlockId(null);
+
+    if (
+      !sourceBlockId ||
+      sourceBlockId === targetBlockId
+    ) {
+      return;
+    }
+
+    const currentBlocks = [...blocks];
+
+    const sourceIndex =
+      currentBlocks.findIndex(
+        (block) =>
+          block.id === sourceBlockId
+      );
+
+    const targetIndex =
+      currentBlocks.findIndex(
+        (block) =>
+          block.id === targetBlockId
+      );
+
+    if (
+      sourceIndex === -1 ||
+      targetIndex === -1
+    ) {
+      return;
+    }
+
+    const reorderedBlocks = [
+      ...currentBlocks,
+    ];
+
+    const [movedBlock] =
+      reorderedBlocks.splice(
+        sourceIndex,
+        1
+      );
+
+    reorderedBlocks.splice(
+      targetIndex,
+      0,
+      movedBlock
+    );
+
+    const normalizedBlocks =
+      reorderedBlocks.map(
+        (block, index) => ({
+          ...block,
+          position: index,
+        })
+      );
+
+    setBlocks(normalizedBlocks);
+
+    await saveBlockOrder(
+      normalizedBlocks
+    );
+  }
+
+  function handleDragEnd() {
+    setDraggedBlockId(null);
+    setDragOverBlockId(null);
+  }
+
+  async function saveBlockOrder(
+    orderedBlocks: ContentBlock[]
+  ) {
+    try {
+      setSavingOrder(true);
+      setError("");
+
+      const response = await fetch(
+        `/api/admin/journeys/${journeyId}/blocks`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            reorder: true,
+            blocks: orderedBlocks.map(
+              (block, index) => ({
+                id: block.id,
+                position: index,
+              })
+            ),
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to save block order."
+        );
+      }
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to save block order."
+      );
+
+      await loadBlocks();
+    } finally {
+      setSavingOrder(false);
+    }
+  }
+
   return (
     <section className="mt-10">
 
@@ -715,7 +904,7 @@ export default function ContentBuilder({
                 (value) => !value
               )
             }
-            disabled={saving}
+            disabled={saving || savingOrder}
             className="rounded-xl bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             + Add Block
@@ -734,7 +923,10 @@ export default function ContentBuilder({
                         item.type
                       )
                     }
-                    disabled={saving}
+                    disabled={
+                      saving ||
+                      savingOrder
+                    }
                     className="w-full rounded-xl px-4 py-3 text-left transition hover:bg-white/5 disabled:opacity-50"
                   >
                     <p className="text-sm font-medium text-white">
@@ -755,6 +947,18 @@ export default function ContentBuilder({
 
       </div>
 
+      {/* SAVE STATUS */}
+
+      {(saving || savingOrder) && (
+        <div className="mt-4 flex items-center gap-2 text-xs text-white/30">
+          <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-[#D99A3D]" />
+
+          {savingOrder
+            ? "Saving block order..."
+            : "Saving changes..."}
+        </div>
+      )}
+
       {/* ERROR */}
 
       {error && (
@@ -762,6 +966,19 @@ export default function ContentBuilder({
           {error}
         </div>
       )}
+
+      {/* DRAG INSTRUCTION */}
+
+      {!loading &&
+        blocks.length > 1 && (
+          <div className="mt-6 rounded-xl border border-white/5 bg-white/[0.015] px-4 py-3 text-xs text-white/30">
+            <span className="text-white/50">
+              Tip:
+            </span>{" "}
+            Drag the blocks using the handle to
+            change the order of your story.
+          </div>
+        )}
 
       {/* LOADING */}
 
@@ -803,29 +1020,88 @@ export default function ContentBuilder({
 
               <div
                 key={block.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6"
+                draggable
+                onDragStart={(event) =>
+                  handleDragStart(
+                    event,
+                    block.id
+                  )
+                }
+                onDragOver={(event) =>
+                  handleDragOver(
+                    event,
+                    block.id
+                  )
+                }
+                onDragLeave={
+                  handleDragLeave
+                }
+                onDrop={(event) =>
+                  handleDrop(
+                    event,
+                    block.id
+                  )
+                }
+                onDragEnd={
+                  handleDragEnd
+                }
+                className={`rounded-2xl border bg-white/[0.02] p-6 transition-all ${
+                  draggedBlockId ===
+                  block.id
+                    ? "scale-[0.99] border-[#D99A3D]/50 opacity-50"
+                    : dragOverBlockId ===
+                      block.id
+                    ? "border-[#D99A3D] bg-[#D99A3D]/5"
+                    : "border-white/10"
+                }`}
               >
 
                 {/* BLOCK HEADER */}
 
                 <div className="flex items-start justify-between gap-4">
 
-                  <div>
+                  <div className="flex items-start gap-4">
 
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/25">
-                      Block {index + 1}
-                    </p>
+                    {/* DRAG HANDLE */}
 
-                    <h4 className="mt-2 text-lg font-medium">
-                      {
-                        BLOCK_TYPES.find(
-                          (item) =>
-                            item.type ===
-                            block.type
-                        )?.label ||
-                        block.type
+                    <div
+                      draggable
+                      onDragStart={(event) =>
+                        handleDragStart(
+                          event,
+                          block.id
+                        )
                       }
-                    </h4>
+                      className="mt-1 flex cursor-grab touch-none flex-col gap-1 rounded-lg border border-white/10 px-2 py-2 text-white/25 transition hover:border-white/20 hover:text-white/60 active:cursor-grabbing"
+                      title="Drag to reorder"
+                    >
+                      <span className="block h-1 w-1 rounded-full bg-current" />
+                      <span className="block h-1 w-1 rounded-full bg-current" />
+                      <span className="block h-1 w-1 rounded-full bg-current" />
+
+                      <span className="block h-1 w-1 rounded-full bg-current" />
+                      <span className="block h-1 w-1 rounded-full bg-current" />
+                      <span className="block h-1 w-1 rounded-full bg-current" />
+                    </div>
+
+                    <div>
+
+                      <p className="text-xs uppercase tracking-[0.2em] text-white/25">
+                        Block {index + 1}
+                      </p>
+
+                      <h4 className="mt-2 text-lg font-medium">
+                        {
+                          BLOCK_TYPES.find(
+                            (item) =>
+                              item.type ===
+                              block.type
+                          )?.label ||
+                          block.type
+                        }
+                      </h4>
+
+                    </div>
 
                   </div>
 
@@ -836,7 +1112,10 @@ export default function ContentBuilder({
                         block.id
                       )
                     }
-                    disabled={saving}
+                    disabled={
+                      saving ||
+                      savingOrder
+                    }
                     className="text-sm text-red-400/70 transition hover:text-red-400 disabled:opacity-40"
                   >
                     Delete
@@ -1156,7 +1435,10 @@ export default function ContentBuilder({
                           block.id
                         )
                       }
-                      disabled={saving}
+                      disabled={
+                        saving ||
+                        savingOrder
+                      }
                       className="w-full rounded-xl bg-[#D99A3D] px-5 py-4 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:opacity-50"
                     >
                       {block.media
@@ -1316,7 +1598,10 @@ export default function ContentBuilder({
                           block.id
                         )
                       }
-                      disabled={saving}
+                      disabled={
+                        saving ||
+                        savingOrder
+                      }
                       className="w-full rounded-xl bg-[#D99A3D] px-5 py-4 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:opacity-50"
                     >
                       {block.media
@@ -1492,7 +1777,8 @@ export default function ContentBuilder({
                               )
                             }
                             disabled={
-                              saving
+                              saving ||
+                              savingOrder
                             }
                             className="mt-4 w-full rounded-xl bg-[#D99A3D] px-5 py-3 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:opacity-50"
                           >
@@ -1621,7 +1907,10 @@ export default function ContentBuilder({
                           block
                         )
                       }
-                      disabled={saving}
+                      disabled={
+                        saving ||
+                        savingOrder
+                      }
                       className="w-full rounded-xl border border-dashed border-white/15 px-4 py-4 text-sm text-white/50 transition hover:border-[#D99A3D]/50 hover:text-white disabled:opacity-50"
                     >
                       + Add image from Media Library
