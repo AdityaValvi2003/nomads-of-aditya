@@ -4,6 +4,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import CoverImageField from "../../../../src/components/admin/CoverImageField";
+
+import StoryContentEditor from "../../../../src/components/admin/StoryContentEditor";
+
+type BlogStatus = "Draft" | "Published";
+
 export default function NewBlogPostPage() {
   const router = useRouter();
 
@@ -12,11 +18,27 @@ export default function NewBlogPostPage() {
   const [excerpt, setExcerpt] = useState("");
   const [category, setCategory] = useState("Travel");
   const [content, setContent] = useState("");
+
   const [status, setStatus] =
-    useState<"Draft" | "Published">("Draft");
-  const [featured, setFeatured] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [saving, setSaving] = useState(false);
+    useState<BlogStatus>("Draft");
+
+  const [featured, setFeatured] =
+    useState(false);
+
+  const [coverImage, setCoverImage] =
+    useState<string | null>(null);
+
+  const [saved, setSaved] =
+    useState(false);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  /*
+   * ==========================================================
+   * SLUG
+   * ==========================================================
+   */
 
   function generateSlug(value: string) {
     return value
@@ -27,62 +49,101 @@ export default function NewBlogPostPage() {
       .replace(/-+/g, "-");
   }
 
-  function handleTitleChange(value: string) {
+  function handleTitleChange(
+    value: string
+  ) {
     setTitle(value);
 
-    if (!slug || slug === generateSlug(title)) {
+    if (
+      !slug ||
+      slug === generateSlug(title)
+    ) {
       setSlug(generateSlug(value));
     }
   }
 
+  /*
+   * ==========================================================
+   * SAVE
+   * ==========================================================
+   */
+
   async function handleSave(
-    publishStatus: "Draft" | "Published" = "Draft"
+    publishStatus: BlogStatus = "Draft"
   ) {
     if (!title.trim()) {
-      alert("Please enter a story title.");
+      alert(
+        "Please enter a story title."
+      );
+
       return;
     }
 
     if (!slug.trim()) {
-      alert("Please enter a URL slug.");
+      alert(
+        "Please enter a URL slug."
+      );
+
       return;
     }
 
     setSaving(true);
 
     try {
-      const response = await fetch("/api/admin/blog", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          slug: slug.trim(),
-          subtitle: category,
-          shortIntro: excerpt.trim(),
-          status: publishStatus,
-          isFeatured: featured,
-          content,
-        }),
-      });
+      const response = await fetch(
+        "/api/admin/blog",
+        {
+          method: "POST",
 
-      const data = await response.json();
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            title: title.trim(),
+
+            slug: slug.trim(),
+
+            subtitle: category,
+
+            shortIntro:
+              excerpt.trim(),
+
+            status: publishStatus,
+
+            isFeatured: featured,
+
+            content,
+
+            coverImage,
+          }),
+        }
+      );
+
+      const data =
+        await response.json();
 
       if (!response.ok) {
         alert(
           data.error ||
             "Failed to save blog post."
         );
+
         return;
       }
 
       setStatus(publishStatus);
+
       setSaved(true);
 
       setTimeout(() => {
         setSaved(false);
-        router.push("/admin/blog");
+
+        router.push(
+          "/admin/blog"
+        );
+
         router.refresh();
       }, 800);
     } catch (error) {
@@ -98,6 +159,28 @@ export default function NewBlogPostPage() {
       setSaving(false);
     }
   }
+
+  /*
+   * ==========================================================
+   * READING TIME
+   * ==========================================================
+   */
+
+  const wordCount = content
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean).length;
+
+  const readingTime = Math.max(
+    1,
+    Math.ceil(wordCount / 200)
+  );
+
+  /*
+   * ==========================================================
+   * UI
+   * ==========================================================
+   */
 
   return (
     <>
@@ -120,7 +203,11 @@ export default function NewBlogPostPage() {
         }
 
         .editor-header h1 {
-          font: clamp(3rem, 6vw, 6rem) / .95 var(--serif);
+          font:
+            clamp(3rem, 6vw, 6rem)
+            / .95
+            var(--serif);
+
           margin: 12px 0;
         }
 
@@ -170,9 +257,14 @@ export default function NewBlogPostPage() {
 
         .editor-layout {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 330px;
+          grid-template-columns:
+            minmax(0, 1fr)
+            330px;
+
           gap: 35px;
+
           margin-top: 45px;
+
           align-items: start;
         }
 
@@ -193,11 +285,17 @@ export default function NewBlogPostPage() {
 
         .editor-label {
           display: block;
+
           color: var(--accent);
+
           font-size: .68rem;
+
           letter-spacing: .13em;
+
           text-transform: uppercase;
+
           font-weight: 700;
+
           margin-bottom: 10px;
         }
 
@@ -205,20 +303,30 @@ export default function NewBlogPostPage() {
         .editor-select,
         .editor-textarea {
           width: 100%;
+
           background: var(--panel);
+
           color: var(--text);
+
           border: 1px solid var(--line);
+
           outline: none;
+
           font: inherit;
         }
 
         .editor-input {
           padding: 16px 18px;
+
           font-size: 1rem;
         }
 
         .editor-input.title-input {
-          font: clamp(2rem, 4vw, 4rem) / 1.05 var(--serif);
+          font:
+            clamp(2rem, 4vw, 4rem)
+            / 1.05
+            var(--serif);
+
           padding: 22px;
         }
 
@@ -230,10 +338,15 @@ export default function NewBlogPostPage() {
 
         .editor-textarea {
           min-height: 500px;
+
           resize: vertical;
+
           padding: 22px;
+
           line-height: 1.8;
         }
+
+        /* SLUG */
 
         .slug-row {
           display: flex;
@@ -242,13 +355,21 @@ export default function NewBlogPostPage() {
 
         .slug-prefix {
           display: flex;
+
           align-items: center;
+
           padding: 0 14px;
+
           background: var(--bg);
+
           border: 1px solid var(--line);
+
           border-right: 0;
+
           color: var(--muted);
+
           font-size: .8rem;
+
           white-space: nowrap;
         }
 
@@ -258,56 +379,40 @@ export default function NewBlogPostPage() {
 
         .character-count {
           text-align: right;
+
           margin-top: 6px;
+
           color: var(--muted);
+
           font-size: .68rem;
-        }
-
-        /* TOOLBAR */
-
-        .editor-toolbar {
-          display: flex;
-          gap: 5px;
-          flex-wrap: wrap;
-          padding: 10px;
-          background: var(--panel);
-          border: 1px solid var(--line);
-          border-bottom: 0;
-        }
-
-        .toolbar-button {
-          padding: 8px 11px;
-          border: 1px solid transparent;
-          color: var(--muted);
-          background: transparent;
-          cursor: pointer;
-          font-size: .72rem;
-          font-weight: 700;
-        }
-
-        .toolbar-button:hover {
-          color: var(--accent);
-          border-color: var(--line);
         }
 
         /* SIDEBAR */
 
         .sidebar-card {
           background: var(--panel);
+
           border: 1px solid var(--line);
+
           margin-bottom: 18px;
         }
 
         .sidebar-card-header {
           padding: 18px 20px;
-          border-bottom: 1px solid var(--line);
+
+          border-bottom:
+            1px solid var(--line);
         }
 
         .sidebar-card-header span {
           color: var(--accent);
+
           font-size: .67rem;
+
           letter-spacing: .13em;
+
           text-transform: uppercase;
+
           font-weight: 700;
         }
 
@@ -325,8 +430,11 @@ export default function NewBlogPostPage() {
 
         .sidebar-label {
           display: block;
+
           color: var(--muted);
+
           font-size: .68rem;
+
           margin-bottom: 8px;
         }
 
@@ -338,24 +446,36 @@ export default function NewBlogPostPage() {
 
         .status-options {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+
+          grid-template-columns:
+            1fr 1fr;
+
           gap: 8px;
         }
 
         .status-option {
           padding: 12px;
+
           border: 1px solid var(--line);
+
           background: transparent;
+
           color: var(--muted);
+
           cursor: pointer;
+
           font-size: .68rem;
+
           text-transform: uppercase;
+
           letter-spacing: .06em;
         }
 
         .status-option.active {
           background: var(--accent);
+
           border-color: var(--accent);
+
           color: #15110b;
         }
 
@@ -363,128 +483,164 @@ export default function NewBlogPostPage() {
 
         .featured-toggle {
           display: flex;
+
           align-items: center;
+
           justify-content: space-between;
+
           gap: 15px;
         }
 
         .featured-copy strong {
           display: block;
+
           font-size: .82rem;
+
           margin-bottom: 4px;
         }
 
         .featured-copy span {
           color: var(--muted);
+
           font-size: .68rem;
+
           line-height: 1.4;
         }
 
         .toggle {
           width: 44px;
+
           height: 24px;
+
           border: 1px solid var(--line);
+
           border-radius: 30px;
+
           padding: 3px;
+
           background: var(--bg);
+
           cursor: pointer;
+
           flex-shrink: 0;
         }
 
         .toggle-dot {
           width: 16px;
+
           height: 16px;
+
           border-radius: 50%;
+
           background: var(--muted);
+
           transition: .2s;
         }
 
         .toggle.active {
           background: var(--accent);
+
           border-color: var(--accent);
         }
 
         .toggle.active .toggle-dot {
           background: #15110b;
-          transform: translateX(18px);
+
+          transform:
+            translateX(18px);
         }
 
         /* COVER */
 
-        .cover-placeholder {
-          min-height: 170px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          border: 1px dashed var(--line);
-          color: var(--muted);
-          padding: 25px;
-          font-size: .75rem;
-          line-height: 1.6;
-        }
-
-        .cover-placeholder strong {
-          display: block;
-          color: var(--text);
-          font-family: var(--serif);
-          font-size: 1.4rem;
-          margin-bottom: 6px;
-        }
-
-        /* SAVE NOTICE */
-
-        .save-notice {
-          position: fixed;
-          right: 30px;
-          bottom: 30px;
-          z-index: 100;
-          padding: 14px 20px;
-          background: var(--accent);
-          color: #15110b;
-          font-size: .72rem;
-          letter-spacing: .06em;
-          text-transform: uppercase;
-          box-shadow: 0 15px 40px rgba(0,0,0,.35);
+        .cover-field-wrapper {
+          width: 100%;
         }
 
         /* PREVIEW */
 
         .preview-box {
           margin-top: 40px;
-          border-top: 1px solid var(--line);
+
+          border-top:
+            1px solid var(--line);
+
           padding-top: 40px;
         }
 
         .preview-label {
           color: var(--accent);
+
           font-size: .68rem;
+
           letter-spacing: .13em;
+
           text-transform: uppercase;
+
           font-weight: 700;
+
           margin-bottom: 20px;
         }
 
         .preview-title {
-          font: clamp(2.5rem, 5vw, 5rem) / .95 var(--serif);
-          margin: 10px 0 20px;
+          font:
+            clamp(2.5rem, 5vw, 5rem)
+            / .95
+            var(--serif);
+
+          margin:
+            10px 0 20px;
         }
 
         .preview-excerpt {
           color: var(--muted);
+
           max-width: 700px;
+
           font-size: 1.05rem;
+
           margin-bottom: 35px;
         }
 
         .preview-content {
           white-space: pre-wrap;
+
           max-width: 800px;
+
           line-height: 1.9;
+
           color: #d8d2c8;
         }
 
+        /* SAVE */
+
+        .save-notice {
+          position: fixed;
+
+          right: 30px;
+
+          bottom: 30px;
+
+          z-index: 100;
+
+          padding: 14px 20px;
+
+          background: var(--accent);
+
+          color: #15110b;
+
+          font-size: .72rem;
+
+          letter-spacing: .06em;
+
+          text-transform: uppercase;
+
+          box-shadow:
+            0 15px 40px
+            rgba(0,0,0,.35);
+        }
+
         @media (max-width: 950px) {
+
           .editor-layout {
             grid-template-columns: 1fr;
           }
@@ -492,11 +648,16 @@ export default function NewBlogPostPage() {
           .editor-sidebar {
             position: static;
           }
+
         }
 
         @media (max-width: 700px) {
+
           .editor-page {
-            padding: 110px 7vw 70px;
+            padding:
+              110px
+              7vw
+              70px;
           }
 
           .editor-header {
@@ -514,6 +675,7 @@ export default function NewBlogPostPage() {
           .editor-input.title-input {
             font-size: 2rem;
           }
+
         }
 
       `}</style>
@@ -530,7 +692,9 @@ export default function NewBlogPostPage() {
               NOMADS OF ADITYA · BLOG
             </span>
 
-            <h1>New Story</h1>
+            <h1>
+              New Story
+            </h1>
 
             <p>
               Write something worth remembering.
@@ -548,6 +712,7 @@ export default function NewBlogPostPage() {
             </Link>
 
             <button
+              type="button"
               className="editor-button"
               disabled={saving}
               onClick={() =>
@@ -560,6 +725,7 @@ export default function NewBlogPostPage() {
             </button>
 
             <button
+              type="button"
               className="editor-button primary"
               disabled={saving}
               onClick={() =>
@@ -574,7 +740,6 @@ export default function NewBlogPostPage() {
           </div>
 
         </header>
-
 
         {/* EDITOR */}
 
@@ -595,16 +760,15 @@ export default function NewBlogPostPage() {
               <input
                 className="editor-input title-input"
                 value={title}
-                onChange={(e) =>
+                onChange={(event) =>
                   handleTitleChange(
-                    e.target.value
+                    event.target.value
                   )
                 }
                 placeholder="Give your story a name..."
               />
 
             </div>
-
 
             {/* SLUG */}
 
@@ -623,10 +787,10 @@ export default function NewBlogPostPage() {
                 <input
                   className="editor-input"
                   value={slug}
-                  onChange={(e) =>
+                  onChange={(event) =>
                     setSlug(
                       generateSlug(
-                        e.target.value
+                        event.target.value
                       )
                     )
                   }
@@ -636,7 +800,6 @@ export default function NewBlogPostPage() {
               </div>
 
             </div>
-
 
             {/* EXCERPT */}
 
@@ -649,25 +812,26 @@ export default function NewBlogPostPage() {
               <textarea
                 className="editor-textarea"
                 style={{
-                  minHeight: "130px",
+                  minHeight:
+                    "130px",
                 }}
                 value={excerpt}
-                onChange={(e) =>
+                onChange={(event) =>
                   setExcerpt(
-                    e.target.value
+                    event.target.value
                   )
                 }
                 placeholder="A short description that appears on the Blog page..."
               />
 
               <div className="character-count">
-                {excerpt.length} characters
+                {excerpt.length}{" "}
+                characters
               </div>
 
             </div>
 
-
-            {/* CONTENT */}
+            {/* STORY CONTENT */}
 
             <div className="editor-field">
 
@@ -675,114 +839,12 @@ export default function NewBlogPostPage() {
                 Story Content
               </label>
 
-              <div className="editor-toolbar">
-
-                <button
-                  className="toolbar-button"
-                  type="button"
-                  onClick={() =>
-                    setContent(
-                      (current) =>
-                        current + "\n\n# "
-                    )
-                  }
-                >
-                  H1
-                </button>
-
-                <button
-                  className="toolbar-button"
-                  type="button"
-                  onClick={() =>
-                    setContent(
-                      (current) =>
-                        current + "\n\n## "
-                    )
-                  }
-                >
-                  H2
-                </button>
-
-                <button
-                  className="toolbar-button"
-                  type="button"
-                  onClick={() =>
-                    setContent(
-                      (current) =>
-                        current +
-                        "\n\n**bold**"
-                    )
-                  }
-                >
-                  B
-                </button>
-
-                <button
-                  className="toolbar-button"
-                  type="button"
-                  onClick={() =>
-                    setContent(
-                      (current) =>
-                        current +
-                        "\n\n> "
-                    )
-                  }
-                >
-                  Quote
-                </button>
-
-                <button
-                  className="toolbar-button"
-                  type="button"
-                  onClick={() =>
-                    setContent(
-                      (current) =>
-                        current +
-                        "\n\n---\n\n"
-                    )
-                  }
-                >
-                  Divider
-                </button>
-
-                <button
-                  className="toolbar-button"
-                  type="button"
-                  onClick={() =>
-                    setContent(
-                      (current) =>
-                        current +
-                        "\n\n[Image]\n\n"
-                    )
-                  }
-                >
-                  Image
-                </button>
-
-              </div>
-
-              <textarea
-                className="editor-textarea"
+              <StoryContentEditor
                 value={content}
-                onChange={(e) =>
-                  setContent(
-                    e.target.value
-                  )
-                }
-                placeholder={`Start writing your story...
-
-Tell the story naturally.
-
-Write about the road.
-The people.
-The places.
-The things you noticed.
-
-This editor will later become a proper rich-text editor connected to the database.`}
+                onChange={setContent}
               />
 
             </div>
-
 
             {/* PREVIEW */}
 
@@ -811,12 +873,11 @@ This editor will later become a proper rich-text editor connected to the databas
 
           </section>
 
-
           {/* SIDEBAR */}
 
           <aside className="editor-sidebar">
 
-            {/* PUBLISH */}
+            {/* PUBLISHING */}
 
             <div className="sidebar-card">
 
@@ -871,7 +932,6 @@ This editor will later become a proper rich-text editor connected to the databas
 
                 </div>
 
-
                 <div className="sidebar-field">
 
                   <label className="sidebar-label">
@@ -881,33 +941,31 @@ This editor will later become a proper rich-text editor connected to the databas
                   <select
                     className="editor-select"
                     value={category}
-                    onChange={(e) =>
+                    onChange={(event) =>
                       setCategory(
-                        e.target.value
+                        event.target.value
                       )
                     }
                   >
-
-                    <option>
+                    <option value="Travel">
                       Travel
                     </option>
 
-                    <option>
+                    <option value="Thoughts">
                       Thoughts
                     </option>
 
-                    <option>
+                    <option value="People">
                       People
                     </option>
 
-                    <option>
+                    <option value="Photography">
                       Photography
                     </option>
 
-                    <option>
+                    <option value="Life">
                       Life
                     </option>
-
                   </select>
 
                 </div>
@@ -915,7 +973,6 @@ This editor will later become a proper rich-text editor connected to the databas
               </div>
 
             </div>
-
 
             {/* FEATURED */}
 
@@ -946,6 +1003,7 @@ This editor will later become a proper rich-text editor connected to the databas
 
                   <button
                     type="button"
+                    aria-label="Toggle featured story"
                     className={`toggle ${
                       featured
                         ? "active"
@@ -966,7 +1024,6 @@ This editor will later become a proper rich-text editor connected to the databas
 
             </div>
 
-
             {/* COVER IMAGE */}
 
             <div className="sidebar-card">
@@ -979,26 +1036,22 @@ This editor will later become a proper rich-text editor connected to the databas
 
               <div className="sidebar-card-body">
 
-                <div className="cover-placeholder">
+                <div className="cover-field-wrapper">
 
-                  <div>
-
-                    <strong>
-                      No image selected
-                    </strong>
-
-                    Cover image upload will
-                    be connected to the
-                    Media Library next.
-
-                  </div>
+                  <CoverImageField
+                    initialImage={
+                      coverImage
+                    }
+                    onChange={
+                      setCoverImage
+                    }
+                  />
 
                 </div>
 
               </div>
 
             </div>
-
 
             {/* DETAILS */}
 
@@ -1024,7 +1077,6 @@ This editor will later become a proper rich-text editor connected to the databas
 
                 </div>
 
-
                 <div className="sidebar-field">
 
                   <label className="sidebar-label">
@@ -1032,24 +1084,11 @@ This editor will later become a proper rich-text editor connected to the databas
                   </label>
 
                   <strong>
-
-                    {Math.max(
-                      1,
-                      Math.ceil(
-                        content
-                          .trim()
-                          .split(/\s+/)
-                          .filter(
-                            Boolean
-                          ).length / 200
-                      )
-                    )}{" "}
-                    min read
-
+                    {readingTime} min
+                    read
                   </strong>
 
                 </div>
-
 
                 <div className="sidebar-field">
 
@@ -1073,15 +1112,12 @@ This editor will later become a proper rich-text editor connected to the databas
 
       </main>
 
-
       {/* SAVE NOTICE */}
 
       {saved && (
-
         <div className="save-notice">
           Changes saved
         </div>
-
       )}
 
     </>

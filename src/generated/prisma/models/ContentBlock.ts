@@ -252,8 +252,8 @@ export type ContentBlockWhereInput = {
   mediaId?: Prisma.StringNullableFilter<"ContentBlock"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ContentBlock"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ContentBlock"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   media?: Prisma.XOR<Prisma.MediaAssetNullableScalarRelationFilter, Prisma.MediaAssetWhereInput> | null
 }
 
@@ -268,8 +268,8 @@ export type ContentBlockOrderByWithRelationInput = {
   mediaId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  journey?: Prisma.JourneyOrderByWithRelationInput
   blog?: Prisma.BlogOrderByWithRelationInput
+  journey?: Prisma.JourneyOrderByWithRelationInput
   media?: Prisma.MediaAssetOrderByWithRelationInput
 }
 
@@ -287,8 +287,8 @@ export type ContentBlockWhereUniqueInput = Prisma.AtLeast<{
   mediaId?: Prisma.StringNullableFilter<"ContentBlock"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ContentBlock"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ContentBlock"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   media?: Prisma.XOR<Prisma.MediaAssetNullableScalarRelationFilter, Prisma.MediaAssetWhereInput> | null
 }, "id">
 
@@ -334,8 +334,8 @@ export type ContentBlockCreateInput = {
   imageDisplay?: $Enums.ImageDisplay | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutContentBlocksInput
   blog?: Prisma.BlogCreateNestedOneWithoutContentBlocksInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutContentBlocksInput
   media?: Prisma.MediaAssetCreateNestedOneWithoutBlocksInput
 }
 
@@ -360,8 +360,8 @@ export type ContentBlockUpdateInput = {
   imageDisplay?: Prisma.NullableEnumImageDisplayFieldUpdateOperationsInput | $Enums.ImageDisplay | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutContentBlocksNestedInput
   blog?: Prisma.BlogUpdateOneWithoutContentBlocksNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutContentBlocksNestedInput
   media?: Prisma.MediaAssetUpdateOneWithoutBlocksNestedInput
 }
 
@@ -735,8 +735,8 @@ export type ContentBlockCreateWithoutMediaInput = {
   imageDisplay?: $Enums.ImageDisplay | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutContentBlocksInput
   blog?: Prisma.BlogCreateNestedOneWithoutContentBlocksInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutContentBlocksInput
 }
 
 export type ContentBlockUncheckedCreateWithoutMediaInput = {
@@ -893,8 +893,8 @@ export type ContentBlockUpdateWithoutMediaInput = {
   imageDisplay?: Prisma.NullableEnumImageDisplayFieldUpdateOperationsInput | $Enums.ImageDisplay | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutContentBlocksNestedInput
   blog?: Prisma.BlogUpdateOneWithoutContentBlocksNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutContentBlocksNestedInput
 }
 
 export type ContentBlockUncheckedUpdateWithoutMediaInput = {
@@ -934,8 +934,8 @@ export type ContentBlockSelect<ExtArgs extends runtime.Types.Extensions.Internal
   mediaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentBlock$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   media?: boolean | Prisma.ContentBlock$mediaArgs<ExtArgs>
 }, ExtArgs["result"]["contentBlock"]>
 
@@ -950,8 +950,8 @@ export type ContentBlockSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   mediaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentBlock$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   media?: boolean | Prisma.ContentBlock$mediaArgs<ExtArgs>
 }, ExtArgs["result"]["contentBlock"]>
 
@@ -966,8 +966,8 @@ export type ContentBlockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   mediaId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentBlock$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   media?: boolean | Prisma.ContentBlock$mediaArgs<ExtArgs>
 }, ExtArgs["result"]["contentBlock"]>
 
@@ -986,26 +986,26 @@ export type ContentBlockSelectScalar = {
 
 export type ContentBlockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "position" | "data" | "imageDisplay" | "journeyId" | "blogId" | "mediaId" | "createdAt" | "updatedAt", ExtArgs["result"]["contentBlock"]>
 export type ContentBlockInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentBlock$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   media?: boolean | Prisma.ContentBlock$mediaArgs<ExtArgs>
 }
 export type ContentBlockIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentBlock$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   media?: boolean | Prisma.ContentBlock$mediaArgs<ExtArgs>
 }
 export type ContentBlockIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentBlock$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentBlock$journeyArgs<ExtArgs>
   media?: boolean | Prisma.ContentBlock$mediaArgs<ExtArgs>
 }
 
 export type $ContentBlockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ContentBlock"
   objects: {
-    journey: Prisma.$JourneyPayload<ExtArgs> | null
     blog: Prisma.$BlogPayload<ExtArgs> | null
+    journey: Prisma.$JourneyPayload<ExtArgs> | null
     media: Prisma.$MediaAssetPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1413,8 +1413,8 @@ readonly fields: ContentBlockFieldRefs;
  */
 export interface Prisma__ContentBlockClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journey<T extends Prisma.ContentBlock$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentBlock$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   blog<T extends Prisma.ContentBlock$blogArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentBlock$blogArgs<ExtArgs>>): Prisma.Prisma__BlogClient<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  journey<T extends Prisma.ContentBlock$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentBlock$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   media<T extends Prisma.ContentBlock$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentBlock$mediaArgs<ExtArgs>>): Prisma.Prisma__MediaAssetClient<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1856,25 +1856,6 @@ export type ContentBlockDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
 }
 
 /**
- * ContentBlock.journey
- */
-export type ContentBlock$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Journey
-   */
-  select?: Prisma.JourneySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Journey
-   */
-  omit?: Prisma.JourneyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.JourneyInclude<ExtArgs> | null
-  where?: Prisma.JourneyWhereInput
-}
-
-/**
  * ContentBlock.blog
  */
 export type ContentBlock$blogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1891,6 +1872,25 @@ export type ContentBlock$blogArgs<ExtArgs extends runtime.Types.Extensions.Inter
    */
   include?: Prisma.BlogInclude<ExtArgs> | null
   where?: Prisma.BlogWhereInput
+}
+
+/**
+ * ContentBlock.journey
+ */
+export type ContentBlock$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
 }
 
 /**

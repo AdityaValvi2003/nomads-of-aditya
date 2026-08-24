@@ -198,11 +198,11 @@ export type UserWhereInput = {
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  journeys?: Prisma.JourneyListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
-  quotes?: Prisma.QuoteListRelationFilter
-  versions?: Prisma.ContentVersionListRelationFilter
   moderatedComments?: Prisma.CommentListRelationFilter
+  versions?: Prisma.ContentVersionListRelationFilter
+  journeys?: Prisma.JourneyListRelationFilter
+  quotes?: Prisma.QuoteListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -213,11 +213,11 @@ export type UserOrderByWithRelationInput = {
   role?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  journeys?: Prisma.JourneyOrderByRelationAggregateInput
   blogs?: Prisma.BlogOrderByRelationAggregateInput
-  quotes?: Prisma.QuoteOrderByRelationAggregateInput
-  versions?: Prisma.ContentVersionOrderByRelationAggregateInput
   moderatedComments?: Prisma.CommentOrderByRelationAggregateInput
+  versions?: Prisma.ContentVersionOrderByRelationAggregateInput
+  journeys?: Prisma.JourneyOrderByRelationAggregateInput
+  quotes?: Prisma.QuoteOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -231,11 +231,11 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   role?: Prisma.EnumUserRoleFilter<"User"> | $Enums.UserRole
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  journeys?: Prisma.JourneyListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
-  quotes?: Prisma.QuoteListRelationFilter
-  versions?: Prisma.ContentVersionListRelationFilter
   moderatedComments?: Prisma.CommentListRelationFilter
+  versions?: Prisma.ContentVersionListRelationFilter
+  journeys?: Prisma.JourneyListRelationFilter
+  quotes?: Prisma.QuoteListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -272,11 +272,11 @@ export type UserCreateInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
+  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -287,11 +287,11 @@ export type UserUncheckedCreateInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentUncheckedCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
+  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUpdateInput = {
@@ -302,11 +302,11 @@ export type UserUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
+  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -317,11 +317,11 @@ export type UserUncheckedUpdateInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUncheckedUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
+  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -487,9 +487,9 @@ export type UserCreateWithoutJourneysInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
+  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutJourneysInput = {
@@ -501,9 +501,9 @@ export type UserUncheckedCreateWithoutJourneysInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentUncheckedCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutJourneysInput = {
@@ -531,9 +531,9 @@ export type UserUpdateWithoutJourneysInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
+  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutJourneysInput = {
@@ -545,9 +545,9 @@ export type UserUncheckedUpdateWithoutJourneysInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUncheckedUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutBlogsInput = {
@@ -558,10 +558,10 @@ export type UserCreateWithoutBlogsInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  moderatedComments?: Prisma.CommentCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
   journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
-  moderatedComments?: Prisma.CommentCreateNestedManyWithoutModeratedByInput
 }
 
 export type UserUncheckedCreateWithoutBlogsInput = {
@@ -572,10 +572,10 @@ export type UserUncheckedCreateWithoutBlogsInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
+  moderatedComments?: Prisma.CommentUncheckedCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
   journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
-  moderatedComments?: Prisma.CommentUncheckedCreateNestedManyWithoutModeratedByInput
 }
 
 export type UserCreateOrConnectWithoutBlogsInput = {
@@ -602,10 +602,10 @@ export type UserUpdateWithoutBlogsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  moderatedComments?: Prisma.CommentUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
   journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
-  moderatedComments?: Prisma.CommentUpdateManyWithoutModeratedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlogsInput = {
@@ -616,10 +616,10 @@ export type UserUncheckedUpdateWithoutBlogsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  moderatedComments?: Prisma.CommentUncheckedUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
-  moderatedComments?: Prisma.CommentUncheckedUpdateManyWithoutModeratedByNestedInput
 }
 
 export type UserCreateWithoutQuotesInput = {
@@ -630,10 +630,10 @@ export type UserCreateWithoutQuotesInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
 }
 
 export type UserUncheckedCreateWithoutQuotesInput = {
@@ -644,10 +644,10 @@ export type UserUncheckedCreateWithoutQuotesInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentUncheckedCreateNestedManyWithoutModeratedByInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type UserCreateOrConnectWithoutQuotesInput = {
@@ -674,10 +674,10 @@ export type UserUpdateWithoutQuotesInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserUncheckedUpdateWithoutQuotesInput = {
@@ -688,10 +688,10 @@ export type UserUncheckedUpdateWithoutQuotesInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUncheckedUpdateManyWithoutModeratedByNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type UserCreateWithoutModeratedCommentsInput = {
@@ -702,10 +702,10 @@ export type UserCreateWithoutModeratedCommentsInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
   versions?: Prisma.ContentVersionCreateNestedManyWithoutCreatedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
+  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutModeratedCommentsInput = {
@@ -716,10 +716,10 @@ export type UserUncheckedCreateWithoutModeratedCommentsInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
   versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutCreatedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
+  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutModeratedCommentsInput = {
@@ -746,10 +746,10 @@ export type UserUpdateWithoutModeratedCommentsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
   versions?: Prisma.ContentVersionUpdateManyWithoutCreatedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
+  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutModeratedCommentsInput = {
@@ -760,10 +760,10 @@ export type UserUncheckedUpdateWithoutModeratedCommentsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
   versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutCreatedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
+  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserCreateWithoutVersionsInput = {
@@ -774,10 +774,10 @@ export type UserCreateWithoutVersionsInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentCreateNestedManyWithoutModeratedByInput
+  journeys?: Prisma.JourneyCreateNestedManyWithoutAuthorInput
+  quotes?: Prisma.QuoteCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserUncheckedCreateWithoutVersionsInput = {
@@ -788,10 +788,10 @@ export type UserUncheckedCreateWithoutVersionsInput = {
   role?: $Enums.UserRole
   createdAt?: Date | string
   updatedAt?: Date | string
-  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutAuthorInput
-  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
   moderatedComments?: Prisma.CommentUncheckedCreateNestedManyWithoutModeratedByInput
+  journeys?: Prisma.JourneyUncheckedCreateNestedManyWithoutAuthorInput
+  quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutCreatedByInput
 }
 
 export type UserCreateOrConnectWithoutVersionsInput = {
@@ -818,10 +818,10 @@ export type UserUpdateWithoutVersionsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUpdateManyWithoutModeratedByNestedInput
+  journeys?: Prisma.JourneyUpdateManyWithoutAuthorNestedInput
+  quotes?: Prisma.QuoteUpdateManyWithoutCreatedByNestedInput
 }
 
 export type UserUncheckedUpdateWithoutVersionsInput = {
@@ -832,10 +832,10 @@ export type UserUncheckedUpdateWithoutVersionsInput = {
   role?: Prisma.EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutAuthorNestedInput
-  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
   moderatedComments?: Prisma.CommentUncheckedUpdateManyWithoutModeratedByNestedInput
+  journeys?: Prisma.JourneyUncheckedUpdateManyWithoutAuthorNestedInput
+  quotes?: Prisma.QuoteUncheckedUpdateManyWithoutCreatedByNestedInput
 }
 
 
@@ -844,19 +844,19 @@ export type UserUncheckedUpdateWithoutVersionsInput = {
  */
 
 export type UserCountOutputType = {
-  journeys: number
   blogs: number
-  quotes: number
-  versions: number
   moderatedComments: number
+  versions: number
+  journeys: number
+  quotes: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journeys?: boolean | UserCountOutputTypeCountJourneysArgs
   blogs?: boolean | UserCountOutputTypeCountBlogsArgs
-  quotes?: boolean | UserCountOutputTypeCountQuotesArgs
-  versions?: boolean | UserCountOutputTypeCountVersionsArgs
   moderatedComments?: boolean | UserCountOutputTypeCountModeratedCommentsArgs
+  versions?: boolean | UserCountOutputTypeCountVersionsArgs
+  journeys?: boolean | UserCountOutputTypeCountJourneysArgs
+  quotes?: boolean | UserCountOutputTypeCountQuotesArgs
 }
 
 /**
@@ -872,13 +872,6 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountJourneysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.JourneyWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
 export type UserCountOutputTypeCountBlogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.BlogWhereInput
 }
@@ -886,8 +879,8 @@ export type UserCountOutputTypeCountBlogsArgs<ExtArgs extends runtime.Types.Exte
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountQuotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.QuoteWhereInput
+export type UserCountOutputTypeCountModeratedCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CommentWhereInput
 }
 
 /**
@@ -900,8 +893,15 @@ export type UserCountOutputTypeCountVersionsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountModeratedCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.CommentWhereInput
+export type UserCountOutputTypeCountJourneysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.JourneyWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountQuotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.QuoteWhereInput
 }
 
 
@@ -913,11 +913,11 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   role?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
   blogs?: boolean | Prisma.User$blogsArgs<ExtArgs>
-  quotes?: boolean | Prisma.User$quotesArgs<ExtArgs>
-  versions?: boolean | Prisma.User$versionsArgs<ExtArgs>
   moderatedComments?: boolean | Prisma.User$moderatedCommentsArgs<ExtArgs>
+  versions?: boolean | Prisma.User$versionsArgs<ExtArgs>
+  journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
+  quotes?: boolean | Prisma.User$quotesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -953,11 +953,11 @@ export type UserSelectScalar = {
 
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "role" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
   blogs?: boolean | Prisma.User$blogsArgs<ExtArgs>
-  quotes?: boolean | Prisma.User$quotesArgs<ExtArgs>
-  versions?: boolean | Prisma.User$versionsArgs<ExtArgs>
   moderatedComments?: boolean | Prisma.User$moderatedCommentsArgs<ExtArgs>
+  versions?: boolean | Prisma.User$versionsArgs<ExtArgs>
+  journeys?: boolean | Prisma.User$journeysArgs<ExtArgs>
+  quotes?: boolean | Prisma.User$quotesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -966,11 +966,11 @@ export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
   objects: {
-    journeys: Prisma.$JourneyPayload<ExtArgs>[]
     blogs: Prisma.$BlogPayload<ExtArgs>[]
-    quotes: Prisma.$QuotePayload<ExtArgs>[]
-    versions: Prisma.$ContentVersionPayload<ExtArgs>[]
     moderatedComments: Prisma.$CommentPayload<ExtArgs>[]
+    versions: Prisma.$ContentVersionPayload<ExtArgs>[]
+    journeys: Prisma.$JourneyPayload<ExtArgs>[]
+    quotes: Prisma.$QuotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1374,11 +1374,11 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journeys<T extends Prisma.User$journeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$journeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blogs<T extends Prisma.User$blogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  quotes<T extends Prisma.User$quotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$quotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  versions<T extends Prisma.User$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   moderatedComments<T extends Prisma.User$moderatedCommentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$moderatedCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  versions<T extends Prisma.User$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  journeys<T extends Prisma.User$journeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$journeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  quotes<T extends Prisma.User$quotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$quotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1808,30 +1808,6 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.journeys
- */
-export type User$journeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Journey
-   */
-  select?: Prisma.JourneySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Journey
-   */
-  omit?: Prisma.JourneyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.JourneyInclude<ExtArgs> | null
-  where?: Prisma.JourneyWhereInput
-  orderBy?: Prisma.JourneyOrderByWithRelationInput | Prisma.JourneyOrderByWithRelationInput[]
-  cursor?: Prisma.JourneyWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.JourneyScalarFieldEnum | Prisma.JourneyScalarFieldEnum[]
-}
-
-/**
  * User.blogs
  */
 export type User$blogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1856,27 +1832,27 @@ export type User$blogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
 }
 
 /**
- * User.quotes
+ * User.moderatedComments
  */
-export type User$quotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$moderatedCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Quote
+   * Select specific fields to fetch from the Comment
    */
-  select?: Prisma.QuoteSelect<ExtArgs> | null
+  select?: Prisma.CommentSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Quote
+   * Omit specific fields from the Comment
    */
-  omit?: Prisma.QuoteOmit<ExtArgs> | null
+  omit?: Prisma.CommentOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.QuoteInclude<ExtArgs> | null
-  where?: Prisma.QuoteWhereInput
-  orderBy?: Prisma.QuoteOrderByWithRelationInput | Prisma.QuoteOrderByWithRelationInput[]
-  cursor?: Prisma.QuoteWhereUniqueInput
+  include?: Prisma.CommentInclude<ExtArgs> | null
+  where?: Prisma.CommentWhereInput
+  orderBy?: Prisma.CommentOrderByWithRelationInput | Prisma.CommentOrderByWithRelationInput[]
+  cursor?: Prisma.CommentWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.QuoteScalarFieldEnum | Prisma.QuoteScalarFieldEnum[]
+  distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
 }
 
 /**
@@ -1904,27 +1880,51 @@ export type User$versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
- * User.moderatedComments
+ * User.journeys
  */
-export type User$moderatedCommentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$journeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Comment
+   * Select specific fields to fetch from the Journey
    */
-  select?: Prisma.CommentSelect<ExtArgs> | null
+  select?: Prisma.JourneySelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Comment
+   * Omit specific fields from the Journey
    */
-  omit?: Prisma.CommentOmit<ExtArgs> | null
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.CommentInclude<ExtArgs> | null
-  where?: Prisma.CommentWhereInput
-  orderBy?: Prisma.CommentOrderByWithRelationInput | Prisma.CommentOrderByWithRelationInput[]
-  cursor?: Prisma.CommentWhereUniqueInput
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
+  orderBy?: Prisma.JourneyOrderByWithRelationInput | Prisma.JourneyOrderByWithRelationInput[]
+  cursor?: Prisma.JourneyWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.CommentScalarFieldEnum | Prisma.CommentScalarFieldEnum[]
+  distinct?: Prisma.JourneyScalarFieldEnum | Prisma.JourneyScalarFieldEnum[]
+}
+
+/**
+ * User.quotes
+ */
+export type User$quotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Quote
+   */
+  select?: Prisma.QuoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Quote
+   */
+  omit?: Prisma.QuoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.QuoteInclude<ExtArgs> | null
+  where?: Prisma.QuoteWhereInput
+  orderBy?: Prisma.QuoteOrderByWithRelationInput | Prisma.QuoteOrderByWithRelationInput[]
+  cursor?: Prisma.QuoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.QuoteScalarFieldEnum | Prisma.QuoteScalarFieldEnum[]
 }
 
 /**

@@ -312,9 +312,9 @@ export type MediaAssetWhereInput = {
   journeyId?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blocks?: Prisma.ContentBlockListRelationFilter
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }
 
 export type MediaAssetOrderByWithRelationInput = {
@@ -334,9 +334,9 @@ export type MediaAssetOrderByWithRelationInput = {
   journeyId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  journey?: Prisma.JourneyOrderByWithRelationInput
   blocks?: Prisma.ContentBlockOrderByRelationAggregateInput
   encounter?: Prisma.EncounterOrderByWithRelationInput
+  journey?: Prisma.JourneyOrderByWithRelationInput
 }
 
 export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
@@ -359,9 +359,9 @@ export type MediaAssetWhereUniqueInput = Prisma.AtLeast<{
   journeyId?: Prisma.StringNullableFilter<"MediaAsset"> | string | null
   createdAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"MediaAsset"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blocks?: Prisma.ContentBlockListRelationFilter
   encounter?: Prisma.XOR<Prisma.EncounterNullableScalarRelationFilter, Prisma.EncounterWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }, "id">
 
 export type MediaAssetOrderByWithAggregationInput = {
@@ -426,9 +426,9 @@ export type MediaAssetCreateInput = {
   photographer?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutMediaInput
   blocks?: Prisma.ContentBlockCreateNestedManyWithoutMediaInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutMediaInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutMediaInput
 }
 
 export type MediaAssetUncheckedCreateInput = {
@@ -468,9 +468,9 @@ export type MediaAssetUpdateInput = {
   photographer?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutMediaNestedInput
   blocks?: Prisma.ContentBlockUpdateManyWithoutMediaNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutMediaNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutMediaNestedInput
 }
 
 export type MediaAssetUncheckedUpdateInput = {
@@ -820,8 +820,8 @@ export type MediaAssetCreateWithoutBlocksInput = {
   photographer?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutMediaInput
   encounter?: Prisma.EncounterCreateNestedOneWithoutMediaInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutMediaInput
 }
 
 export type MediaAssetUncheckedCreateWithoutBlocksInput = {
@@ -876,8 +876,8 @@ export type MediaAssetUpdateWithoutBlocksInput = {
   photographer?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutMediaNestedInput
   encounter?: Prisma.EncounterUpdateOneWithoutMediaNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutMediaNestedInput
 }
 
 export type MediaAssetUncheckedUpdateWithoutBlocksInput = {
@@ -916,8 +916,8 @@ export type MediaAssetCreateWithoutEncounterInput = {
   photographer?: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutMediaInput
   blocks?: Prisma.ContentBlockCreateNestedManyWithoutMediaInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutMediaInput
 }
 
 export type MediaAssetUncheckedCreateWithoutEncounterInput = {
@@ -972,8 +972,8 @@ export type MediaAssetUpdateWithoutEncounterInput = {
   photographer?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutMediaNestedInput
   blocks?: Prisma.ContentBlockUpdateManyWithoutMediaNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutMediaNestedInput
 }
 
 export type MediaAssetUncheckedUpdateWithoutEncounterInput = {
@@ -1120,9 +1120,9 @@ export type MediaAssetSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   journeyId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.MediaAsset$journeyArgs<ExtArgs>
   blocks?: boolean | Prisma.MediaAsset$blocksArgs<ExtArgs>
   encounter?: boolean | Prisma.MediaAsset$encounterArgs<ExtArgs>
+  journey?: boolean | Prisma.MediaAsset$journeyArgs<ExtArgs>
   _count?: boolean | Prisma.MediaAssetCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["mediaAsset"]>
 
@@ -1187,9 +1187,9 @@ export type MediaAssetSelectScalar = {
 
 export type MediaAssetOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "url" | "thumbnailUrl" | "fileName" | "mimeType" | "width" | "height" | "fileSize" | "caption" | "altText" | "location" | "capturedDate" | "photographer" | "journeyId" | "createdAt" | "updatedAt", ExtArgs["result"]["mediaAsset"]>
 export type MediaAssetInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.MediaAsset$journeyArgs<ExtArgs>
   blocks?: boolean | Prisma.MediaAsset$blocksArgs<ExtArgs>
   encounter?: boolean | Prisma.MediaAsset$encounterArgs<ExtArgs>
+  journey?: boolean | Prisma.MediaAsset$journeyArgs<ExtArgs>
   _count?: boolean | Prisma.MediaAssetCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type MediaAssetIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1202,9 +1202,9 @@ export type MediaAssetIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 export type $MediaAssetPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "MediaAsset"
   objects: {
-    journey: Prisma.$JourneyPayload<ExtArgs> | null
     blocks: Prisma.$ContentBlockPayload<ExtArgs>[]
     encounter: Prisma.$EncounterPayload<ExtArgs> | null
+    journey: Prisma.$JourneyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1617,9 +1617,9 @@ readonly fields: MediaAssetFieldRefs;
  */
 export interface Prisma__MediaAssetClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journey<T extends Prisma.MediaAsset$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   blocks<T extends Prisma.MediaAsset$blocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$blocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   encounter<T extends Prisma.MediaAsset$encounterArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$encounterArgs<ExtArgs>>): Prisma.Prisma__EncounterClient<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  journey<T extends Prisma.MediaAsset$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MediaAsset$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2066,25 +2066,6 @@ export type MediaAssetDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.In
 }
 
 /**
- * MediaAsset.journey
- */
-export type MediaAsset$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Journey
-   */
-  select?: Prisma.JourneySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Journey
-   */
-  omit?: Prisma.JourneyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.JourneyInclude<ExtArgs> | null
-  where?: Prisma.JourneyWhereInput
-}
-
-/**
  * MediaAsset.blocks
  */
 export type MediaAsset$blocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2125,6 +2106,25 @@ export type MediaAsset$encounterArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.EncounterInclude<ExtArgs> | null
   where?: Prisma.EncounterWhereInput
+}
+
+/**
+ * MediaAsset.journey
+ */
+export type MediaAsset$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
 }
 
 /**

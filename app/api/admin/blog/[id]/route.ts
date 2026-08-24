@@ -152,7 +152,6 @@ export async function GET(
   }
 }
 
-
 // ============================================================
 // PUT — UPDATE ONE BLOG POST
 // ============================================================
@@ -212,6 +211,7 @@ export async function PUT(
       status,
       isFeatured,
       content,
+      coverImage,
     } = body;
 
     // --------------------------------------------------------
@@ -319,6 +319,24 @@ export async function PUT(
         : ContentStatus.DRAFT;
 
     // --------------------------------------------------------
+    // COVER IMAGE
+    // --------------------------------------------------------
+
+    let normalizedCoverImage:
+      | string
+      | null;
+
+    if (typeof coverImage === "string") {
+      normalizedCoverImage =
+        coverImage.trim() || null;
+    } else if (coverImage === null) {
+      normalizedCoverImage = null;
+    } else {
+      normalizedCoverImage =
+        existingBlog.coverImage;
+    }
+
+    // --------------------------------------------------------
     // UPDATE BLOG + CONTENT
     // --------------------------------------------------------
 
@@ -339,45 +357,46 @@ export async function PUT(
           // UPDATE BLOG
           // ----------------------------------------------
 
-          const updatedBlog =
-            await tx.blog.update({
-              where: {
-                id,
-              },
+          await tx.blog.update({
+            where: {
+              id,
+            },
 
-              data: {
-                title: title.trim(),
+            data: {
+              title: title.trim(),
 
-                slug: slug.trim(),
+              slug: slug.trim(),
 
-                subtitle:
-                  typeof subtitle === "string" &&
-                  subtitle.trim()
-                    ? subtitle.trim()
-                    : null,
+              subtitle:
+                typeof subtitle === "string" &&
+                subtitle.trim()
+                  ? subtitle.trim()
+                  : null,
 
-                shortIntro:
-                  typeof shortIntro === "string" &&
-                  shortIntro.trim()
-                    ? shortIntro.trim()
-                    : null,
+              shortIntro:
+                typeof shortIntro === "string" &&
+                shortIntro.trim()
+                  ? shortIntro.trim()
+                  : null,
 
-                status: prismaStatus,
+              status: prismaStatus,
 
-                isFeatured:
-                  typeof isFeatured ===
-                  "boolean"
-                    ? isFeatured
-                    : false,
+              isFeatured:
+                typeof isFeatured === "boolean"
+                  ? isFeatured
+                  : false,
 
-                publishedAt:
-                  prismaStatus ===
-                  ContentStatus.PUBLISHED
-                    ? existingBlog.publishedAt ||
-                      new Date()
-                    : null,
-              },
-            });
+              coverImage:
+                normalizedCoverImage,
+
+              publishedAt:
+                prismaStatus ===
+                ContentStatus.PUBLISHED
+                  ? existingBlog.publishedAt ||
+                    new Date()
+                  : null,
+            },
+          });
 
           // ----------------------------------------------
           // CREATE NEW CONTENT BLOCK
@@ -485,7 +504,6 @@ export async function PUT(
     );
   }
 }
-
 
 // ============================================================
 // DELETE — DELETE ONE BLOG POST

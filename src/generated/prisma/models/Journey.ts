@@ -358,13 +358,13 @@ export type JourneyWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   publishedAt?: Prisma.DateTimeNullableFilter<"Journey"> | Date | string | null
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  contentBlocks?: Prisma.ContentBlockListRelationFilter
-  media?: Prisma.MediaAssetListRelationFilter
-  encounters?: Prisma.EncounterListRelationFilter
-  versions?: Prisma.ContentVersionListRelationFilter
-  comments?: Prisma.CommentListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
+  comments?: Prisma.CommentListRelationFilter
+  contentBlocks?: Prisma.ContentBlockListRelationFilter
+  versions?: Prisma.ContentVersionListRelationFilter
+  encounters?: Prisma.EncounterListRelationFilter
+  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  media?: Prisma.MediaAssetListRelationFilter
   quotes?: Prisma.QuoteListRelationFilter
 }
 
@@ -396,13 +396,13 @@ export type JourneyOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   publishedAt?: Prisma.SortOrderInput | Prisma.SortOrder
-  author?: Prisma.UserOrderByWithRelationInput
-  contentBlocks?: Prisma.ContentBlockOrderByRelationAggregateInput
-  media?: Prisma.MediaAssetOrderByRelationAggregateInput
-  encounters?: Prisma.EncounterOrderByRelationAggregateInput
-  versions?: Prisma.ContentVersionOrderByRelationAggregateInput
-  comments?: Prisma.CommentOrderByRelationAggregateInput
   blogs?: Prisma.BlogOrderByRelationAggregateInput
+  comments?: Prisma.CommentOrderByRelationAggregateInput
+  contentBlocks?: Prisma.ContentBlockOrderByRelationAggregateInput
+  versions?: Prisma.ContentVersionOrderByRelationAggregateInput
+  encounters?: Prisma.EncounterOrderByRelationAggregateInput
+  author?: Prisma.UserOrderByWithRelationInput
+  media?: Prisma.MediaAssetOrderByRelationAggregateInput
   quotes?: Prisma.QuoteOrderByRelationAggregateInput
 }
 
@@ -437,13 +437,13 @@ export type JourneyWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Journey"> | Date | string
   publishedAt?: Prisma.DateTimeNullableFilter<"Journey"> | Date | string | null
-  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
-  contentBlocks?: Prisma.ContentBlockListRelationFilter
-  media?: Prisma.MediaAssetListRelationFilter
-  encounters?: Prisma.EncounterListRelationFilter
-  versions?: Prisma.ContentVersionListRelationFilter
-  comments?: Prisma.CommentListRelationFilter
   blogs?: Prisma.BlogListRelationFilter
+  comments?: Prisma.CommentListRelationFilter
+  contentBlocks?: Prisma.ContentBlockListRelationFilter
+  versions?: Prisma.ContentVersionListRelationFilter
+  encounters?: Prisma.EncounterListRelationFilter
+  author?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  media?: Prisma.MediaAssetListRelationFilter
   quotes?: Prisma.QuoteListRelationFilter
 }, "id" | "slug">
 
@@ -540,13 +540,13 @@ export type JourneyCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -578,12 +578,12 @@ export type JourneyUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -614,13 +614,13 @@ export type JourneyUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -652,12 +652,12 @@ export type JourneyUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1055,12 +1055,12 @@ export type JourneyCreateWithoutAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -1091,12 +1091,12 @@ export type JourneyUncheckedCreateWithoutAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -1186,12 +1186,12 @@ export type JourneyCreateWithoutBlogsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
   comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -1223,11 +1223,11 @@ export type JourneyUncheckedCreateWithoutBlogsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
   comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -1274,12 +1274,12 @@ export type JourneyUpdateWithoutBlogsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
   comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1311,11 +1311,11 @@ export type JourneyUncheckedUpdateWithoutBlogsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
   comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1346,12 +1346,12 @@ export type JourneyCreateWithoutContentBlocksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
+  blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
   author: Prisma.UserCreateNestedOneWithoutJourneysInput
   media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
-  blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -1383,11 +1383,11 @@ export type JourneyUncheckedCreateWithoutContentBlocksInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -1434,12 +1434,12 @@ export type JourneyUpdateWithoutContentBlocksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
   author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
   media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
-  blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1471,11 +1471,11 @@ export type JourneyUncheckedUpdateWithoutContentBlocksInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1506,12 +1506,12 @@ export type JourneyCreateWithoutMediaInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -1543,11 +1543,11 @@ export type JourneyUncheckedCreateWithoutMediaInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -1594,12 +1594,12 @@ export type JourneyUpdateWithoutMediaInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1631,11 +1631,11 @@ export type JourneyUncheckedUpdateWithoutMediaInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1666,12 +1666,12 @@ export type JourneyCreateWithoutEncountersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -1703,11 +1703,11 @@ export type JourneyUncheckedCreateWithoutEncountersInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -1754,12 +1754,12 @@ export type JourneyUpdateWithoutEncountersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1791,11 +1791,11 @@ export type JourneyUncheckedUpdateWithoutEncountersInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -1826,13 +1826,13 @@ export type JourneyCreateWithoutQuotesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyUncheckedCreateWithoutQuotesInput = {
@@ -1863,12 +1863,12 @@ export type JourneyUncheckedCreateWithoutQuotesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
 }
 
 export type JourneyCreateOrConnectWithoutQuotesInput = {
@@ -1914,13 +1914,13 @@ export type JourneyUpdateWithoutQuotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyUncheckedUpdateWithoutQuotesInput = {
@@ -1951,12 +1951,12 @@ export type JourneyUncheckedUpdateWithoutQuotesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
 export type JourneyCreateWithoutCommentsInput = {
@@ -1986,12 +1986,12 @@ export type JourneyCreateWithoutCommentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -2023,11 +2023,11 @@ export type JourneyUncheckedCreateWithoutCommentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  versions?: Prisma.ContentVersionUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -2074,12 +2074,12 @@ export type JourneyUpdateWithoutCommentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -2111,11 +2111,11 @@ export type JourneyUncheckedUpdateWithoutCommentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -2146,12 +2146,12 @@ export type JourneyCreateWithoutVersionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  author: Prisma.UserCreateNestedOneWithoutJourneysInput
-  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterCreateNestedManyWithoutJourneyInput
+  author: Prisma.UserCreateNestedOneWithoutJourneysInput
+  media?: Prisma.MediaAssetCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteCreateNestedManyWithoutJourneyInput
 }
 
@@ -2183,11 +2183,11 @@ export type JourneyUncheckedCreateWithoutVersionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   publishedAt?: Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
-  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
-  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
-  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
   blogs?: Prisma.BlogUncheckedCreateNestedManyWithoutRelatedJourneyInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutJourneyInput
+  contentBlocks?: Prisma.ContentBlockUncheckedCreateNestedManyWithoutJourneyInput
+  encounters?: Prisma.EncounterUncheckedCreateNestedManyWithoutJourneyInput
+  media?: Prisma.MediaAssetUncheckedCreateNestedManyWithoutJourneyInput
   quotes?: Prisma.QuoteUncheckedCreateNestedManyWithoutJourneyInput
 }
 
@@ -2234,12 +2234,12 @@ export type JourneyUpdateWithoutVersionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  author?: Prisma.UserUpdateOneRequiredWithoutJourneysNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -2271,11 +2271,11 @@ export type JourneyUncheckedUpdateWithoutVersionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -2335,12 +2335,12 @@ export type JourneyUpdateWithoutAuthorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUpdateManyWithoutJourneyNestedInput
 }
 
@@ -2371,12 +2371,12 @@ export type JourneyUncheckedUpdateWithoutAuthorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
-  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
-  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
-  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
-  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
   blogs?: Prisma.BlogUncheckedUpdateManyWithoutRelatedJourneyNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutJourneyNestedInput
+  contentBlocks?: Prisma.ContentBlockUncheckedUpdateManyWithoutJourneyNestedInput
+  versions?: Prisma.ContentVersionUncheckedUpdateManyWithoutJourneyNestedInput
+  encounters?: Prisma.EncounterUncheckedUpdateManyWithoutJourneyNestedInput
+  media?: Prisma.MediaAssetUncheckedUpdateManyWithoutJourneyNestedInput
   quotes?: Prisma.QuoteUncheckedUpdateManyWithoutJourneyNestedInput
 }
 
@@ -2415,22 +2415,22 @@ export type JourneyUncheckedUpdateManyWithoutAuthorInput = {
  */
 
 export type JourneyCountOutputType = {
-  contentBlocks: number
-  media: number
-  encounters: number
-  versions: number
-  comments: number
   blogs: number
+  comments: number
+  contentBlocks: number
+  versions: number
+  encounters: number
+  media: number
   quotes: number
 }
 
 export type JourneyCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  contentBlocks?: boolean | JourneyCountOutputTypeCountContentBlocksArgs
-  media?: boolean | JourneyCountOutputTypeCountMediaArgs
-  encounters?: boolean | JourneyCountOutputTypeCountEncountersArgs
-  versions?: boolean | JourneyCountOutputTypeCountVersionsArgs
-  comments?: boolean | JourneyCountOutputTypeCountCommentsArgs
   blogs?: boolean | JourneyCountOutputTypeCountBlogsArgs
+  comments?: boolean | JourneyCountOutputTypeCountCommentsArgs
+  contentBlocks?: boolean | JourneyCountOutputTypeCountContentBlocksArgs
+  versions?: boolean | JourneyCountOutputTypeCountVersionsArgs
+  encounters?: boolean | JourneyCountOutputTypeCountEncountersArgs
+  media?: boolean | JourneyCountOutputTypeCountMediaArgs
   quotes?: boolean | JourneyCountOutputTypeCountQuotesArgs
 }
 
@@ -2447,29 +2447,8 @@ export type JourneyCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
 /**
  * JourneyCountOutputType without action
  */
-export type JourneyCountOutputTypeCountContentBlocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ContentBlockWhereInput
-}
-
-/**
- * JourneyCountOutputType without action
- */
-export type JourneyCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.MediaAssetWhereInput
-}
-
-/**
- * JourneyCountOutputType without action
- */
-export type JourneyCountOutputTypeCountEncountersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.EncounterWhereInput
-}
-
-/**
- * JourneyCountOutputType without action
- */
-export type JourneyCountOutputTypeCountVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.ContentVersionWhereInput
+export type JourneyCountOutputTypeCountBlogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlogWhereInput
 }
 
 /**
@@ -2482,8 +2461,29 @@ export type JourneyCountOutputTypeCountCommentsArgs<ExtArgs extends runtime.Type
 /**
  * JourneyCountOutputType without action
  */
-export type JourneyCountOutputTypeCountBlogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.BlogWhereInput
+export type JourneyCountOutputTypeCountContentBlocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentBlockWhereInput
+}
+
+/**
+ * JourneyCountOutputType without action
+ */
+export type JourneyCountOutputTypeCountVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContentVersionWhereInput
+}
+
+/**
+ * JourneyCountOutputType without action
+ */
+export type JourneyCountOutputTypeCountEncountersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.EncounterWhereInput
+}
+
+/**
+ * JourneyCountOutputType without action
+ */
+export type JourneyCountOutputTypeCountMediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MediaAssetWhereInput
 }
 
 /**
@@ -2522,13 +2522,13 @@ export type JourneySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   publishedAt?: boolean
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  contentBlocks?: boolean | Prisma.Journey$contentBlocksArgs<ExtArgs>
-  media?: boolean | Prisma.Journey$mediaArgs<ExtArgs>
-  encounters?: boolean | Prisma.Journey$encountersArgs<ExtArgs>
-  versions?: boolean | Prisma.Journey$versionsArgs<ExtArgs>
-  comments?: boolean | Prisma.Journey$commentsArgs<ExtArgs>
   blogs?: boolean | Prisma.Journey$blogsArgs<ExtArgs>
+  comments?: boolean | Prisma.Journey$commentsArgs<ExtArgs>
+  contentBlocks?: boolean | Prisma.Journey$contentBlocksArgs<ExtArgs>
+  versions?: boolean | Prisma.Journey$versionsArgs<ExtArgs>
+  encounters?: boolean | Prisma.Journey$encountersArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  media?: boolean | Prisma.Journey$mediaArgs<ExtArgs>
   quotes?: boolean | Prisma.Journey$quotesArgs<ExtArgs>
   _count?: boolean | Prisma.JourneyCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["journey"]>
@@ -2627,13 +2627,13 @@ export type JourneySelectScalar = {
 
 export type JourneyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "location" | "country" | "coverImage" | "shortIntro" | "journeyDate" | "duration" | "distance" | "difficulty" | "companions" | "placesVisited" | "status" | "isFeatured" | "seoTitle" | "seoDescription" | "canonicalUrl" | "ogTitle" | "ogDescription" | "ogImage" | "noIndex" | "noFollow" | "authorId" | "createdAt" | "updatedAt" | "publishedAt", ExtArgs["result"]["journey"]>
 export type JourneyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
-  contentBlocks?: boolean | Prisma.Journey$contentBlocksArgs<ExtArgs>
-  media?: boolean | Prisma.Journey$mediaArgs<ExtArgs>
-  encounters?: boolean | Prisma.Journey$encountersArgs<ExtArgs>
-  versions?: boolean | Prisma.Journey$versionsArgs<ExtArgs>
-  comments?: boolean | Prisma.Journey$commentsArgs<ExtArgs>
   blogs?: boolean | Prisma.Journey$blogsArgs<ExtArgs>
+  comments?: boolean | Prisma.Journey$commentsArgs<ExtArgs>
+  contentBlocks?: boolean | Prisma.Journey$contentBlocksArgs<ExtArgs>
+  versions?: boolean | Prisma.Journey$versionsArgs<ExtArgs>
+  encounters?: boolean | Prisma.Journey$encountersArgs<ExtArgs>
+  author?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  media?: boolean | Prisma.Journey$mediaArgs<ExtArgs>
   quotes?: boolean | Prisma.Journey$quotesArgs<ExtArgs>
   _count?: boolean | Prisma.JourneyCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -2647,13 +2647,13 @@ export type JourneyIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $JourneyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Journey"
   objects: {
-    author: Prisma.$UserPayload<ExtArgs>
-    contentBlocks: Prisma.$ContentBlockPayload<ExtArgs>[]
-    media: Prisma.$MediaAssetPayload<ExtArgs>[]
-    encounters: Prisma.$EncounterPayload<ExtArgs>[]
-    versions: Prisma.$ContentVersionPayload<ExtArgs>[]
-    comments: Prisma.$CommentPayload<ExtArgs>[]
     blogs: Prisma.$BlogPayload<ExtArgs>[]
+    comments: Prisma.$CommentPayload<ExtArgs>[]
+    contentBlocks: Prisma.$ContentBlockPayload<ExtArgs>[]
+    versions: Prisma.$ContentVersionPayload<ExtArgs>[]
+    encounters: Prisma.$EncounterPayload<ExtArgs>[]
+    author: Prisma.$UserPayload<ExtArgs>
+    media: Prisma.$MediaAssetPayload<ExtArgs>[]
     quotes: Prisma.$QuotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -3078,13 +3078,13 @@ readonly fields: JourneyFieldRefs;
  */
 export interface Prisma__JourneyClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  contentBlocks<T extends Prisma.Journey$contentBlocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$contentBlocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  media<T extends Prisma.Journey$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  encounters<T extends Prisma.Journey$encountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$encountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  versions<T extends Prisma.Journey$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  comments<T extends Prisma.Journey$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   blogs<T extends Prisma.Journey$blogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$blogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  comments<T extends Prisma.Journey$commentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contentBlocks<T extends Prisma.Journey$contentBlocksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$contentBlocksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentBlockPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  versions<T extends Prisma.Journey$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContentVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  encounters<T extends Prisma.Journey$encountersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$encountersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EncounterPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  author<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  media<T extends Prisma.Journey$mediaArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$mediaArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MediaAssetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   quotes<T extends Prisma.Journey$quotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Journey$quotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3543,99 +3543,27 @@ export type JourneyDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Journey.contentBlocks
+ * Journey.blogs
  */
-export type Journey$contentBlocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Journey$blogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ContentBlock
+   * Select specific fields to fetch from the Blog
    */
-  select?: Prisma.ContentBlockSelect<ExtArgs> | null
+  select?: Prisma.BlogSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ContentBlock
+   * Omit specific fields from the Blog
    */
-  omit?: Prisma.ContentBlockOmit<ExtArgs> | null
+  omit?: Prisma.BlogOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ContentBlockInclude<ExtArgs> | null
-  where?: Prisma.ContentBlockWhereInput
-  orderBy?: Prisma.ContentBlockOrderByWithRelationInput | Prisma.ContentBlockOrderByWithRelationInput[]
-  cursor?: Prisma.ContentBlockWhereUniqueInput
+  include?: Prisma.BlogInclude<ExtArgs> | null
+  where?: Prisma.BlogWhereInput
+  orderBy?: Prisma.BlogOrderByWithRelationInput | Prisma.BlogOrderByWithRelationInput[]
+  cursor?: Prisma.BlogWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.ContentBlockScalarFieldEnum | Prisma.ContentBlockScalarFieldEnum[]
-}
-
-/**
- * Journey.media
- */
-export type Journey$mediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MediaAsset
-   */
-  select?: Prisma.MediaAssetSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MediaAsset
-   */
-  omit?: Prisma.MediaAssetOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MediaAssetInclude<ExtArgs> | null
-  where?: Prisma.MediaAssetWhereInput
-  orderBy?: Prisma.MediaAssetOrderByWithRelationInput | Prisma.MediaAssetOrderByWithRelationInput[]
-  cursor?: Prisma.MediaAssetWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.MediaAssetScalarFieldEnum | Prisma.MediaAssetScalarFieldEnum[]
-}
-
-/**
- * Journey.encounters
- */
-export type Journey$encountersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Encounter
-   */
-  select?: Prisma.EncounterSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Encounter
-   */
-  omit?: Prisma.EncounterOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.EncounterInclude<ExtArgs> | null
-  where?: Prisma.EncounterWhereInput
-  orderBy?: Prisma.EncounterOrderByWithRelationInput | Prisma.EncounterOrderByWithRelationInput[]
-  cursor?: Prisma.EncounterWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.EncounterScalarFieldEnum | Prisma.EncounterScalarFieldEnum[]
-}
-
-/**
- * Journey.versions
- */
-export type Journey$versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the ContentVersion
-   */
-  select?: Prisma.ContentVersionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the ContentVersion
-   */
-  omit?: Prisma.ContentVersionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.ContentVersionInclude<ExtArgs> | null
-  where?: Prisma.ContentVersionWhereInput
-  orderBy?: Prisma.ContentVersionOrderByWithRelationInput | Prisma.ContentVersionOrderByWithRelationInput[]
-  cursor?: Prisma.ContentVersionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.ContentVersionScalarFieldEnum | Prisma.ContentVersionScalarFieldEnum[]
+  distinct?: Prisma.BlogScalarFieldEnum | Prisma.BlogScalarFieldEnum[]
 }
 
 /**
@@ -3663,27 +3591,99 @@ export type Journey$commentsArgs<ExtArgs extends runtime.Types.Extensions.Intern
 }
 
 /**
- * Journey.blogs
+ * Journey.contentBlocks
  */
-export type Journey$blogsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Journey$contentBlocksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Blog
+   * Select specific fields to fetch from the ContentBlock
    */
-  select?: Prisma.BlogSelect<ExtArgs> | null
+  select?: Prisma.ContentBlockSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Blog
+   * Omit specific fields from the ContentBlock
    */
-  omit?: Prisma.BlogOmit<ExtArgs> | null
+  omit?: Prisma.ContentBlockOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.BlogInclude<ExtArgs> | null
-  where?: Prisma.BlogWhereInput
-  orderBy?: Prisma.BlogOrderByWithRelationInput | Prisma.BlogOrderByWithRelationInput[]
-  cursor?: Prisma.BlogWhereUniqueInput
+  include?: Prisma.ContentBlockInclude<ExtArgs> | null
+  where?: Prisma.ContentBlockWhereInput
+  orderBy?: Prisma.ContentBlockOrderByWithRelationInput | Prisma.ContentBlockOrderByWithRelationInput[]
+  cursor?: Prisma.ContentBlockWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.BlogScalarFieldEnum | Prisma.BlogScalarFieldEnum[]
+  distinct?: Prisma.ContentBlockScalarFieldEnum | Prisma.ContentBlockScalarFieldEnum[]
+}
+
+/**
+ * Journey.versions
+ */
+export type Journey$versionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContentVersion
+   */
+  select?: Prisma.ContentVersionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContentVersion
+   */
+  omit?: Prisma.ContentVersionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContentVersionInclude<ExtArgs> | null
+  where?: Prisma.ContentVersionWhereInput
+  orderBy?: Prisma.ContentVersionOrderByWithRelationInput | Prisma.ContentVersionOrderByWithRelationInput[]
+  cursor?: Prisma.ContentVersionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContentVersionScalarFieldEnum | Prisma.ContentVersionScalarFieldEnum[]
+}
+
+/**
+ * Journey.encounters
+ */
+export type Journey$encountersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Encounter
+   */
+  select?: Prisma.EncounterSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Encounter
+   */
+  omit?: Prisma.EncounterOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.EncounterInclude<ExtArgs> | null
+  where?: Prisma.EncounterWhereInput
+  orderBy?: Prisma.EncounterOrderByWithRelationInput | Prisma.EncounterOrderByWithRelationInput[]
+  cursor?: Prisma.EncounterWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.EncounterScalarFieldEnum | Prisma.EncounterScalarFieldEnum[]
+}
+
+/**
+ * Journey.media
+ */
+export type Journey$mediaArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MediaAsset
+   */
+  select?: Prisma.MediaAssetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MediaAsset
+   */
+  omit?: Prisma.MediaAssetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MediaAssetInclude<ExtArgs> | null
+  where?: Prisma.MediaAssetWhereInput
+  orderBy?: Prisma.MediaAssetOrderByWithRelationInput | Prisma.MediaAssetOrderByWithRelationInput[]
+  cursor?: Prisma.MediaAssetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MediaAssetScalarFieldEnum | Prisma.MediaAssetScalarFieldEnum[]
 }
 
 /**

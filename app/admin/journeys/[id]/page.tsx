@@ -600,7 +600,7 @@ export default async function EditJourneyPage({
 
 
               {/* =================================================
-                  COVER IMAGE — NEW
+                  COVER IMAGE
               ================================================== */}
 
               <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
@@ -705,7 +705,7 @@ export default async function EditJourneyPage({
                         ""
                       }
                       placeholder="1 day"
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
 
                   </div>
@@ -731,7 +731,7 @@ export default async function EditJourneyPage({
                         ""
                       }
                       placeholder="14 km"
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
 
                   </div>
@@ -757,7 +757,7 @@ export default async function EditJourneyPage({
                         ""
                       }
                       placeholder="Moderate"
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
 
                   </div>
@@ -956,7 +956,7 @@ export default async function EditJourneyPage({
                         ""
                       }
                       placeholder="Harishchandragad Trek - Nomads of Aditya"
-                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20 focus:border-white/30"
+                      className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none placeholder:text-white/20"
                     />
 
                   </div>

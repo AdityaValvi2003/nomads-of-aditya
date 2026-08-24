@@ -230,8 +230,8 @@ export type CommentWhereInput = {
   moderatedAt?: Prisma.DateTimeNullableFilter<"Comment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Comment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Comment"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   moderatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
@@ -247,8 +247,8 @@ export type CommentOrderByWithRelationInput = {
   moderatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  journey?: Prisma.JourneyOrderByWithRelationInput
   blog?: Prisma.BlogOrderByWithRelationInput
+  journey?: Prisma.JourneyOrderByWithRelationInput
   moderatedBy?: Prisma.UserOrderByWithRelationInput
 }
 
@@ -267,8 +267,8 @@ export type CommentWhereUniqueInput = Prisma.AtLeast<{
   moderatedAt?: Prisma.DateTimeNullableFilter<"Comment"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Comment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Comment"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   moderatedBy?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
@@ -315,8 +315,8 @@ export type CommentCreateInput = {
   moderatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutCommentsInput
   blog?: Prisma.BlogCreateNestedOneWithoutCommentsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutCommentsInput
   moderatedBy?: Prisma.UserCreateNestedOneWithoutModeratedCommentsInput
 }
 
@@ -343,8 +343,8 @@ export type CommentUpdateInput = {
   moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutCommentsNestedInput
   blog?: Prisma.BlogUpdateOneWithoutCommentsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutCommentsNestedInput
   moderatedBy?: Prisma.UserUpdateOneWithoutModeratedCommentsNestedInput
 }
 
@@ -592,8 +592,8 @@ export type CommentCreateWithoutModeratedByInput = {
   moderatedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutCommentsInput
   blog?: Prisma.BlogCreateNestedOneWithoutCommentsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutCommentsInput
 }
 
 export type CommentUncheckedCreateWithoutModeratedByInput = {
@@ -778,8 +778,8 @@ export type CommentUpdateWithoutModeratedByInput = {
   moderatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutCommentsNestedInput
   blog?: Prisma.BlogUpdateOneWithoutCommentsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutCommentsNestedInput
 }
 
 export type CommentUncheckedUpdateWithoutModeratedByInput = {
@@ -926,8 +926,8 @@ export type CommentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   moderatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Comment$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   moderatedBy?: boolean | Prisma.Comment$moderatedByArgs<ExtArgs>
 }, ExtArgs["result"]["comment"]>
 
@@ -943,8 +943,8 @@ export type CommentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   moderatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Comment$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   moderatedBy?: boolean | Prisma.Comment$moderatedByArgs<ExtArgs>
 }, ExtArgs["result"]["comment"]>
 
@@ -960,8 +960,8 @@ export type CommentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   moderatedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Comment$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   moderatedBy?: boolean | Prisma.Comment$moderatedByArgs<ExtArgs>
 }, ExtArgs["result"]["comment"]>
 
@@ -981,26 +981,26 @@ export type CommentSelectScalar = {
 
 export type CommentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "content" | "status" | "journeyId" | "blogId" | "moderatedById" | "moderatedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["comment"]>
 export type CommentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Comment$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   moderatedBy?: boolean | Prisma.Comment$moderatedByArgs<ExtArgs>
 }
 export type CommentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Comment$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   moderatedBy?: boolean | Prisma.Comment$moderatedByArgs<ExtArgs>
 }
 export type CommentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Comment$blogArgs<ExtArgs>
+  journey?: boolean | Prisma.Comment$journeyArgs<ExtArgs>
   moderatedBy?: boolean | Prisma.Comment$moderatedByArgs<ExtArgs>
 }
 
 export type $CommentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Comment"
   objects: {
-    journey: Prisma.$JourneyPayload<ExtArgs> | null
     blog: Prisma.$BlogPayload<ExtArgs> | null
+    journey: Prisma.$JourneyPayload<ExtArgs> | null
     moderatedBy: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1409,8 +1409,8 @@ readonly fields: CommentFieldRefs;
  */
 export interface Prisma__CommentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journey<T extends Prisma.Comment$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comment$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   blog<T extends Prisma.Comment$blogArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comment$blogArgs<ExtArgs>>): Prisma.Prisma__BlogClient<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  journey<T extends Prisma.Comment$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comment$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   moderatedBy<T extends Prisma.Comment$moderatedByArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Comment$moderatedByArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1853,25 +1853,6 @@ export type CommentDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Comment.journey
- */
-export type Comment$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Journey
-   */
-  select?: Prisma.JourneySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Journey
-   */
-  omit?: Prisma.JourneyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.JourneyInclude<ExtArgs> | null
-  where?: Prisma.JourneyWhereInput
-}
-
-/**
  * Comment.blog
  */
 export type Comment$blogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1888,6 +1869,25 @@ export type Comment$blogArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.BlogInclude<ExtArgs> | null
   where?: Prisma.BlogWhereInput
+}
+
+/**
+ * Comment.journey
+ */
+export type Comment$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
 }
 
 /**

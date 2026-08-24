@@ -8,6 +8,293 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id                String           @id @default(cuid())
+  name              String
+  email             String           @unique
+  passwordHash      String
+  role              UserRole         @default(ADMIN)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  blogs             Blog[]
+  moderatedComments Comment[]        @relation("CommentModerator")
+  versions          ContentVersion[]
+  journeys          Journey[]
+  quotes            Quote[]
+}
+
+model Journey {
+  id             String           @id @default(cuid())
+  title          String
+  slug           String           @unique
+  location       String
+  country        String
+  coverImage     String?
+  shortIntro     String?
+  journeyDate    DateTime?
+  duration       String?
+  distance       String?
+  difficulty     String?
+  companions     String?
+  placesVisited  String?
+  status         ContentStatus    @default(DRAFT)
+  isFeatured     Boolean          @default(false)
+  seoTitle       String?
+  seoDescription String?
+  canonicalUrl   String?
+  ogTitle        String?
+  ogDescription  String?
+  ogImage        String?
+  noIndex        Boolean          @default(false)
+  noFollow       Boolean          @default(false)
+  authorId       String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  publishedAt    DateTime?
+  blogs          Blog[]           @relation("JourneyBlog")
+  comments       Comment[]
+  contentBlocks  ContentBlock[]
+  versions       ContentVersion[]
+  encounters     Encounter[]
+  author         User             @relation(fields: [authorId], references: [id])
+  media          MediaAsset[]
+  quotes         Quote[]
+
+  @@index([status])
+  @@index([authorId])
+  @@index([location])
+  @@index([country])
+}
+
+model Blog {
+  id               String           @id @default(cuid())
+  title            String
+  slug             String           @unique
+  subtitle         String?
+  coverImage       String?
+  shortIntro       String?
+  status           ContentStatus    @default(DRAFT)
+  isFeatured       Boolean          @default(false)
+  relatedJourneyId String?
+  location         String?
+  seoTitle         String?
+  seoDescription   String?
+  canonicalUrl     String?
+  ogTitle          String?
+  ogDescription    String?
+  ogImage          String?
+  noIndex          Boolean          @default(false)
+  noFollow         Boolean          @default(false)
+  authorId         String
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  publishedAt      DateTime?
+  author           User             @relation(fields: [authorId], references: [id])
+  relatedJourney   Journey?         @relation("JourneyBlog", fields: [relatedJourneyId], references: [id])
+  comments         Comment[]
+  contentBlocks    ContentBlock[]
+  versions         ContentVersion[]
+  quotes           Quote[]
+
+  @@index([status])
+  @@index([authorId])
+  @@index([relatedJourneyId])
+  @@index([location])
+}
+
+model ContentBlock {
+  id           String           @id @default(cuid())
+  type         ContentBlockType
+  position     Int
+  data         Json
+  imageDisplay ImageDisplay?
+  journeyId    String?
+  blogId       String?
+  mediaId      String?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  blog         Blog?            @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  journey      Journey?         @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  media        MediaAsset?      @relation(fields: [mediaId], references: [id])
+
+  @@index([journeyId, position])
+  @@index([blogId, position])
+}
+
+model MediaAsset {
+  id           String         @id @default(cuid())
+  url          String
+  thumbnailUrl String?
+  fileName     String
+  mimeType     String
+  width        Int?
+  height       Int?
+  fileSize     Int?
+  caption      String?
+  altText      String?
+  location     String?
+  capturedDate DateTime?
+  photographer String         @default("Aditya Valvi")
+  journeyId    String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  blocks       ContentBlock[]
+  encounter    Encounter?
+  journey      Journey?       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@index([journeyId])
+}
+
+model Encounter {
+  id                 String      @id @default(cuid())
+  title              String
+  shortIntro         String?
+  story              Json
+  featuredOnHomepage Boolean     @default(false)
+  journeyId          String
+  mediaId            String?     @unique
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  journey            Journey     @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  media              MediaAsset? @relation(fields: [mediaId], references: [id])
+
+  @@index([journeyId])
+  @@index([featuredOnHomepage])
+}
+
+model DreamDestination {
+  id         String   @id @default(cuid())
+  name       String
+  country    String
+  coverImage String?
+  shortNote  String?
+  whyVisit   String?
+  interests  String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([country])
+}
+
+model Quote {
+  id          String   @id @default(cuid())
+  text        String
+  author      String?
+  source      String?
+  journeyId   String?
+  blogId      String?
+  position    Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdById String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  blog        Blog?    @relation(fields: [blogId], references: [id])
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  journey     Journey? @relation(fields: [journeyId], references: [id])
+
+  @@index([isActive])
+  @@index([journeyId])
+  @@index([blogId])
+}
+
+model Comment {
+  id            String        @id @default(cuid())
+  name          String
+  email         String
+  content       String
+  status        CommentStatus @default(PENDING)
+  journeyId     String?
+  blogId        String?
+  moderatedById String?
+  moderatedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  blog          Blog?         @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  journey       Journey?      @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+  moderatedBy   User?         @relation("CommentModerator", fields: [moderatedById], references: [id])
+
+  @@index([status])
+  @@index([journeyId])
+  @@index([blogId])
+}
+
+model ContactMessage {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  status    MessageStatus @default(UNREAD)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model ContentVersion {
+  id            String   @id @default(cuid())
+  versionNumber Int
+  snapshot      Json
+  journeyId     String?
+  blogId        String?
+  createdById   String
+  createdAt     DateTime @default(now())
+  blog          Blog?    @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  createdBy     User     @relation(fields: [createdById], references: [id])
+  journey       Journey? @relation(fields: [journeyId], references: [id], onDelete: Cascade)
+
+  @@unique([journeyId, versionNumber])
+  @@unique([blogId, versionNumber])
+  @@index([journeyId])
+  @@index([blogId])
+}
+
+model AboutPage {
+  id             String   @id @default(cuid())
+  content        Json
+  seoTitle       String?
+  seoDescription String?
+  ogImage        String?
+  updatedAt      DateTime @updatedAt
+}
+
+model ContactSettings {
+  id           String   @id @default(cuid())
+  introMessage String?
+  email        String?
+  closingText  String?
+  updatedAt    DateTime @updatedAt
+}
+
+model SocialLink {
+  id        String   @id @default(cuid())
+  platform  String
+  label     String
+  url       String
+  icon      String?
+  position  Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([position])
+  @@index([isActive])
+}
+
+model SiteSettings {
+  id                 String      @id @default(cuid())
+  siteName           String      @default("Nomads of Aditya")
+  ownerName          String      @default("Aditya Valvi")
+  defaultTheme       String      @default("dark")
+  accentColor        String      @default("#D99A3D")
+  heroHeadline       String?
+  heroSubheadline    String?
+  journeyFeatureMode FeatureMode @default(AUTOMATIC)
+  featuredJourneyId  String?
+  blogFeatureMode    FeatureMode @default(AUTOMATIC)
+  featuredBlogId     String?
+  updatedAt          DateTime    @updatedAt
+}
+
 enum UserRole {
   OWNER
   ADMIN
@@ -56,346 +343,4 @@ enum MessageStatus {
 enum FeatureMode {
   AUTOMATIC
   MANUAL
-}
-
-model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(ADMIN)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  journeys          Journey[]
-  blogs             Blog[]
-  quotes            Quote[]
-  versions          ContentVersion[]
-  moderatedComments Comment[]        @relation("CommentModerator")
-}
-
-model Journey {
-  id         String  @id @default(cuid())
-  title      String
-  slug       String  @unique
-  location   String
-  country    String
-  coverImage String?
-  shortIntro String?
-
-  journeyDate   DateTime?
-  duration      String?
-  distance      String?
-  difficulty    String?
-  companions    String?
-  placesVisited String?
-
-  status     ContentStatus @default(DRAFT)
-  isFeatured Boolean       @default(false)
-
-  seoTitle       String?
-  seoDescription String?
-  canonicalUrl   String?
-  ogTitle        String?
-  ogDescription  String?
-  ogImage        String?
-  noIndex        Boolean @default(false)
-  noFollow       Boolean @default(false)
-
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id])
-
-  contentBlocks ContentBlock[]
-  media         MediaAsset[]
-  encounters    Encounter[]
-  versions      ContentVersion[]
-  comments      Comment[]
-  blogs         Blog[]           @relation("JourneyBlog")
-  quotes        Quote[]
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  publishedAt DateTime?
-
-  @@index([status])
-  @@index([authorId])
-  @@index([location])
-  @@index([country])
-}
-
-model Blog {
-  id         String  @id @default(cuid())
-  title      String
-  slug       String  @unique
-  subtitle   String?
-  coverImage String?
-  shortIntro String?
-
-  status     ContentStatus @default(DRAFT)
-  isFeatured Boolean       @default(false)
-
-  relatedJourneyId String?
-  relatedJourney   Journey? @relation("JourneyBlog", fields: [relatedJourneyId], references: [id], onDelete: SetNull)
-
-  location String?
-
-  seoTitle       String?
-  seoDescription String?
-  canonicalUrl   String?
-  ogTitle        String?
-  ogDescription  String?
-  ogImage        String?
-  noIndex        Boolean @default(false)
-  noFollow       Boolean @default(false)
-
-  authorId String
-  author   User   @relation(fields: [authorId], references: [id])
-
-  contentBlocks ContentBlock[]
-  versions      ContentVersion[]
-  comments      Comment[]
-  quotes        Quote[]
-
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  publishedAt DateTime?
-
-  @@index([status])
-  @@index([authorId])
-  @@index([relatedJourneyId])
-  @@index([location])
-}
-
-model ContentBlock {
-  id           String           @id @default(cuid())
-  type         ContentBlockType
-  position     Int
-  data         Json
-  imageDisplay ImageDisplay?
-
-  journeyId String?
-  journey   Journey? @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  blogId String?
-  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
-
-  mediaId String?
-  media   MediaAsset? @relation(fields: [mediaId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([journeyId, position])
-  @@index([blogId, position])
-}
-
-model MediaAsset {
-  id           String  @id @default(cuid())
-  url          String
-  thumbnailUrl String?
-  fileName     String
-  mimeType     String
-  width        Int?
-  height       Int?
-  fileSize     Int?
-
-  caption String?
-  altText String?
-
-  location     String?
-  capturedDate DateTime?
-  photographer String    @default("Aditya Valvi")
-
-  journeyId String?
-  journey   Journey? @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  blocks    ContentBlock[]
-  encounter Encounter?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([journeyId])
-}
-
-model Encounter {
-  id         String  @id @default(cuid())
-  title      String
-  shortIntro String?
-  story      Json
-
-  featuredOnHomepage Boolean @default(false)
-
-  journeyId String
-  journey   Journey @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  mediaId String?     @unique
-  media   MediaAsset? @relation(fields: [mediaId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([journeyId])
-  @@index([featuredOnHomepage])
-}
-
-model DreamDestination {
-  id         String  @id @default(cuid())
-  name       String
-  country    String
-  coverImage String?
-  shortNote  String?
-  whyVisit   String?
-  interests  String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([country])
-}
-
-model Quote {
-  id     String  @id @default(cuid())
-  text   String
-  author String?
-  source String?
-
-  journeyId String?
-  journey   Journey? @relation(fields: [journeyId], references: [id], onDelete: SetNull)
-
-  blogId String?
-  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: SetNull)
-
-  position Int     @default(0)
-  isActive Boolean @default(true)
-
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([isActive])
-  @@index([journeyId])
-  @@index([blogId])
-}
-
-model Comment {
-  id      String        @id @default(cuid())
-  name    String
-  email   String
-  content String
-  status  CommentStatus @default(PENDING)
-
-  journeyId String?
-  journey   Journey? @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  blogId String?
-  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
-
-  moderatedById String?
-  moderatedBy   User?   @relation("CommentModerator", fields: [moderatedById], references: [id], onDelete: SetNull)
-
-  moderatedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status])
-  @@index([journeyId])
-  @@index([blogId])
-}
-
-model ContactMessage {
-  id      String        @id @default(cuid())
-  name    String
-  email   String
-  message String
-  status  MessageStatus @default(UNREAD)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([status])
-}
-
-model ContentVersion {
-  id            String @id @default(cuid())
-  versionNumber Int
-  snapshot      Json
-
-  journeyId String?
-  journey   Journey? @relation(fields: [journeyId], references: [id], onDelete: Cascade)
-
-  blogId String?
-  blog   Blog?   @relation(fields: [blogId], references: [id], onDelete: Cascade)
-
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@unique([journeyId, versionNumber])
-  @@unique([blogId, versionNumber])
-  @@index([journeyId])
-  @@index([blogId])
-}
-
-model AboutPage {
-  id String @id @default(cuid())
-
-  content Json
-
-  seoTitle       String?
-  seoDescription String?
-  ogImage        String?
-
-  updatedAt DateTime @updatedAt
-}
-
-model ContactSettings {
-  id String @id @default(cuid())
-
-  introMessage String?
-  email        String?
-  closingText  String?
-
-  updatedAt DateTime @updatedAt
-}
-
-model SocialLink {
-  id       String  @id @default(cuid())
-  platform String
-  label    String
-  url      String
-  icon     String?
-  position Int     @default(0)
-  isActive Boolean @default(true)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([position])
-  @@index([isActive])
-}
-
-model SiteSettings {
-  id String @id @default(cuid())
-
-  siteName     String @default("Nomads of Aditya")
-  ownerName    String @default("Aditya Valvi")
-  defaultTheme String @default("dark")
-  accentColor  String @default("#D99A3D")
-
-  heroHeadline    String?
-  heroSubheadline String?
-
-  journeyFeatureMode FeatureMode @default(AUTOMATIC)
-  featuredJourneyId  String?
-
-  blogFeatureMode FeatureMode @default(AUTOMATIC)
-  featuredBlogId  String?
-
-  updatedAt DateTime @updatedAt
 }

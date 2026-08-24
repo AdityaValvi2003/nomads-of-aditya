@@ -1,53 +1,136 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 type JourneyInfo = {
   id: string;
   title: string;
 };
 
+type MediaUsage = {
+  type:
+    | "JOURNEY"
+    | "JOURNEY_COVER"
+    | "BLOG_COVER"
+    | "CONTENT_BLOCK"
+    | "ENCOUNTER";
+
+  id: string;
+
+  title?: string;
+
+  blockType?: string;
+
+  journeyId?: string;
+
+  journeyTitle?: string;
+};
+
 type MediaItem = {
   id: string;
+
   url: string;
+
   thumbnailUrl: string | null;
+
   fileName: string;
+
   mimeType: string;
+
   width: number | null;
+
   height: number | null;
+
   fileSize: number | null;
+
   caption: string | null;
+
   altText: string | null;
+
   location: string | null;
+
   capturedDate: string | null;
+
   photographer: string;
+
   journeyId: string | null;
+
   journey: JourneyInfo | null;
+
   createdAt: string;
+
   updatedAt: string;
+
+  usage: MediaUsage[];
+
+  usageCount: number;
+
+  isUsed: boolean;
 };
+
+type UsageFilter =
+  | "All"
+  | "Used"
+  | "Unused"
+  | "Journey"
+  | "Blog"
+  | "Content"
+  | "Encounter";
 
 type UploadForm = {
   file: File | null;
+
   altText: string;
+
   caption: string;
+
   location: string;
+
   photographer: string;
+
   capturedDate: string;
+
+  journeyId: string;
+};
+
+type EditForm = {
+  altText: string;
+
+  caption: string;
+
+  location: string;
+
+  photographer: string;
+
+  capturedDate: string;
+
   journeyId: string;
 };
 
 export default function MediaPage() {
-  const [media, setMedia] = useState<MediaItem[]>([]);
-  const [journeys, setJourneys] = useState<JourneyInfo[]>([]);
+  const [media, setMedia] =
+    useState<MediaItem[]>([]);
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("All");
+  const [journeys, setJourneys] =
+    useState<JourneyInfo[]>([]);
+
+  const [search, setSearch] =
+    useState("");
+
+  const [category, setCategory] =
+    useState<UsageFilter>("All");
 
   const [selected, setSelected] =
     useState<MediaItem | null>(null);
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] =
+    useState(true);
+
   const [loadingJourneys, setLoadingJourneys] =
     useState(true);
 
@@ -57,8 +140,19 @@ export default function MediaPage() {
   const [deletingId, setDeletingId] =
     useState<string | null>(null);
 
-  const [error, setError] = useState("");
+  const [editing, setEditing] =
+    useState(false);
+
+  const [savingEdit, setSavingEdit] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
   const [uploadError, setUploadError] =
+    useState("");
+
+  const [editError, setEditError] =
     useState("");
 
   const [showUpload, setShowUpload] =
@@ -78,6 +172,22 @@ export default function MediaPage() {
       journeyId: "",
     });
 
+  const [editForm, setEditForm] =
+    useState<EditForm>({
+      altText: "",
+      caption: "",
+      location: "",
+      photographer: "",
+      capturedDate: "",
+      journeyId: "",
+    });
+
+  /*
+   * ==========================================================
+   * LOAD
+   * ==========================================================
+   */
+
   useEffect(() => {
     loadMedia();
     loadJourneys();
@@ -86,6 +196,7 @@ export default function MediaPage() {
   async function loadMedia() {
     try {
       setLoading(true);
+
       setError("");
 
       const response = await fetch(
@@ -95,7 +206,8 @@ export default function MediaPage() {
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (!response.ok) {
         throw new Error(
@@ -104,7 +216,11 @@ export default function MediaPage() {
         );
       }
 
-      setMedia(data);
+      setMedia(
+        Array.isArray(data)
+          ? data
+          : []
+      );
     } catch (error) {
       setError(
         error instanceof Error
@@ -120,18 +236,20 @@ export default function MediaPage() {
     try {
       setLoadingJourneys(true);
 
-      const response = await fetch(
-        "/api/admin/journeys",
-        {
-          cache: "no-store",
-        }
-      );
+      const response =
+        await fetch(
+          "/api/admin/journeys",
+          {
+            cache: "no-store",
+          }
+        );
 
       if (!response.ok) {
         return;
       }
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
       if (Array.isArray(data)) {
         setJourneys(
@@ -148,10 +266,18 @@ export default function MediaPage() {
     }
   }
 
+  /*
+   * ==========================================================
+   * FILTERING
+   * ==========================================================
+   */
+
   const filteredMedia = useMemo(() => {
     return media.filter((item) => {
       const searchValue =
-        search.trim().toLowerCase();
+        search
+          .trim()
+          .toLowerCase();
 
       const matchesSearch =
         searchValue === "" ||
@@ -172,23 +298,105 @@ export default function MediaPage() {
           .includes(searchValue) ||
         (item.journey?.title || "")
           .toLowerCase()
-          .includes(searchValue);
+          .includes(searchValue) ||
+        item.usage.some(
+          (usage) =>
+            (usage.title || "")
+              .toLowerCase()
+              .includes(searchValue) ||
+            (usage.journeyTitle || "")
+              .toLowerCase()
+              .includes(searchValue) ||
+            (usage.blockType || "")
+              .toLowerCase()
+              .includes(searchValue)
+        );
 
-      const matchesCategory =
-        category === "All"
-          ? true
-          : category === "Journey"
-            ? Boolean(item.journeyId)
-            : category === "Unassigned"
-              ? !item.journeyId
-              : true;
+      let matchesCategory = true;
+
+      if (category === "Used") {
+        matchesCategory =
+          item.isUsed;
+      }
+
+      if (category === "Unused") {
+        matchesCategory =
+          !item.isUsed;
+      }
+
+      if (category === "Journey") {
+        matchesCategory =
+          item.usage.some(
+            (usage) =>
+              usage.type ===
+                "JOURNEY" ||
+              usage.type ===
+                "JOURNEY_COVER"
+          );
+      }
+
+      if (category === "Blog") {
+        matchesCategory =
+          item.usage.some(
+            (usage) =>
+              usage.type ===
+              "BLOG_COVER"
+          );
+      }
+
+      if (category === "Content") {
+        matchesCategory =
+          item.usage.some(
+            (usage) =>
+              usage.type ===
+              "CONTENT_BLOCK"
+          );
+      }
+
+      if (category === "Encounter") {
+        matchesCategory =
+          item.usage.some(
+            (usage) =>
+              usage.type ===
+              "ENCOUNTER"
+          );
+      }
 
       return (
         matchesSearch &&
         matchesCategory
       );
     });
-  }, [media, search, category]);
+  }, [
+    media,
+    search,
+    category,
+  ]);
+
+  /*
+   * ==========================================================
+   * STATISTICS
+   * ==========================================================
+   */
+
+  const totalMedia =
+    media.length;
+
+  const usedMedia =
+    media.filter(
+      (item) => item.isUsed
+    ).length;
+
+  const unusedMedia =
+    media.filter(
+      (item) => !item.isUsed
+    ).length;
+
+  /*
+   * ==========================================================
+   * FORMATTERS
+   * ==========================================================
+   */
 
   function formatFileSize(
     bytes: number | null
@@ -204,8 +412,13 @@ export default function MediaPage() {
       return `${bytes} B`;
     }
 
-    if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
+    if (
+      bytes <
+      1024 * 1024
+    ) {
+      return `${(
+        bytes / 1024
+      ).toFixed(1)} KB`;
     }
 
     return `${(
@@ -251,12 +464,99 @@ export default function MediaPage() {
 
     return new Date(
       date
-    ).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
+    ).toLocaleDateString(
+      "en-IN",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
   }
+
+  /*
+   * ==========================================================
+   * USAGE HELPERS
+   * ==========================================================
+   */
+
+  function getUsageLabel(
+    usage: MediaUsage
+  ) {
+    switch (usage.type) {
+      case "JOURNEY":
+        return "Journey";
+
+      case "JOURNEY_COVER":
+        return "Journey Cover";
+
+      case "BLOG_COVER":
+        return "Blog Cover";
+
+      case "CONTENT_BLOCK":
+        return "Story Content";
+
+      case "ENCOUNTER":
+        return "Encounter";
+
+      default:
+        return "Usage";
+    }
+  }
+
+  function getUsageDescription(
+    usage: MediaUsage
+  ) {
+    switch (usage.type) {
+      case "JOURNEY":
+        return (
+          usage.title ||
+          "Journey"
+        );
+
+      case "JOURNEY_COVER":
+        return (
+          usage.title ||
+          "Journey cover"
+        );
+
+      case "BLOG_COVER":
+        return (
+          usage.title ||
+          "Blog cover"
+        );
+
+      case "CONTENT_BLOCK":
+        if (
+          usage.title
+        ) {
+          return usage.title;
+        }
+
+        if (
+          usage.blockType
+        ) {
+          return usage.blockType;
+        }
+
+        return "Story content";
+
+      case "ENCOUNTER":
+        return (
+          usage.title ||
+          "Encounter"
+        );
+
+      default:
+        return "Unknown";
+    }
+  }
+
+  /*
+   * ==========================================================
+   * UPLOAD
+   * ==========================================================
+   */
 
   function openUploadModal() {
     setUploadError("");
@@ -271,8 +571,11 @@ export default function MediaPage() {
       journeyId: "",
     });
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    if (
+      fileInputRef.current
+    ) {
+      fileInputRef.current.value =
+        "";
     }
 
     setShowUpload(true);
@@ -284,6 +587,7 @@ export default function MediaPage() {
     }
 
     setShowUpload(false);
+
     setUploadError("");
   }
 
@@ -291,53 +595,69 @@ export default function MediaPage() {
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file =
-      event.target.files?.[0] || null;
+      event.target.files?.[0] ||
+      null;
 
     setUploadError("");
 
     if (!file) {
-      setUploadForm((current) => ({
-        ...current,
-        file: null,
-      }));
+      setUploadForm(
+        (current) => ({
+          ...current,
+          file: null,
+        })
+      );
 
       return;
     }
 
-    if (!file.type.startsWith("image/")) {
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
       setUploadError(
         "Only image files are allowed."
       );
 
       event.target.value = "";
 
-      setUploadForm((current) => ({
-        ...current,
-        file: null,
-      }));
+      setUploadForm(
+        (current) => ({
+          ...current,
+          file: null,
+        })
+      );
 
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
+    if (
+      file.size >
+      10 * 1024 * 1024
+    ) {
       setUploadError(
         "Image must be smaller than 10 MB."
       );
 
       event.target.value = "";
 
-      setUploadForm((current) => ({
-        ...current,
-        file: null,
-      }));
+      setUploadForm(
+        (current) => ({
+          ...current,
+          file: null,
+        })
+      );
 
       return;
     }
 
-    setUploadForm((current) => ({
-      ...current,
-      file,
-    }));
+    setUploadForm(
+      (current) => ({
+        ...current,
+        file,
+      })
+    );
   }
 
   async function uploadMedia(
@@ -406,13 +726,14 @@ export default function MediaPage() {
         uploadForm.journeyId
       );
 
-      const response = await fetch(
-        "/api/admin/media",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+      const response =
+        await fetch(
+          "/api/admin/media",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
       const data =
         await response.json();
@@ -424,10 +745,12 @@ export default function MediaPage() {
         );
       }
 
-      setMedia((current) => [
-        data,
-        ...current,
-      ]);
+      setMedia(
+        (current) => [
+          data,
+          ...current,
+        ]
+      );
 
       setShowUpload(false);
 
@@ -441,8 +764,11 @@ export default function MediaPage() {
         journeyId: "",
       });
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+      if (
+        fileInputRef.current
+      ) {
+        fileInputRef.current.value =
+          "";
       }
     } catch (error) {
       setUploadError(
@@ -454,6 +780,152 @@ export default function MediaPage() {
       setUploading(false);
     }
   }
+
+  /*
+   * ==========================================================
+   * EDIT MEDIA
+   * ==========================================================
+   */
+
+  function openEditModal(
+    item: MediaItem
+  ) {
+    setEditError("");
+
+    setEditForm({
+      altText:
+        item.altText || "",
+
+      caption:
+        item.caption || "",
+
+      location:
+        item.location || "",
+
+      photographer:
+        item.photographer || "",
+
+      capturedDate:
+        item.capturedDate
+          ? item.capturedDate
+              .split("T")[0]
+          : "",
+
+      journeyId:
+        item.journeyId || "",
+    });
+
+    setEditing(true);
+  }
+
+  function closeEditModal() {
+    if (savingEdit) {
+      return;
+    }
+
+    setEditing(false);
+
+    setEditError("");
+  }
+
+  async function saveMediaEdit(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+
+    setEditError("");
+
+    if (!selected) {
+      return;
+    }
+
+    if (
+      !editForm.altText.trim()
+    ) {
+      setEditError(
+        "Alt text is required."
+      );
+
+      return;
+    }
+
+    try {
+      setSavingEdit(true);
+
+      const response =
+        await fetch(
+          "/api/admin/media",
+          {
+            method: "PATCH",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              id: selected.id,
+
+              altText:
+                editForm.altText.trim(),
+
+              caption:
+                editForm.caption.trim(),
+
+              location:
+                editForm.location.trim(),
+
+              photographer:
+                editForm.photographer.trim(),
+
+              capturedDate:
+                editForm.capturedDate,
+
+              journeyId:
+                editForm.journeyId,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+            "Failed to update media."
+        );
+      }
+
+      setMedia(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id === data.id
+                ? data
+                : item
+          )
+      );
+
+      setSelected(data);
+
+      setEditing(false);
+    } catch (error) {
+      setEditError(
+        error instanceof Error
+          ? error.message
+          : "Failed to update media."
+      );
+    } finally {
+      setSavingEdit(false);
+    }
+  }
+
+  /*
+   * ==========================================================
+   * DELETE
+   * ==========================================================
+   */
 
   async function deleteMedia(
     item: MediaItem
@@ -469,21 +941,25 @@ export default function MediaPage() {
 
     try {
       setDeletingId(item.id);
+
       setError("");
 
-      const response = await fetch(
-        "/api/admin/media",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            id: item.id,
-          }),
-        }
-      );
+      const response =
+        await fetch(
+          "/api/admin/media",
+          {
+            method: "DELETE",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify({
+              id: item.id,
+            }),
+          }
+        );
 
       const data =
         await response.json();
@@ -495,17 +971,24 @@ export default function MediaPage() {
         );
       }
 
-      setMedia((current) =>
-        current.filter(
-          (mediaItem) =>
-            mediaItem.id !== item.id
-        )
+      setMedia(
+        (current) =>
+          current.filter(
+            (mediaItem) =>
+              mediaItem.id !==
+              item.id
+          )
       );
 
       if (
-        selected?.id === item.id
+        selected?.id ===
+        item.id
       ) {
         setSelected(null);
+      }
+
+      if (editing) {
+        setEditing(false);
       }
     } catch (error) {
       setError(
@@ -517,6 +1000,12 @@ export default function MediaPage() {
       setDeletingId(null);
     }
   }
+
+  /*
+   * ==========================================================
+   * COPY URL
+   * ==========================================================
+   */
 
   async function copyUrl(
     url: string
@@ -535,6 +1024,12 @@ export default function MediaPage() {
       );
     }
   }
+
+  /*
+   * ==========================================================
+   * RENDER
+   * ==========================================================
+   */
 
   return (
     <>
@@ -590,12 +1085,37 @@ export default function MediaPage() {
           font-size: .85rem;
         }
 
+        .media-stats {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 12px;
+          margin-top: 35px;
+        }
+
+        .media-stat {
+          padding: 18px 20px;
+          border: 1px solid var(--line);
+          background: var(--panel);
+        }
+
+        .media-stat-label {
+          color: var(--muted);
+          font-size: .65rem;
+          letter-spacing: .1em;
+          text-transform: uppercase;
+          margin-bottom: 7px;
+        }
+
+        .media-stat-value {
+          font: 1.8rem var(--serif);
+        }
+
         .media-toolbar {
           display: flex;
           justify-content: space-between;
           align-items: center;
           gap: 20px;
-          margin: 45px 0 30px;
+          margin: 45px 0 20px;
           flex-wrap: wrap;
         }
 
@@ -620,17 +1140,17 @@ export default function MediaPage() {
 
         .media-filters {
           display: flex;
-          gap: 8px;
+          gap: 7px;
           flex-wrap: wrap;
         }
 
         .media-filter {
-          padding: 11px 15px;
+          padding: 10px 13px;
           border: 1px solid var(--line);
           color: var(--muted);
           background: transparent;
           cursor: pointer;
-          font-size: .72rem;
+          font-size: .65rem;
           letter-spacing: .06em;
           text-transform: uppercase;
         }
@@ -700,6 +1220,29 @@ export default function MediaPage() {
           transform: scale(1.035);
         }
 
+        .media-usage-badge {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          padding: 6px 9px;
+          background: rgba(0,0,0,.78);
+          border: 1px solid rgba(255,255,255,.12);
+          color: white;
+          font-size: .58rem;
+          letter-spacing: .07em;
+          text-transform: uppercase;
+          backdrop-filter: blur(8px);
+        }
+
+        .media-usage-badge.used {
+          color: var(--accent);
+          border-color: rgba(217,154,61,.4);
+        }
+
+        .media-usage-badge.unused {
+          color: rgba(255,255,255,.45);
+        }
+
         .media-card-content {
           padding: 18px;
         }
@@ -721,6 +1264,47 @@ export default function MediaPage() {
 
         .media-journey {
           color: var(--accent);
+        }
+
+        .media-usage-summary {
+          margin-top: 14px;
+          padding-top: 13px;
+          border-top: 1px solid var(--line);
+        }
+
+        .media-usage-title {
+          color: var(--muted);
+          font-size: .62rem;
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+
+        .media-usage-list {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
+        }
+
+        .media-usage-item {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          min-width: 0;
+          color: var(--text);
+          font-size: .68rem;
+        }
+
+        .media-usage-type {
+          color: var(--accent);
+          white-space: nowrap;
+        }
+
+        .media-usage-name {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: var(--muted);
         }
 
         .media-card-actions {
@@ -846,6 +1430,47 @@ export default function MediaPage() {
           word-break: break-word;
         }
 
+        .media-modal-usage {
+          margin-top: 25px;
+        }
+
+        .media-modal-usage-title {
+          color: var(--accent);
+          font-size: .68rem;
+          letter-spacing: .13em;
+          text-transform: uppercase;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+
+        .media-modal-usage-list {
+          display: grid;
+          gap: 8px;
+        }
+
+        .media-modal-usage-item {
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 13px 15px;
+          border: 1px solid var(--line);
+          background: rgba(255,255,255,.02);
+        }
+
+        .media-modal-usage-type {
+          color: var(--accent);
+          font-size: .68rem;
+          text-transform: uppercase;
+          letter-spacing: .06em;
+          white-space: nowrap;
+        }
+
+        .media-modal-usage-name {
+          color: var(--text);
+          font-size: .8rem;
+          text-align: right;
+        }
+
         .media-modal-description {
           margin-top: 20px;
           padding: 18px;
@@ -899,7 +1524,6 @@ export default function MediaPage() {
 
         .media-modal-button.primary:hover {
           background: var(--accent2);
-          color: #15110b;
         }
 
         .media-modal-button.danger {
@@ -909,6 +1533,11 @@ export default function MediaPage() {
         .media-modal-button.danger:hover {
           border-color: #a94a3d;
           color: #d98c7c;
+        }
+
+        .media-modal-button:disabled {
+          opacity: .45;
+          cursor: not-allowed;
         }
 
         .media-close {
@@ -929,8 +1558,6 @@ export default function MediaPage() {
           border-color: var(--accent);
           color: var(--accent);
         }
-
-        /* UPLOAD MODAL */
 
         .upload-backdrop {
           position: fixed;
@@ -984,6 +1611,11 @@ export default function MediaPage() {
         .upload-close:hover {
           border-color: var(--accent);
           color: var(--accent);
+        }
+
+        .upload-close:disabled {
+          opacity: .4;
+          cursor: not-allowed;
         }
 
         .upload-field {
@@ -1098,6 +1730,19 @@ export default function MediaPage() {
           cursor: not-allowed;
         }
 
+        .edit-preview {
+          margin-bottom: 25px;
+          border: 1px solid var(--line);
+          background: #0d0d0c;
+        }
+
+        .edit-preview img {
+          width: 100%;
+          max-height: 260px;
+          object-fit: contain;
+          display: block;
+        }
+
         @media (max-width: 1100px) {
           .media-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1120,6 +1765,10 @@ export default function MediaPage() {
           .media-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
           }
+
+          .media-stats {
+            grid-template-columns: 1fr;
+          }
         }
 
         @media (max-width: 520px) {
@@ -1135,6 +1784,15 @@ export default function MediaPage() {
             grid-template-columns: 1fr;
           }
 
+          .media-modal-usage-item {
+            display: block;
+          }
+
+          .media-modal-usage-name {
+            text-align: left;
+            margin-top: 5px;
+          }
+
           .upload-modal {
             padding: 22px;
           }
@@ -1143,7 +1801,9 @@ export default function MediaPage() {
 
       <main className="media-page">
 
-        {/* HEADER */}
+        {/* ====================================================
+            HEADER
+        ==================================================== */}
 
         <header className="media-header">
 
@@ -1168,7 +1828,9 @@ export default function MediaPage() {
           <button
             type="button"
             className="media-upload-button"
-            onClick={openUploadModal}
+            onClick={
+              openUploadModal
+            }
           >
             + Upload Media
           </button>
@@ -1183,7 +1845,55 @@ export default function MediaPage() {
           </div>
         )}
 
-        {/* TOOLBAR */}
+        {/* ====================================================
+            STATS
+        ==================================================== */}
+
+        {!loading && (
+          <div className="media-stats">
+
+            <div className="media-stat">
+
+              <div className="media-stat-label">
+                Total Photographs
+              </div>
+
+              <div className="media-stat-value">
+                {totalMedia}
+              </div>
+
+            </div>
+
+            <div className="media-stat">
+
+              <div className="media-stat-label">
+                Currently Used
+              </div>
+
+              <div className="media-stat-value">
+                {usedMedia}
+              </div>
+
+            </div>
+
+            <div className="media-stat">
+
+              <div className="media-stat-label">
+                Unused
+              </div>
+
+              <div className="media-stat-value">
+                {unusedMedia}
+              </div>
+
+            </div>
+
+          </div>
+        )}
+
+        {/* ====================================================
+            TOOLBAR
+        ==================================================== */}
 
         <div className="media-toolbar">
 
@@ -1191,7 +1901,7 @@ export default function MediaPage() {
 
             <input
               type="text"
-              placeholder="Search photographs..."
+              placeholder="Search photographs, journeys, blogs..."
               value={search}
               onChange={(event) =>
                 setSearch(
@@ -1206,26 +1916,32 @@ export default function MediaPage() {
 
             {[
               "All",
+              "Used",
+              "Unused",
               "Journey",
-              "Unassigned",
-            ].map((item) => (
-
-              <button
-                key={item}
-                type="button"
-                className={`media-filter ${
-                  category === item
-                    ? "active"
-                    : ""
-                }`}
-                onClick={() =>
-                  setCategory(item)
-                }
-              >
-                {item}
-              </button>
-
-            ))}
+              "Blog",
+              "Content",
+              "Encounter",
+            ].map(
+              (item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className={`media-filter ${
+                    category === item
+                      ? "active"
+                      : ""
+                  }`}
+                  onClick={() =>
+                    setCategory(
+                      item as UsageFilter
+                    )
+                  }
+                >
+                  {item}
+                </button>
+              )
+            )}
 
           </div>
 
@@ -1237,13 +1953,16 @@ export default function MediaPage() {
           <div className="media-count">
             Showing{" "}
             {filteredMedia.length}{" "}
-            {filteredMedia.length === 1
+            {filteredMedia.length ===
+            1
               ? "photograph"
               : "photographs"}
           </div>
         )}
 
-        {/* CONTENT */}
+        {/* ====================================================
+            CONTENT
+        ==================================================== */}
 
         {loading ? (
 
@@ -1255,7 +1974,8 @@ export default function MediaPage() {
 
           <div className="media-grid">
 
-            {filteredMedia.length === 0 ? (
+            {filteredMedia.length ===
+            0 ? (
 
               <div className="media-empty">
 
@@ -1280,10 +2000,14 @@ export default function MediaPage() {
                     key={item.id}
                   >
 
+                    {/* IMAGE */}
+
                     <div
                       className="media-image"
                       onClick={() =>
-                        setSelected(item)
+                        setSelected(
+                          item
+                        )
                       }
                     >
 
@@ -1298,7 +2022,26 @@ export default function MediaPage() {
                         }
                       />
 
+                      <div
+                        className={`media-usage-badge ${
+                          item.isUsed
+                            ? "used"
+                            : "unused"
+                        }`}
+                      >
+                        {item.isUsed
+                          ? `${item.usageCount} ${
+                              item.usageCount ===
+                              1
+                                ? "Use"
+                                : "Uses"
+                            }`
+                          : "Unused"}
+                      </div>
+
                     </div>
+
+                    {/* CARD */}
 
                     <div className="media-card-content">
 
@@ -1331,18 +2074,99 @@ export default function MediaPage() {
 
                           <span className="media-journey">
                             Journey:{" "}
-                            {item.journey.title}
+                            {
+                              item.journey
+                                .title
+                            }
                           </span>
 
                         ) : (
 
                           <span>
-                            Unassigned
+                            No journey assigned
                           </span>
 
                         )}
 
                       </div>
+
+                      {/* USAGE */}
+
+                      {item.usage.length >
+                        0 && (
+
+                        <div className="media-usage-summary">
+
+                          <div className="media-usage-title">
+                            Used in
+                          </div>
+
+                          <div className="media-usage-list">
+
+                            {item.usage
+                              .slice(
+                                0,
+                                3
+                              )
+                              .map(
+                                (
+                                  usage
+                                ) => (
+
+                                  <div
+                                    className="media-usage-item"
+                                    key={`${usage.type}-${usage.id}`}
+                                  >
+
+                                    <span className="media-usage-type">
+                                      {
+                                        getUsageLabel(
+                                          usage
+                                        )
+                                      }
+                                    </span>
+
+                                    <span className="media-usage-name">
+                                      {
+                                        getUsageDescription(
+                                          usage
+                                        )
+                                      }
+                                    </span>
+
+                                  </div>
+
+                                )
+                              )}
+
+                          </div>
+
+                          {item.usage.length >
+                            3 && (
+
+                            <div
+                              style={{
+                                marginTop:
+                                  "7px",
+                                color:
+                                  "var(--muted)",
+                                fontSize:
+                                  ".62rem",
+                              }}
+                            >
+                              +
+                              {item.usage.length -
+                                3}{" "}
+                              more
+                            </div>
+
+                          )}
+
+                        </div>
+
+                      )}
+
+                      {/* ACTIONS */}
 
                       <div className="media-card-actions">
 
@@ -1350,7 +2174,9 @@ export default function MediaPage() {
                           type="button"
                           className="media-action"
                           onClick={() =>
-                            setSelected(item)
+                            setSelected(
+                              item
+                            )
                           }
                         >
                           View
@@ -1364,7 +2190,9 @@ export default function MediaPage() {
                             item.id
                           }
                           onClick={() =>
-                            deleteMedia(item)
+                            deleteMedia(
+                              item
+                            )
                           }
                         >
                           {deletingId ===
@@ -1388,9 +2216,11 @@ export default function MediaPage() {
 
         )}
 
-        {/* VIEW MODAL */}
+        {/* ====================================================
+            VIEW MODAL
+        ==================================================== */}
 
-        {selected && (
+        {selected && !editing && (
 
           <div
             className="media-modal-backdrop"
@@ -1436,95 +2266,203 @@ export default function MediaPage() {
                   {selected.url}
                 </div>
 
+                {/* INFO */}
+
                 <div className="media-modal-info">
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       File type
                     </div>
+
                     <div className="media-modal-info-value">
                       {formatMimeType(
                         selected.mimeType
                       )}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       File size
                     </div>
+
                     <div className="media-modal-info-value">
                       {formatFileSize(
                         selected.fileSize
                       )}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       Dimensions
                     </div>
+
                     <div className="media-modal-info-value">
                       {formatDimensions(
                         selected.width,
                         selected.height
                       )}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       Uploaded
                     </div>
+
                     <div className="media-modal-info-value">
                       {formatDate(
                         selected.createdAt
                       )}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       Photographer
                     </div>
+
                     <div className="media-modal-info-value">
                       {selected.photographer ||
                         "—"}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       Location
                     </div>
+
                     <div className="media-modal-info-value">
                       {selected.location ||
                         "—"}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
                       Captured
                     </div>
+
                     <div className="media-modal-info-value">
                       {formatDate(
                         selected.capturedDate
                       )}
                     </div>
+
                   </div>
 
                   <div className="media-modal-info-item">
+
                     <div className="media-modal-info-label">
-                      Journey
+                      Usage
                     </div>
+
                     <div className="media-modal-info-value">
-                      {selected.journey?.title ||
-                        "Unassigned"}
+                      {selected.isUsed
+                        ? `${selected.usageCount} ${
+                            selected.usageCount ===
+                            1
+                              ? "place"
+                              : "places"
+                          }`
+                        : "Unused"}
                     </div>
+
                   </div>
 
                 </div>
+
+                {/* USAGE */}
+
+                {selected.usage.length >
+                0 ? (
+
+                  <div className="media-modal-usage">
+
+                    <div className="media-modal-usage-title">
+                      Where this photograph
+                      is being used
+                    </div>
+
+                    <div className="media-modal-usage-list">
+
+                      {selected.usage.map(
+                        (usage) => (
+
+                          <div
+                            className="media-modal-usage-item"
+                            key={`${usage.type}-${usage.id}`}
+                          >
+
+                            <span className="media-modal-usage-type">
+                              {getUsageLabel(
+                                usage
+                              )}
+                            </span>
+
+                            <span className="media-modal-usage-name">
+                              {getUsageDescription(
+                                usage
+                              )}
+
+                              {usage.blockType &&
+                                usage.type ===
+                                  "CONTENT_BLOCK" && (
+                                  <>
+                                    {" · "}
+                                    {
+                                      usage.blockType
+                                    }
+                                  </>
+                                )}
+
+                            </span>
+
+                          </div>
+
+                        )
+                      )}
+
+                    </div>
+
+                  </div>
+
+                ) : (
+
+                  <div className="media-modal-description">
+
+                    <div className="media-modal-description-label">
+                      Usage
+                    </div>
+
+                    <p>
+                      This photograph is
+                      currently not used
+                      anywhere on the
+                      website.
+                    </p>
+
+                  </div>
+
+                )}
+
+                {/* ALT */}
 
                 {selected.altText && (
                   <div className="media-modal-description">
@@ -1540,6 +2478,8 @@ export default function MediaPage() {
                   </div>
                 )}
 
+                {/* CAPTION */}
+
                 {selected.caption && (
                   <div className="media-modal-description">
 
@@ -1554,11 +2494,25 @@ export default function MediaPage() {
                   </div>
                 )}
 
+                {/* ACTIONS */}
+
                 <div className="media-modal-actions">
 
                   <button
                     type="button"
                     className="media-modal-button primary"
+                    onClick={() =>
+                      openEditModal(
+                        selected
+                      )
+                    }
+                  >
+                    Edit Media
+                  </button>
+
+                  <button
+                    type="button"
+                    className="media-modal-button"
                     onClick={() =>
                       copyUrl(
                         selected.url
@@ -1572,7 +2526,9 @@ export default function MediaPage() {
                     type="button"
                     className="media-modal-button"
                     onClick={() =>
-                      setSelected(null)
+                      setSelected(
+                        null
+                      )
                     }
                   >
                     Close
@@ -1607,13 +2563,349 @@ export default function MediaPage() {
 
         )}
 
-        {/* UPLOAD MODAL */}
+        {/* ====================================================
+            EDIT MEDIA MODAL
+        ==================================================== */}
+
+        {editing && selected && (
+
+          <div
+            className="upload-backdrop"
+            onClick={
+              closeEditModal
+            }
+          >
+
+            <div
+              className="upload-modal"
+              onClick={(event) =>
+                event.stopPropagation()
+              }
+            >
+
+              <div className="upload-header">
+
+                <div>
+
+                  <h2>
+                    Edit Media
+                  </h2>
+
+                  <p>
+                    Update the information
+                    associated with this
+                    photograph.
+                  </p>
+
+                </div>
+
+                <button
+                  type="button"
+                  className="upload-close"
+                  onClick={
+                    closeEditModal
+                  }
+                  disabled={
+                    savingEdit
+                  }
+                >
+                  ×
+                </button>
+
+              </div>
+
+              {/* PREVIEW */}
+
+              <div className="edit-preview">
+
+                <img
+                  src={selected.url}
+                  alt={
+                    selected.altText ||
+                    selected.fileName
+                  }
+                />
+
+              </div>
+
+              <form
+                onSubmit={
+                  saveMediaEdit
+                }
+              >
+
+                {/* ALT TEXT */}
+
+                <div className="upload-field">
+
+                  <label>
+                    Alt Text *
+                  </label>
+
+                  <input
+                    type="text"
+                    value={
+                      editForm.altText
+                    }
+                    onChange={(event) =>
+                      setEditForm(
+                        (current) => ({
+                          ...current,
+                          altText:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
+                    }
+                    placeholder="Describe what is visible in the photograph..."
+                    disabled={
+                      savingEdit
+                    }
+                  />
+
+                </div>
+
+                {/* CAPTION */}
+
+                <div className="upload-field">
+
+                  <label>
+                    Caption
+                  </label>
+
+                  <textarea
+                    value={
+                      editForm.caption
+                    }
+                    onChange={(event) =>
+                      setEditForm(
+                        (current) => ({
+                          ...current,
+                          caption:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
+                    }
+                    placeholder="Add a story or caption..."
+                    disabled={
+                      savingEdit
+                    }
+                  />
+
+                </div>
+
+                {/* LOCATION */}
+
+                <div className="upload-field">
+
+                  <label>
+                    Location
+                  </label>
+
+                  <input
+                    type="text"
+                    value={
+                      editForm.location
+                    }
+                    onChange={(event) =>
+                      setEditForm(
+                        (current) => ({
+                          ...current,
+                          location:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
+                    }
+                    placeholder="Harishchandragad, Maharashtra"
+                    disabled={
+                      savingEdit
+                    }
+                  />
+
+                </div>
+
+                {/* PHOTOGRAPHER */}
+
+                <div className="upload-field">
+
+                  <label>
+                    Photographer
+                  </label>
+
+                  <input
+                    type="text"
+                    value={
+                      editForm.photographer
+                    }
+                    onChange={(event) =>
+                      setEditForm(
+                        (current) => ({
+                          ...current,
+                          photographer:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
+                    }
+                    placeholder="Photographer name"
+                    disabled={
+                      savingEdit
+                    }
+                  />
+
+                </div>
+
+                {/* CAPTURE DATE */}
+
+                <div className="upload-field">
+
+                  <label>
+                    Captured Date
+                  </label>
+
+                  <input
+                    type="date"
+                    value={
+                      editForm.capturedDate
+                    }
+                    onChange={(event) =>
+                      setEditForm(
+                        (current) => ({
+                          ...current,
+                          capturedDate:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
+                    }
+                    disabled={
+                      savingEdit
+                    }
+                  />
+
+                </div>
+
+                {/* JOURNEY */}
+
+                <div className="upload-field">
+
+                  <label>
+                    Journey
+                  </label>
+
+                  <select
+                    value={
+                      editForm.journeyId
+                    }
+                    onChange={(event) =>
+                      setEditForm(
+                        (current) => ({
+                          ...current,
+                          journeyId:
+                            event
+                              .target
+                              .value,
+                        })
+                      )
+                    }
+                    disabled={
+                      savingEdit ||
+                      loadingJourneys
+                    }
+                  >
+
+                    <option value="">
+                      Unassigned
+                    </option>
+
+                    {journeys.map(
+                      (
+                        journey
+                      ) => (
+                        <option
+                          key={
+                            journey.id
+                          }
+                          value={
+                            journey.id
+                          }
+                        >
+                          {
+                            journey.title
+                          }
+                        </option>
+                      )
+                    )}
+
+                  </select>
+
+                </div>
+
+                {/* ERROR */}
+
+                {editError && (
+                  <div className="upload-error">
+                    {editError}
+                  </div>
+                )}
+
+                {/* ACTIONS */}
+
+                <div className="upload-actions">
+
+                  <button
+                    type="button"
+                    className="upload-button"
+                    onClick={
+                      closeEditModal
+                    }
+                    disabled={
+                      savingEdit
+                    }
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="upload-button primary"
+                    disabled={
+                      savingEdit
+                    }
+                  >
+                    {savingEdit
+                      ? "Saving..."
+                      : "Save Changes"}
+                  </button>
+
+                </div>
+
+              </form>
+
+            </div>
+
+          </div>
+
+        )}
+
+        {/* ====================================================
+            UPLOAD MODAL
+        ==================================================== */}
 
         {showUpload && (
 
           <div
             className="upload-backdrop"
-            onClick={closeUploadModal}
+            onClick={
+              closeUploadModal
+            }
           >
 
             <div
@@ -1632,8 +2924,8 @@ export default function MediaPage() {
                   </h2>
 
                   <p>
-                    Add a photograph to your
-                    media library.
+                    Add a photograph to
+                    your media library.
                   </p>
 
                 </div>
@@ -1644,7 +2936,9 @@ export default function MediaPage() {
                   onClick={
                     closeUploadModal
                   }
-                  disabled={uploading}
+                  disabled={
+                    uploading
+                  }
                 >
                   ×
                 </button>
@@ -1652,7 +2946,9 @@ export default function MediaPage() {
               </div>
 
               <form
-                onSubmit={uploadMedia}
+                onSubmit={
+                  uploadMedia
+                }
               >
 
                 {/* FILE */}
@@ -1666,17 +2962,20 @@ export default function MediaPage() {
                   <div className="upload-file">
 
                     <input
-                      ref={fileInputRef}
+                      ref={
+                        fileInputRef
+                      }
                       type="file"
                       accept="image/*"
                       onChange={
                         handleFileChange
                       }
-                      disabled={uploading}
+                      disabled={
+                        uploading
+                      }
                     />
 
                     {uploadForm.file && (
-
                       <div className="upload-file-name">
                         Selected:{" "}
                         {
@@ -1685,7 +2984,6 @@ export default function MediaPage() {
                             .name
                         }
                       </div>
-
                     )}
 
                   </div>
@@ -1710,13 +3008,16 @@ export default function MediaPage() {
                         (current) => ({
                           ...current,
                           altText:
-                            event.target
+                            event
+                              .target
                               .value,
                         })
                       )
                     }
                     placeholder="Describe what is visible in the photograph..."
-                    disabled={uploading}
+                    disabled={
+                      uploading
+                    }
                   />
 
                 </div>
@@ -1738,13 +3039,16 @@ export default function MediaPage() {
                         (current) => ({
                           ...current,
                           caption:
-                            event.target
+                            event
+                              .target
                               .value,
                         })
                       )
                     }
                     placeholder="Add a story or caption..."
-                    disabled={uploading}
+                    disabled={
+                      uploading
+                    }
                   />
 
                 </div>
@@ -1767,13 +3071,16 @@ export default function MediaPage() {
                         (current) => ({
                           ...current,
                           location:
-                            event.target
+                            event
+                              .target
                               .value,
                         })
                       )
                     }
                     placeholder="Harishchandragad, Maharashtra"
-                    disabled={uploading}
+                    disabled={
+                      uploading
+                    }
                   />
 
                 </div>
@@ -1796,13 +3103,16 @@ export default function MediaPage() {
                         (current) => ({
                           ...current,
                           photographer:
-                            event.target
+                            event
+                              .target
                               .value,
                         })
                       )
                     }
                     placeholder="Photographer name"
-                    disabled={uploading}
+                    disabled={
+                      uploading
+                    }
                   />
 
                 </div>
@@ -1825,12 +3135,15 @@ export default function MediaPage() {
                         (current) => ({
                           ...current,
                           capturedDate:
-                            event.target
+                            event
+                              .target
                               .value,
                         })
                       )
                     }
-                    disabled={uploading}
+                    disabled={
+                      uploading
+                    }
                   />
 
                 </div>
@@ -1852,7 +3165,8 @@ export default function MediaPage() {
                         (current) => ({
                           ...current,
                           journeyId:
-                            event.target
+                            event
+                              .target
                               .value,
                         })
                       )
@@ -1868,8 +3182,9 @@ export default function MediaPage() {
                     </option>
 
                     {journeys.map(
-                      (journey) => (
-
+                      (
+                        journey
+                      ) => (
                         <option
                           key={
                             journey.id
@@ -1882,7 +3197,6 @@ export default function MediaPage() {
                             journey.title
                           }
                         </option>
-
                       )
                     )}
 
@@ -1893,11 +3207,11 @@ export default function MediaPage() {
                 {/* ERROR */}
 
                 {uploadError && (
-
                   <div className="upload-error">
-                    {uploadError}
+                    {
+                      uploadError
+                    }
                   </div>
-
                 )}
 
                 {/* ACTIONS */}
@@ -1910,7 +3224,9 @@ export default function MediaPage() {
                     onClick={
                       closeUploadModal
                     }
-                    disabled={uploading}
+                    disabled={
+                      uploading
+                    }
                   >
                     Cancel
                   </button>

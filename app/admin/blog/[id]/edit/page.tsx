@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import CoverImageField from "../../../../../src/components/admin/CoverImageField";
 
 type BlogStatus = "Draft" | "Published";
 
@@ -15,39 +16,41 @@ type BlogPost = {
   status: BlogStatus;
   featured: boolean;
   content: string;
-  coverImage?: string | null;
-  author?: {
+  coverImage: string | null;
+  author: {
     id: string;
     name: string;
     email: string;
   };
-  date?: string;
+  date: string;
 };
 
 export default function EditBlogPostPage() {
   const params = useParams();
   const router = useRouter();
 
-  /*
-   * IMPORTANT:
-   * Prisma Blog.id is a STRING.
-   *
-   * Do NOT use Number(params.id).
-   */
-  const id = Array.isArray(params.id)
-    ? params.id[0]
-    : params.id;
+  const id =
+    typeof params.id === "string"
+      ? params.id
+      : "";
 
-  const [post, setPost] = useState<BlogPost | null>(
-    null
-  );
+  const [loading, setLoading] =
+    useState(true);
 
-  const [title, setTitle] = useState("");
-  const [slug, setSlug] = useState("");
-  const [excerpt, setExcerpt] = useState("");
+  const [title, setTitle] =
+    useState("");
+
+  const [slug, setSlug] =
+    useState("");
+
+  const [excerpt, setExcerpt] =
+    useState("");
+
   const [category, setCategory] =
     useState("Travel");
-  const [content, setContent] = useState("");
+
+  const [content, setContent] =
+    useState("");
 
   const [status, setStatus] =
     useState<BlogStatus>("Draft");
@@ -55,8 +58,8 @@ export default function EditBlogPostPage() {
   const [featured, setFeatured] =
     useState(false);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [coverImage, setCoverImage] =
+    useState<string | null>(null);
 
   const [saving, setSaving] =
     useState(false);
@@ -67,13 +70,14 @@ export default function EditBlogPostPage() {
   const [error, setError] =
     useState("");
 
-
-  // ==========================================================
-  // LOAD BLOG FROM DATABASE
-  // ==========================================================
+  // ============================================================
+  // LOAD BLOG
+  // ============================================================
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      return;
+    }
 
     async function loadBlog() {
       try {
@@ -91,33 +95,48 @@ export default function EditBlogPostPage() {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(
+          throw new Error(
             data.error ||
               "Failed to load blog post."
           );
-
-          return;
         }
 
-        const blog: BlogPost = data;
+        setTitle(data.title || "");
 
-        setPost(blog);
+        setSlug(data.slug || "");
 
-        setTitle(blog.title || "");
-        setSlug(blog.slug || "");
-        setExcerpt(blog.excerpt || "");
+        setExcerpt(data.excerpt || "");
+
         setCategory(
-          blog.category || "Travel"
+          data.category || "Travel"
         );
-        setContent(blog.content || "");
 
-        setStatus(
-          blog.status || "Draft"
-        );
+        setContent(data.content || "");
 
         setFeatured(
-          Boolean(blog.featured)
+          Boolean(data.featured)
         );
+
+        setCoverImage(
+          data.coverImage || null
+        );
+
+        /*
+         * Prisma returns enum values such as
+         * DRAFT / PUBLISHED.
+         *
+         * The editor uses:
+         * Draft / Published
+         */
+
+        if (
+          data.status === "PUBLISHED" ||
+          data.status === "Published"
+        ) {
+          setStatus("Published");
+        } else {
+          setStatus("Draft");
+        }
       } catch (error) {
         console.error(
           "Load blog error:",
@@ -125,7 +144,9 @@ export default function EditBlogPostPage() {
         );
 
         setError(
-          "Something went wrong while loading the blog post."
+          error instanceof Error
+            ? error.message
+            : "Failed to load blog post."
         );
       } finally {
         setLoading(false);
@@ -135,20 +156,25 @@ export default function EditBlogPostPage() {
     loadBlog();
   }, [id]);
 
-
-  // ==========================================================
+  // ============================================================
   // SLUG
-  // ==========================================================
+  // ============================================================
 
   function generateSlug(value: string) {
     return value
       .toLowerCase()
       .trim()
-      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(
+        /[^a-z0-9\s-]/g,
+        ""
+      )
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
   }
 
+  // ============================================================
+  // TITLE CHANGE
+  // ============================================================
 
   function handleTitleChange(
     value: string
@@ -156,31 +182,33 @@ export default function EditBlogPostPage() {
     setTitle(value);
   }
 
-
-  // ==========================================================
+  // ============================================================
   // SAVE
-  // ==========================================================
+  // ============================================================
 
   async function handleSave(
-    publishStatus?: BlogStatus
+    saveStatus: BlogStatus = status
   ) {
-    if (!id) {
-      alert("Blog ID is missing.");
-      return;
-    }
-
     if (!title.trim()) {
-      alert("Please enter a story title.");
+      alert(
+        "Please enter a story title."
+      );
       return;
     }
 
     if (!slug.trim()) {
-      alert("Please enter a URL slug.");
+      alert(
+        "Please enter a URL slug."
+      );
       return;
     }
 
-    const finalStatus =
-      publishStatus || status;
+    if (!id) {
+      alert(
+        "Blog ID is missing."
+      );
+      return;
+    }
 
     setSaving(true);
     setError("");
@@ -190,11 +218,10 @@ export default function EditBlogPostPage() {
         `/api/admin/blog/${id}`,
         {
           method: "PUT",
-
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
-
           body: JSON.stringify({
             title: title.trim(),
 
@@ -205,9 +232,18 @@ export default function EditBlogPostPage() {
             shortIntro:
               excerpt.trim(),
 
-            status: finalStatus,
+            status: saveStatus,
 
             isFeatured: featured,
+
+            /*
+             * THIS IS THE IMPORTANT PART.
+             *
+             * The selected image URL is sent
+             * to the API and saved in Prisma.
+             */
+
+            coverImage,
 
             content,
           }),
@@ -220,166 +256,177 @@ export default function EditBlogPostPage() {
       if (!response.ok) {
         alert(
           data.error ||
-            "Failed to save blog post."
+            "Failed to update blog post."
         );
-
         return;
       }
 
-      setStatus(finalStatus);
+      setStatus(saveStatus);
+
+      /*
+       * Make sure the returned database
+       * value becomes the current image.
+       */
+
+      if (
+        data.blog &&
+        Object.prototype.hasOwnProperty.call(
+          data.blog,
+          "coverImage"
+        )
+      ) {
+        setCoverImage(
+          data.blog.coverImage || null
+        );
+      }
 
       setSaved(true);
 
       setTimeout(() => {
         setSaved(false);
-      }, 2500);
+      }, 1800);
+
     } catch (error) {
       console.error(
-        "Save blog error:",
+        "Update blog error:",
         error
       );
 
       alert(
-        "Something went wrong while saving the blog post."
+        "Something went wrong while updating the blog post."
       );
     } finally {
       setSaving(false);
     }
   }
 
+  // ============================================================
+  // READING TIME
+  // ============================================================
 
-  // ==========================================================
+  const readingTime = useMemo(() => {
+    const wordCount = content
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .length;
+
+    return Math.max(
+      1,
+      Math.ceil(wordCount / 200)
+    );
+  }, [content]);
+
+  // ============================================================
   // LOADING
-  // ==========================================================
+  // ============================================================
 
   if (loading) {
     return (
       <>
         <style>{`
 
-          .loading-page {
+          .editor-loading {
             min-height: 100vh;
-            padding: 180px 8vw;
-          }
-
-          .loading-page h1 {
-            font:
-              clamp(3rem, 7vw, 6rem)
-              / .95
-              var(--serif);
-
-            margin: 15px 0;
-          }
-
-          .loading-page p {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--muted);
-          }
-
-        `}</style>
-
-        <main className="loading-page">
-
-          <span className="eyebrow">
-            BLOG · ADMIN
-          </span>
-
-          <h1>
-            Loading story...
-          </h1>
-
-          <p>
-            Loading the story from the database.
-          </p>
-
-        </main>
-      </>
-    );
-  }
-
-
-  // ==========================================================
-  // NOT FOUND / ERROR
-  // ==========================================================
-
-  if (!post || error) {
-    return (
-      <>
-        <style>{`
-
-          .not-found {
-            min-height: 100vh;
-            padding: 180px 8vw;
-          }
-
-          .not-found h1 {
-            font:
-              clamp(3rem, 7vw, 6rem)
-              / .95
-              var(--serif);
-
-            margin: 15px 0;
-          }
-
-          .not-found p {
-            color: var(--muted);
-            margin-bottom: 30px;
-          }
-
-          .back-button {
-            display: inline-block;
-            padding: 13px 18px;
-            border: 1px solid var(--accent);
-            background: var(--accent);
-            color: #15110b;
-            font-size: .7rem;
-            letter-spacing: .08em;
+            font-size: .8rem;
+            letter-spacing: .1em;
             text-transform: uppercase;
           }
 
         `}</style>
 
-        <main className="not-found">
+        <main className="editor-loading">
+          Loading story...
+        </main>
+      </>
+    );
+  }
 
-          <span className="eyebrow">
-            BLOG · ADMIN
-          </span>
+  // ============================================================
+  // ERROR
+  // ============================================================
 
-          <h1>
-            Story not found.
-          </h1>
+  if (error) {
+    return (
+      <>
+        <style>{`
 
-          <p>
-            {error ||
-              "The blog post you're trying to edit doesn't exist."}
-          </p>
+          .editor-error-page {
+            min-height: 100vh;
+            padding: 150px 6vw;
+          }
 
-          <Link
-            href="/admin/blog"
-            className="back-button"
-          >
-            ← Back to Blog
-          </Link>
+          .editor-error-box {
+            max-width: 700px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,.1);
+            background: var(--panel);
+          }
+
+          .editor-error-box h1 {
+            font: 3rem/.95 var(--serif);
+            margin: 0 0 15px;
+          }
+
+          .editor-error-box p {
+            color: var(--muted);
+            margin-bottom: 25px;
+          }
+
+        `}</style>
+
+        <main className="editor-error-page">
+
+          <div className="editor-error-box">
+
+            <h1>
+              Something went wrong
+            </h1>
+
+            <p>
+              {error}
+            </p>
+
+            <Link
+              href="/admin/blog"
+              className="editor-button"
+            >
+              ← Back to Blog
+            </Link>
+
+          </div>
 
         </main>
       </>
     );
   }
 
-
-  // ==========================================================
-  // EDIT PAGE
-  // ==========================================================
+  // ============================================================
+  // PAGE
+  // ============================================================
 
   return (
     <>
       <style>{`
 
-        .edit-page {
+        /* ======================================================
+           PAGE
+           ====================================================== */
+
+        .editor-page {
           min-height: 100vh;
           padding: 150px 6vw 100px;
         }
 
-        .edit-header {
+        /* ======================================================
+           HEADER
+           ====================================================== */
+
+        .editor-header {
           display: flex;
           justify-content: space-between;
           align-items: end;
@@ -388,28 +435,26 @@ export default function EditBlogPostPage() {
           border-bottom: 1px solid var(--line);
         }
 
-        .edit-header h1 {
-          font:
-            clamp(3rem, 6vw, 6rem)
-            / .95
-            var(--serif);
-
+        .editor-header h1 {
+          font: clamp(3rem, 6vw, 6rem) / .95 var(--serif);
           margin: 12px 0;
         }
 
-        .edit-header p {
+        .editor-header p {
           color: var(--muted);
           margin: 0;
         }
 
-        .edit-actions {
+        .editor-header-actions {
           display: flex;
           gap: 10px;
           flex-wrap: wrap;
         }
 
-        .edit-button {
-          display: inline-block;
+        .editor-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           padding: 13px 18px;
           border: 1px solid var(--line);
           color: var(--text);
@@ -418,53 +463,61 @@ export default function EditBlogPostPage() {
           font-size: .68rem;
           letter-spacing: .08em;
           text-transform: uppercase;
+          text-decoration: none;
         }
 
-        .edit-button:hover {
+        .editor-button:hover {
           border-color: var(--accent);
           color: var(--accent);
         }
 
-        .edit-button.primary {
+        .editor-button.primary {
           background: var(--accent);
           border-color: var(--accent);
           color: #15110b;
         }
 
-        .edit-button.primary:hover {
+        .editor-button.primary:hover {
           background: var(--accent2);
+          color: #15110b;
         }
 
-        .edit-button:disabled {
+        .editor-button:disabled {
           opacity: .55;
           cursor: not-allowed;
         }
 
-        .edit-layout {
+        /* ======================================================
+           LAYOUT
+           ====================================================== */
+
+        .editor-layout {
           display: grid;
           grid-template-columns:
-            minmax(0, 1fr)
-            330px;
-
+            minmax(0, 1fr) 330px;
           gap: 35px;
           margin-top: 45px;
           align-items: start;
         }
 
-        .edit-main {
+        .editor-main {
           min-width: 0;
         }
 
-        .edit-sidebar {
+        .editor-sidebar {
           position: sticky;
           top: 110px;
         }
 
-        .edit-field {
+        /* ======================================================
+           FIELD
+           ====================================================== */
+
+        .editor-field {
           margin-bottom: 28px;
         }
 
-        .edit-label {
+        .editor-label {
           display: block;
           color: var(--accent);
           font-size: .68rem;
@@ -474,10 +527,11 @@ export default function EditBlogPostPage() {
           margin-bottom: 10px;
         }
 
-        .edit-input,
-        .edit-select,
-        .edit-textarea {
+        .editor-input,
+        .editor-select,
+        .editor-textarea {
           width: 100%;
+          box-sizing: border-box;
           background: var(--panel);
           color: var(--text);
           border: 1px solid var(--line);
@@ -485,38 +539,39 @@ export default function EditBlogPostPage() {
           font: inherit;
         }
 
-        .edit-input {
+        .editor-input {
           padding: 16px 18px;
+          font-size: 1rem;
         }
 
-        .edit-input.title-input {
+        .editor-input.title-input {
           font:
             clamp(2rem, 4vw, 4rem)
             / 1.05
             var(--serif);
-
           padding: 22px;
         }
 
-        .edit-input:focus,
-        .edit-select:focus,
-        .edit-textarea:focus {
+        .editor-input:focus,
+        .editor-select:focus,
+        .editor-textarea:focus {
           border-color: var(--accent);
         }
 
-        .edit-textarea {
+        .editor-textarea {
           min-height: 500px;
           resize: vertical;
           padding: 22px;
           line-height: 1.8;
         }
 
-        .edit-textarea.excerpt {
-          min-height: 130px;
-        }
+        /* ======================================================
+           SLUG
+           ====================================================== */
 
         .slug-row {
           display: flex;
+          align-items: stretch;
         }
 
         .slug-prefix {
@@ -528,7 +583,27 @@ export default function EditBlogPostPage() {
           border-right: 0;
           color: var(--muted);
           font-size: .8rem;
+          white-space: nowrap;
         }
+
+        .slug-row .editor-input {
+          min-width: 0;
+        }
+
+        /* ======================================================
+           CHARACTER COUNT
+           ====================================================== */
+
+        .character-count {
+          text-align: right;
+          margin-top: 6px;
+          color: var(--muted);
+          font-size: .68rem;
+        }
+
+        /* ======================================================
+           TOOLBAR
+           ====================================================== */
 
         .editor-toolbar {
           display: flex;
@@ -555,18 +630,22 @@ export default function EditBlogPostPage() {
           border-color: var(--line);
         }
 
+        /* ======================================================
+           SIDEBAR
+           ====================================================== */
+
         .sidebar-card {
           background: var(--panel);
           border: 1px solid var(--line);
           margin-bottom: 18px;
         }
 
-        .sidebar-header {
+        .sidebar-card-header {
           padding: 18px 20px;
           border-bottom: 1px solid var(--line);
         }
 
-        .sidebar-header span {
+        .sidebar-card-header span {
           color: var(--accent);
           font-size: .67rem;
           letter-spacing: .13em;
@@ -574,7 +653,7 @@ export default function EditBlogPostPage() {
           font-weight: 700;
         }
 
-        .sidebar-body {
+        .sidebar-card-body {
           padding: 20px;
         }
 
@@ -593,9 +672,13 @@ export default function EditBlogPostPage() {
           margin-bottom: 8px;
         }
 
-        .edit-select {
+        .editor-select {
           padding: 12px;
         }
+
+        /* ======================================================
+           STATUS
+           ====================================================== */
 
         .status-options {
           display: grid;
@@ -619,6 +702,10 @@ export default function EditBlogPostPage() {
           border-color: var(--accent);
           color: #15110b;
         }
+
+        /* ======================================================
+           FEATURED
+           ====================================================== */
 
         .featured-toggle {
           display: flex;
@@ -668,33 +755,33 @@ export default function EditBlogPostPage() {
           transform: translateX(18px);
         }
 
-        .cover-placeholder {
-          min-height: 170px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          border: 1px dashed var(--line);
-          color: var(--muted);
-          padding: 25px;
-          font-size: .75rem;
-          line-height: 1.6;
+        /* ======================================================
+           COVER
+           ====================================================== */
+
+        .cover-wrapper {
+          width: 100%;
         }
 
-        .cover-placeholder strong {
+        /* ======================================================
+           DETAILS
+           ====================================================== */
+
+        .detail-value {
           display: block;
+          font-size: .85rem;
           color: var(--text);
-          font:
-            1.4rem
-            var(--serif);
-
-          margin-bottom: 6px;
+          word-break: break-word;
         }
 
-        .preview {
-          margin-top: 45px;
-          padding-top: 40px;
+        /* ======================================================
+           PREVIEW
+           ====================================================== */
+
+        .preview-box {
+          margin-top: 40px;
           border-top: 1px solid var(--line);
+          padding-top: 40px;
         }
 
         .preview-label {
@@ -703,6 +790,7 @@ export default function EditBlogPostPage() {
           letter-spacing: .13em;
           text-transform: uppercase;
           font-weight: 700;
+          margin-bottom: 20px;
         }
 
         .preview-title {
@@ -710,8 +798,7 @@ export default function EditBlogPostPage() {
             clamp(2.5rem, 5vw, 5rem)
             / .95
             var(--serif);
-
-          margin: 12px 0 20px;
+          margin: 10px 0 20px;
         }
 
         .preview-excerpt {
@@ -721,12 +808,24 @@ export default function EditBlogPostPage() {
           margin-bottom: 35px;
         }
 
+        .preview-cover {
+          width: 100%;
+          max-height: 550px;
+          object-fit: cover;
+          margin-bottom: 40px;
+          border: 1px solid var(--line);
+        }
+
         .preview-content {
           white-space: pre-wrap;
           max-width: 800px;
           line-height: 1.9;
           color: #d8d2c8;
         }
+
+        /* ======================================================
+           SAVE NOTICE
+           ====================================================== */
 
         .save-notice {
           position: fixed;
@@ -740,16 +839,21 @@ export default function EditBlogPostPage() {
           letter-spacing: .06em;
           text-transform: uppercase;
           box-shadow:
-            0 15px 40px rgba(0,0,0,.35);
+            0 15px 40px
+            rgba(0,0,0,.35);
         }
+
+        /* ======================================================
+           MOBILE
+           ====================================================== */
 
         @media (max-width: 950px) {
 
-          .edit-layout {
+          .editor-layout {
             grid-template-columns: 1fr;
           }
 
-          .edit-sidebar {
+          .editor-sidebar {
             position: static;
           }
 
@@ -757,15 +861,18 @@ export default function EditBlogPostPage() {
 
         @media (max-width: 700px) {
 
-          .edit-page {
-            padding: 110px 7vw 70px;
+          .editor-page {
+            padding:
+              110px
+              7vw
+              70px;
           }
 
-          .edit-header {
+          .editor-header {
             display: block;
           }
 
-          .edit-actions {
+          .editor-header-actions {
             margin-top: 25px;
           }
 
@@ -773,7 +880,7 @@ export default function EditBlogPostPage() {
             display: none;
           }
 
-          .edit-input.title-input {
+          .editor-input.title-input {
             font-size: 2rem;
           }
 
@@ -781,19 +888,18 @@ export default function EditBlogPostPage() {
 
       `}</style>
 
+      <main className="editor-page">
 
-      <main className="edit-page">
-
-        {/* ==================================================
+        {/* ====================================================
             HEADER
-        ================================================== */}
+            ==================================================== */}
 
-        <header className="edit-header">
+        <header className="editor-header">
 
           <div>
 
             <span className="eyebrow">
-              NOMADS OF ADITYA · BLOG · EDIT
+              NOMADS OF ADITYA · BLOG
             </span>
 
             <h1>
@@ -807,23 +913,21 @@ export default function EditBlogPostPage() {
 
           </div>
 
-
-          <div className="edit-actions">
+          <div className="editor-header-actions">
 
             <Link
               href="/admin/blog"
-              className="edit-button"
+              className="editor-button"
             >
               ← Back to Blog
             </Link>
 
-
             <button
               type="button"
-              className="edit-button"
+              className="editor-button"
               disabled={saving}
               onClick={() =>
-                handleSave()
+                handleSave("Draft")
               }
             >
               {saving
@@ -831,10 +935,9 @@ export default function EditBlogPostPage() {
                 : "Save Changes"}
             </button>
 
-
             <button
               type="button"
-              className="edit-button primary"
+              className="editor-button primary"
               disabled={saving}
               onClick={() =>
                 handleSave("Published")
@@ -849,47 +952,44 @@ export default function EditBlogPostPage() {
 
         </header>
 
+        {/* ====================================================
+            EDITOR LAYOUT
+            ==================================================== */}
 
-        {/* ==================================================
-            EDITOR
-        ================================================== */}
-
-        <div className="edit-layout">
-
+        <div className="editor-layout">
 
           {/* ==================================================
               MAIN
-          ================================================== */}
+              ================================================== */}
 
-          <section className="edit-main">
-
+          <section className="editor-main">
 
             {/* TITLE */}
 
-            <div className="edit-field">
+            <div className="editor-field">
 
-              <label className="edit-label">
+              <label className="editor-label">
                 Story Title
               </label>
 
               <input
-                className="edit-input title-input"
+                className="editor-input title-input"
                 value={title}
-                onChange={(e) =>
+                onChange={(event) =>
                   handleTitleChange(
-                    e.target.value
+                    event.target.value
                   )
                 }
+                placeholder="Give your story a name..."
               />
 
             </div>
 
-
             {/* SLUG */}
 
-            <div className="edit-field">
+            <div className="editor-field">
 
-              <label className="edit-label">
+              <label className="editor-label">
                 URL Slug
               </label>
 
@@ -900,51 +1000,59 @@ export default function EditBlogPostPage() {
                 </div>
 
                 <input
-                  className="edit-input"
+                  className="editor-input"
                   value={slug}
-                  onChange={(e) =>
+                  onChange={(event) =>
                     setSlug(
                       generateSlug(
-                        e.target.value
+                        event.target.value
                       )
                     )
                   }
+                  placeholder="your-story-slug"
                 />
 
               </div>
 
             </div>
 
+            {/* EXCERPT */}
 
-            {/* DESCRIPTION */}
+            <div className="editor-field">
 
-            <div className="edit-field">
-
-              <label className="edit-label">
+              <label className="editor-label">
                 Short Description
               </label>
 
               <textarea
-                className="edit-textarea excerpt"
+                className="editor-textarea"
+                style={{
+                  minHeight:
+                    "130px",
+                }}
                 value={excerpt}
-                onChange={(e) =>
+                onChange={(event) =>
                   setExcerpt(
-                    e.target.value
+                    event.target.value
                   )
                 }
+                placeholder="A short description that appears on the Blog page..."
               />
+
+              <div className="character-count">
+                {excerpt.length}{" "}
+                characters
+              </div>
 
             </div>
 
-
             {/* CONTENT */}
 
-            <div className="edit-field">
+            <div className="editor-field">
 
-              <label className="edit-label">
+              <label className="editor-label">
                 Story Content
               </label>
-
 
               <div className="editor-toolbar">
 
@@ -962,7 +1070,6 @@ export default function EditBlogPostPage() {
                   H1
                 </button>
 
-
                 <button
                   type="button"
                   className="toolbar-button"
@@ -976,7 +1083,6 @@ export default function EditBlogPostPage() {
                 >
                   H2
                 </button>
-
 
                 <button
                   type="button"
@@ -992,7 +1098,6 @@ export default function EditBlogPostPage() {
                   B
                 </button>
 
-
                 <button
                   type="button"
                   className="toolbar-button"
@@ -1007,7 +1112,6 @@ export default function EditBlogPostPage() {
                   Quote
                 </button>
 
-
                 <button
                   type="button"
                   className="toolbar-button"
@@ -1021,7 +1125,6 @@ export default function EditBlogPostPage() {
                 >
                   Divider
                 </button>
-
 
                 <button
                   type="button"
@@ -1039,72 +1142,85 @@ export default function EditBlogPostPage() {
 
               </div>
 
-
               <textarea
-                className="edit-textarea"
+                className="editor-textarea"
                 value={content}
-                onChange={(e) =>
+                onChange={(event) =>
                   setContent(
-                    e.target.value
+                    event.target.value
                   )
                 }
+                placeholder={`Start writing your story...
+
+Tell the story naturally.
+
+Write about the road.
+The people.
+The places.
+The things you noticed.`}
               />
 
             </div>
 
-
-            {/* ==================================================
+            {/* =================================================
                 PREVIEW
-            ================================================== */}
+                ================================================= */}
 
-            <section className="preview">
+            <section className="preview-box">
 
               <div className="preview-label">
-                Story Preview
+                Live Preview
               </div>
 
+              {coverImage && (
+                <img
+                  src={coverImage}
+                  alt={
+                    title ||
+                    "Blog cover"
+                  }
+                  className="preview-cover"
+                />
+              )}
 
-              <h2 className="preview-title">
-                {title}
-              </h2>
+              <div className="preview-title">
+                {title ||
+                  "Your story title"}
+              </div>
 
-
-              <p className="preview-excerpt">
-                {excerpt}
-              </p>
-
+              <div className="preview-excerpt">
+                {excerpt ||
+                  "Your short description will appear here."}
+              </div>
 
               <div className="preview-content">
-                {content}
+                {content ||
+                  "Your story content will appear here as you write."}
               </div>
 
             </section>
 
           </section>
 
-
           {/* ==================================================
               SIDEBAR
-          ================================================== */}
+              ================================================== */}
 
-          <aside className="edit-sidebar">
+          <aside className="editor-sidebar">
 
-
-            {/* PUBLISHING */}
+            {/* =================================================
+                PUBLISHING
+                ================================================= */}
 
             <div className="sidebar-card">
 
-              <div className="sidebar-header">
-
+              <div className="sidebar-card-header">
                 <span>
                   Publishing
                 </span>
-
               </div>
 
-
-              <div className="sidebar-body">
-
+              <div className="sidebar-card-body">
 
                 <div className="sidebar-field">
 
@@ -1112,23 +1228,24 @@ export default function EditBlogPostPage() {
                     Status
                   </label>
 
-
                   <div className="status-options">
 
                     <button
                       type="button"
                       className={`status-option ${
-                        status === "Draft"
+                        status ===
+                        "Draft"
                           ? "active"
                           : ""
                       }`}
                       onClick={() =>
-                        setStatus("Draft")
+                        setStatus(
+                          "Draft"
+                        )
                       }
                     >
                       Draft
                     </button>
-
 
                     <button
                       type="button"
@@ -1151,44 +1268,40 @@ export default function EditBlogPostPage() {
 
                 </div>
 
-
                 <div className="sidebar-field">
 
                   <label className="sidebar-label">
                     Category
                   </label>
 
-
                   <select
-                    className="edit-select"
+                    className="editor-select"
                     value={category}
-                    onChange={(e) =>
+                    onChange={(event) =>
                       setCategory(
-                        e.target.value
+                        event.target.value
                       )
                     }
                   >
-
-                    <option>
+                    <option value="Travel">
                       Travel
                     </option>
 
-                    <option>
+                    <option value="Thoughts">
                       Thoughts
                     </option>
 
-                    <option>
+                    <option value="People">
                       People
                     </option>
 
-                    <option>
+                    <option value="Photography">
                       Photography
                     </option>
 
-                    <option>
+                    <option value="Life">
                       Life
                     </option>
-
                   </select>
 
                 </div>
@@ -1197,24 +1310,21 @@ export default function EditBlogPostPage() {
 
             </div>
 
-
-            {/* FEATURED */}
+            {/* =================================================
+                FEATURED
+                ================================================= */}
 
             <div className="sidebar-card">
 
-              <div className="sidebar-header">
-
+              <div className="sidebar-card-header">
                 <span>
                   Homepage
                 </span>
-
               </div>
 
-
-              <div className="sidebar-body">
+              <div className="sidebar-card-body">
 
                 <div className="featured-toggle">
-
 
                   <div className="featured-copy">
 
@@ -1229,9 +1339,9 @@ export default function EditBlogPostPage() {
 
                   </div>
 
-
                   <button
                     type="button"
+                    aria-label="Toggle featured story"
                     className={`toggle ${
                       featured
                         ? "active"
@@ -1239,7 +1349,8 @@ export default function EditBlogPostPage() {
                     }`}
                     onClick={() =>
                       setFeatured(
-                        !featured
+                        (current) =>
+                          !current
                       )
                     }
                   >
@@ -1252,35 +1363,30 @@ export default function EditBlogPostPage() {
 
             </div>
 
-
-            {/* COVER */}
+            {/* =================================================
+                COVER IMAGE
+                ================================================= */}
 
             <div className="sidebar-card">
 
-              <div className="sidebar-header">
-
+              <div className="sidebar-card-header">
                 <span>
                   Cover Image
                 </span>
-
               </div>
 
+              <div className="sidebar-card-body">
 
-              <div className="sidebar-body">
+                <div className="cover-wrapper">
 
-                <div className="cover-placeholder">
-
-                  <div>
-
-                    <strong>
-                      Media Library
-                    </strong>
-
-                    Cover image selection
-                    will be connected to
-                    your Media Library.
-
-                  </div>
+                  <CoverImageField
+                    initialImage={
+                      coverImage
+                    }
+                    onChange={
+                      setCoverImage
+                    }
+                  />
 
                 </div>
 
@@ -1288,22 +1394,19 @@ export default function EditBlogPostPage() {
 
             </div>
 
-
-            {/* DETAILS */}
+            {/* =================================================
+                STORY DETAILS
+                ================================================= */}
 
             <div className="sidebar-card">
 
-              <div className="sidebar-header">
-
+              <div className="sidebar-card-header">
                 <span>
                   Story Details
                 </span>
-
               </div>
 
-
-              <div className="sidebar-body">
-
+              <div className="sidebar-card-body">
 
                 <div className="sidebar-field">
 
@@ -1311,13 +1414,11 @@ export default function EditBlogPostPage() {
                     Author
                   </label>
 
-                  <strong>
-                    {post.author?.name ||
-                      "Aditya"}
+                  <strong className="detail-value">
+                    Aditya
                   </strong>
 
                 </div>
-
 
                 <div className="sidebar-field">
 
@@ -1325,25 +1426,12 @@ export default function EditBlogPostPage() {
                     Reading Time
                   </label>
 
-                  <strong>
-
-                    {Math.max(
-                      1,
-                      Math.ceil(
-                        content
-                          .trim()
-                          .split(/\s+/)
-                          .filter(Boolean)
-                          .length /
-                          200
-                      )
-                    )}{" "}
+                  <strong className="detail-value">
+                    {readingTime}{" "}
                     min read
-
                   </strong>
 
                 </div>
-
 
                 <div className="sidebar-field">
 
@@ -1351,7 +1439,7 @@ export default function EditBlogPostPage() {
                     Current Status
                   </label>
 
-                  <strong>
+                  <strong className="detail-value">
                     {status}
                   </strong>
 
@@ -1367,15 +1455,15 @@ export default function EditBlogPostPage() {
 
       </main>
 
-
-      {/* SAVE NOTICE */}
+      {/* ======================================================
+          SAVE NOTICE
+          ====================================================== */}
 
       {saved && (
         <div className="save-notice">
           Changes saved
         </div>
       )}
-
     </>
   );
 }

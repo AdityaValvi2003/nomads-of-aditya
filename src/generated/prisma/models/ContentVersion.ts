@@ -228,9 +228,9 @@ export type ContentVersionWhereInput = {
   blogId?: Prisma.StringNullableFilter<"ContentVersion"> | string | null
   createdById?: Prisma.StringFilter<"ContentVersion"> | string
   createdAt?: Prisma.DateTimeFilter<"ContentVersion"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }
 
 export type ContentVersionOrderByWithRelationInput = {
@@ -241,9 +241,9 @@ export type ContentVersionOrderByWithRelationInput = {
   blogId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  journey?: Prisma.JourneyOrderByWithRelationInput
   blog?: Prisma.BlogOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  journey?: Prisma.JourneyOrderByWithRelationInput
 }
 
 export type ContentVersionWhereUniqueInput = Prisma.AtLeast<{
@@ -259,9 +259,9 @@ export type ContentVersionWhereUniqueInput = Prisma.AtLeast<{
   blogId?: Prisma.StringNullableFilter<"ContentVersion"> | string | null
   createdById?: Prisma.StringFilter<"ContentVersion"> | string
   createdAt?: Prisma.DateTimeFilter<"ContentVersion"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }, "id" | "journeyId_versionNumber" | "blogId_versionNumber">
 
 export type ContentVersionOrderByWithAggregationInput = {
@@ -297,9 +297,9 @@ export type ContentVersionCreateInput = {
   versionNumber: number
   snapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutVersionsInput
   blog?: Prisma.BlogCreateNestedOneWithoutVersionsInput
   createdBy: Prisma.UserCreateNestedOneWithoutVersionsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutVersionsInput
 }
 
 export type ContentVersionUncheckedCreateInput = {
@@ -317,9 +317,9 @@ export type ContentVersionUpdateInput = {
   versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
   snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutVersionsNestedInput
   blog?: Prisma.BlogUpdateOneWithoutVersionsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutVersionsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutVersionsNestedInput
 }
 
 export type ContentVersionUncheckedUpdateInput = {
@@ -546,8 +546,8 @@ export type ContentVersionCreateWithoutCreatedByInput = {
   versionNumber: number
   snapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutVersionsInput
   blog?: Prisma.BlogCreateNestedOneWithoutVersionsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutVersionsInput
 }
 
 export type ContentVersionUncheckedCreateWithoutCreatedByInput = {
@@ -647,8 +647,8 @@ export type ContentVersionCreateWithoutBlogInput = {
   versionNumber: number
   snapshot: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutVersionsInput
   createdBy: Prisma.UserCreateNestedOneWithoutVersionsInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutVersionsInput
 }
 
 export type ContentVersionUncheckedCreateWithoutBlogInput = {
@@ -700,8 +700,8 @@ export type ContentVersionUpdateWithoutCreatedByInput = {
   versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
   snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutVersionsNestedInput
   blog?: Prisma.BlogUpdateOneWithoutVersionsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutVersionsNestedInput
 }
 
 export type ContentVersionUncheckedUpdateWithoutCreatedByInput = {
@@ -772,8 +772,8 @@ export type ContentVersionUpdateWithoutBlogInput = {
   versionNumber?: Prisma.IntFieldUpdateOperationsInput | number
   snapshot?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutVersionsNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutVersionsNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutVersionsNestedInput
 }
 
 export type ContentVersionUncheckedUpdateWithoutBlogInput = {
@@ -804,9 +804,9 @@ export type ContentVersionSelect<ExtArgs extends runtime.Types.Extensions.Intern
   blogId?: boolean
   createdById?: boolean
   createdAt?: boolean
-  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentVersion$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["contentVersion"]>
 
 export type ContentVersionSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -817,9 +817,9 @@ export type ContentVersionSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   blogId?: boolean
   createdById?: boolean
   createdAt?: boolean
-  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentVersion$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["contentVersion"]>
 
 export type ContentVersionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -830,9 +830,9 @@ export type ContentVersionSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   blogId?: boolean
   createdById?: boolean
   createdAt?: boolean
-  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentVersion$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["contentVersion"]>
 
 export type ContentVersionSelectScalar = {
@@ -847,27 +847,27 @@ export type ContentVersionSelectScalar = {
 
 export type ContentVersionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "versionNumber" | "snapshot" | "journeyId" | "blogId" | "createdById" | "createdAt", ExtArgs["result"]["contentVersion"]>
 export type ContentVersionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentVersion$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
 }
 export type ContentVersionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentVersion$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
 }
 export type ContentVersionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.ContentVersion$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.ContentVersion$journeyArgs<ExtArgs>
 }
 
 export type $ContentVersionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ContentVersion"
   objects: {
-    journey: Prisma.$JourneyPayload<ExtArgs> | null
     blog: Prisma.$BlogPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs>
+    journey: Prisma.$JourneyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1271,9 +1271,9 @@ readonly fields: ContentVersionFieldRefs;
  */
 export interface Prisma__ContentVersionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journey<T extends Prisma.ContentVersion$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentVersion$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   blog<T extends Prisma.ContentVersion$blogArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentVersion$blogArgs<ExtArgs>>): Prisma.Prisma__BlogClient<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  journey<T extends Prisma.ContentVersion$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ContentVersion$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1711,25 +1711,6 @@ export type ContentVersionDeleteManyArgs<ExtArgs extends runtime.Types.Extension
 }
 
 /**
- * ContentVersion.journey
- */
-export type ContentVersion$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Journey
-   */
-  select?: Prisma.JourneySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Journey
-   */
-  omit?: Prisma.JourneyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.JourneyInclude<ExtArgs> | null
-  where?: Prisma.JourneyWhereInput
-}
-
-/**
  * ContentVersion.blog
  */
 export type ContentVersion$blogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1746,6 +1727,25 @@ export type ContentVersion$blogArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   include?: Prisma.BlogInclude<ExtArgs> | null
   where?: Prisma.BlogWhereInput
+}
+
+/**
+ * ContentVersion.journey
+ */
+export type ContentVersion$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
 }
 
 /**

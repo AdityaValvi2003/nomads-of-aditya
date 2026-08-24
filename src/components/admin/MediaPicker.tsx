@@ -33,17 +33,22 @@ export default function MediaPicker({
         setLoading(true);
         setError("");
 
-        const response = await fetch("/api/admin/media");
+        const response = await fetch(
+          "/api/admin/media"
+        );
 
         const data = await response.json();
 
         if (!response.ok) {
           throw new Error(
-            data.error || "Failed to load media."
+            data.error ||
+              "Failed to load media."
           );
         }
 
-        setMedia(Array.isArray(data) ? data : []);
+        setMedia(
+          Array.isArray(data) ? data : []
+        );
       } catch (error) {
         setError(
           error instanceof Error
@@ -59,17 +64,27 @@ export default function MediaPicker({
   }, []);
 
   const filteredMedia = media.filter((item) => {
-    const query = search.toLowerCase().trim();
+    const query = search
+      .toLowerCase()
+      .trim();
 
     if (!query) {
       return true;
     }
 
     return (
-      item.fileName.toLowerCase().includes(query) ||
-      item.altText?.toLowerCase().includes(query) ||
-      item.caption?.toLowerCase().includes(query) ||
-      item.location?.toLowerCase().includes(query)
+      item.fileName
+        .toLowerCase()
+        .includes(query) ||
+      item.altText
+        ?.toLowerCase()
+        .includes(query) ||
+      item.caption
+        ?.toLowerCase()
+        .includes(query) ||
+      item.location
+        ?.toLowerCase()
+        .includes(query)
     );
   });
 
@@ -116,6 +131,7 @@ export default function MediaPicker({
         {/* CONTENT */}
 
         <div className="min-h-0 flex-1 overflow-y-auto p-5">
+
           {loading && (
             <div className="py-16 text-center">
               <p className="text-sm text-white/40">
@@ -144,14 +160,18 @@ export default function MediaPicker({
             !error &&
             filteredMedia.length > 0 && (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+
                 {filteredMedia.map((item) => (
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => onSelect(item)}
+                    onClick={() =>
+                      onSelect(item)
+                    }
                     className="group overflow-hidden rounded-xl border border-white/10 bg-black/30 text-left transition hover:border-[#D99A3D]/60 hover:bg-white/[0.04]"
                   >
                     <div className="aspect-[4/3] overflow-hidden bg-black">
+
                       <img
                         src={item.url}
                         alt={
@@ -160,9 +180,11 @@ export default function MediaPicker({
                         }
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                       />
+
                     </div>
 
                     <div className="p-4">
+
                       <p className="truncate text-sm font-medium text-white/80">
                         {item.fileName}
                       </p>
@@ -176,19 +198,25 @@ export default function MediaPicker({
                       <p className="mt-3 text-xs text-[#D99A3D] opacity-0 transition group-hover:opacity-100">
                         Select image →
                       </p>
+
                     </div>
                   </button>
                 ))}
+
               </div>
             )}
+
         </div>
 
         {/* FOOTER */}
 
         <div className="flex items-center justify-between border-t border-white/10 p-5">
+
           <p className="text-xs text-white/30">
             {filteredMedia.length} photograph
-            {filteredMedia.length === 1 ? "" : "s"}
+            {filteredMedia.length === 1
+              ? ""
+              : "s"}
           </p>
 
           <button
@@ -198,7 +226,9 @@ export default function MediaPicker({
           >
             Cancel
           </button>
+
         </div>
+
       </div>
     </div>
   );

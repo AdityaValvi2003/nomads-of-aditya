@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
+
 import { prisma } from "../../../../src/lib/prisma";
+
 import { getSession } from "../../../../src/lib/auth";
+
 import {
   ContentBlockType,
   ContentStatus,
 } from "../../../../src/generated/prisma/enums";
-
 
 // ============================================================
 // GET — LOAD ALL BLOG POSTS
@@ -13,107 +15,152 @@ import {
 
 export async function GET() {
   try {
-    const session = await getSession();
+    // --------------------------------------------------------
+    // AUTHENTICATION
+    // --------------------------------------------------------
+
+    const session =
+      await getSession();
 
     if (!session) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
     }
 
-    const blogs = await prisma.blog.findMany({
-      orderBy: {
-        createdAt: "desc",
-      },
+    // --------------------------------------------------------
+    // LOAD BLOGS
+    // --------------------------------------------------------
 
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
+    const blogs =
+      await prisma.blog.findMany({
+        orderBy: {
+          createdAt: "desc",
         },
 
-        contentBlocks: {
-          orderBy: {
-            position: "asc",
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+
+          contentBlocks: {
+            orderBy: {
+              position: "asc",
+            },
           },
         },
-      },
-    });
+      });
 
-    const posts = blogs.map((blog) => {
-      const contentText = blog.contentBlocks
-        .map((block) => {
-          const data = block.data as {
-            text?: string;
-          };
+    // --------------------------------------------------------
+    // FORMAT BLOGS
+    // --------------------------------------------------------
 
-          return data?.text || "";
-        })
-        .join("\n");
+    const posts = blogs.map(
+      (blog) => {
+        const contentText =
+          blog.contentBlocks
+            .map((block) => {
+              const data =
+                block.data as {
+                  text?: string;
+                };
 
-      const wordCount = contentText
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean).length;
+              return (
+                data?.text || ""
+              );
+            })
+            .join("\n");
 
-      const readTime = Math.max(
-        1,
-        Math.ceil(wordCount / 200)
-      );
+        const wordCount =
+          contentText
+            .trim()
+            .split(/\s+/)
+            .filter(Boolean)
+            .length;
 
-      return {
-        id: blog.id,
-        title: blog.title,
-        slug: blog.slug,
-
-        excerpt:
-          blog.shortIntro ||
-          blog.subtitle ||
-          "",
-
-        category:
-          blog.subtitle ||
-          "Travel",
-
-        status: blog.status,
-
-        date: blog.publishedAt
-          ? blog.publishedAt.toLocaleDateString(
-              "en-IN",
-              {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              }
+        const readTime =
+          Math.max(
+            1,
+            Math.ceil(
+              wordCount / 200
             )
-          : blog.createdAt.toLocaleDateString(
-              "en-IN",
-              {
-                day: "2-digit",
-                month: "short",
-                year: "numeric",
-              }
-            ),
+          );
 
-        readTime: `${readTime} min read`,
+        return {
+          id: blog.id,
 
-        featured: blog.isFeatured,
+          title: blog.title,
 
-        coverImage: blog.coverImage,
+          slug: blog.slug,
 
-        author: blog.author,
+          excerpt:
+            blog.shortIntro ||
+            blog.subtitle ||
+            "",
 
-        createdAt: blog.createdAt,
-        updatedAt: blog.updatedAt,
-        publishedAt: blog.publishedAt,
-      };
-    });
+          category:
+            blog.subtitle ||
+            "Travel",
 
-    return NextResponse.json(posts);
+          status:
+            blog.status,
+
+          date:
+            blog.publishedAt
+              ? blog.publishedAt.toLocaleDateString(
+                  "en-IN",
+                  {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }
+                )
+              : blog.createdAt.toLocaleDateString(
+                  "en-IN",
+                  {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  }
+                ),
+
+          readTime:
+            `${readTime} min read`,
+
+          featured:
+            blog.isFeatured,
+
+          // IMPORTANT
+          coverImage:
+            blog.coverImage,
+
+          author:
+            blog.author,
+
+          createdAt:
+            blog.createdAt,
+
+          updatedAt:
+            blog.updatedAt,
+
+          publishedAt:
+            blog.publishedAt,
+        };
+      }
+    );
+
+    return NextResponse.json(
+      posts
+    );
   } catch (error) {
     console.error(
       "GET /api/admin/blog error:",
@@ -122,7 +169,8 @@ export async function GET() {
 
     return NextResponse.json(
       {
-        error: "Failed to load blog posts.",
+        error:
+          "Failed to load blog posts.",
       },
       {
         status: 500,
@@ -130,7 +178,6 @@ export async function GET() {
     );
   }
 }
-
 
 // ============================================================
 // POST — CREATE NEW BLOG POST
@@ -144,7 +191,8 @@ export async function POST(
     // AUTHENTICATION
     // --------------------------------------------------------
 
-    const session = await getSession();
+    const session =
+      await getSession();
 
     if (!session) {
       return NextResponse.json(
@@ -157,12 +205,12 @@ export async function POST(
       );
     }
 
-
     // --------------------------------------------------------
     // REQUEST BODY
     // --------------------------------------------------------
 
-    const body = await request.json();
+    const body =
+      await request.json();
 
     const {
       title,
@@ -172,8 +220,10 @@ export async function POST(
       status,
       isFeatured,
       content,
-    } = body;
 
+      // IMPORTANT
+      coverImage,
+    } = body;
 
     // --------------------------------------------------------
     // VALIDATION
@@ -185,14 +235,14 @@ export async function POST(
     ) {
       return NextResponse.json(
         {
-          error: "Title is required.",
+          error:
+            "Title is required.",
         },
         {
           status: 400,
         }
       );
     }
-
 
     if (
       typeof slug !== "string" ||
@@ -200,14 +250,14 @@ export async function POST(
     ) {
       return NextResponse.json(
         {
-          error: "Slug is required.",
+          error:
+            "Slug is required.",
         },
         {
           status: 400,
         }
       );
     }
-
 
     if (
       status !== "Draft" &&
@@ -224,6 +274,21 @@ export async function POST(
       );
     }
 
+    // --------------------------------------------------------
+    // COVER IMAGE VALIDATION
+    // --------------------------------------------------------
+
+    let finalCoverImage:
+      string | null = null;
+
+    if (
+      typeof coverImage ===
+        "string" &&
+      coverImage.trim()
+    ) {
+      finalCoverImage =
+        coverImage.trim();
+    }
 
     // --------------------------------------------------------
     // CHECK SLUG
@@ -248,7 +313,6 @@ export async function POST(
       );
     }
 
-
     // --------------------------------------------------------
     // VERIFY AUTHOR
     // --------------------------------------------------------
@@ -272,7 +336,6 @@ export async function POST(
       );
     }
 
-
     // --------------------------------------------------------
     // MAP STATUS
     // --------------------------------------------------------
@@ -282,7 +345,6 @@ export async function POST(
         ? ContentStatus.PUBLISHED
         : ContentStatus.DRAFT;
 
-
     // --------------------------------------------------------
     // CREATE BLOG
     // --------------------------------------------------------
@@ -290,37 +352,72 @@ export async function POST(
     const blog =
       await prisma.blog.create({
         data: {
-          title: title.trim(),
+          // --------------------------------------------------
+          // BASIC
+          // --------------------------------------------------
 
-          slug: slug.trim(),
+          title:
+            title.trim(),
 
-          /*
-           * We currently use subtitle to store
-           * the category selected in the editor.
-           *
-           * Later we can add a dedicated category
-           * field to the Prisma schema.
-           */
+          slug:
+            slug.trim(),
+
+          // --------------------------------------------------
+          // CATEGORY
+          // --------------------------------------------------
+
           subtitle:
-            typeof subtitle === "string" &&
+            typeof subtitle ===
+              "string" &&
             subtitle.trim()
               ? subtitle.trim()
               : null,
 
+          // --------------------------------------------------
+          // DESCRIPTION
+          // --------------------------------------------------
+
           shortIntro:
-            typeof shortIntro === "string" &&
+            typeof shortIntro ===
+              "string" &&
             shortIntro.trim()
               ? shortIntro.trim()
               : null,
 
-          status: prismaStatus,
+          // --------------------------------------------------
+          // STATUS
+          // --------------------------------------------------
+
+          status:
+            prismaStatus,
+
+          // --------------------------------------------------
+          // FEATURED
+          // --------------------------------------------------
 
           isFeatured:
-            typeof isFeatured === "boolean"
+            typeof isFeatured ===
+            "boolean"
               ? isFeatured
               : false,
 
-          authorId: author.id,
+          // --------------------------------------------------
+          // COVER IMAGE
+          // --------------------------------------------------
+
+          coverImage:
+            finalCoverImage,
+
+          // --------------------------------------------------
+          // AUTHOR
+          // --------------------------------------------------
+
+          authorId:
+            author.id,
+
+          // --------------------------------------------------
+          // PUBLISHED DATE
+          // --------------------------------------------------
 
           publishedAt:
             prismaStatus ===
@@ -328,9 +425,14 @@ export async function POST(
               ? new Date()
               : null,
 
+          // --------------------------------------------------
+          // CONTENT
+          // --------------------------------------------------
+
           contentBlocks:
-            typeof content === "string" &&
-            content.trim()
+            typeof content ===
+                "string" &&
+              content.trim()
               ? {
                   create: {
                     type:
@@ -339,7 +441,8 @@ export async function POST(
                     position: 0,
 
                     data: {
-                      text: content,
+                      text:
+                        content,
                     },
                   },
                 }
@@ -363,7 +466,6 @@ export async function POST(
         },
       });
 
-
     // --------------------------------------------------------
     // RESPONSE
     // --------------------------------------------------------
@@ -371,7 +473,8 @@ export async function POST(
     return NextResponse.json(
       {
         message:
-          status === "Published"
+          status ===
+          "Published"
             ? "Blog post published successfully."
             : "Blog draft saved successfully.",
 
@@ -381,21 +484,19 @@ export async function POST(
         status: 201,
       }
     );
-
   } catch (error: unknown) {
-
     console.error(
       "POST /api/admin/blog error:",
       error
     );
 
-
     // --------------------------------------------------------
-    // PRISMA DUPLICATE ERROR
+    // DUPLICATE SLUG
     // --------------------------------------------------------
 
     if (
-      typeof error === "object" &&
+      typeof error ===
+        "object" &&
       error !== null &&
       "code" in error &&
       error.code === "P2002"
@@ -410,7 +511,6 @@ export async function POST(
         }
       );
     }
-
 
     // --------------------------------------------------------
     // GENERAL ERROR

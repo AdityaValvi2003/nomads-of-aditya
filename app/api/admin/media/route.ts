@@ -3,9 +3,16 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../src/lib/prisma";
 import { getSession } from "../../../../src/lib/auth";
 
+/*
+ * ============================================================
+ * GET — LOAD MEDIA LIBRARY
+ * ============================================================
+ */
+
 export async function GET() {
   try {
-    const session = await getSession();
+    const session =
+      await getSession();
 
     if (!session) {
       return NextResponse.json(
@@ -18,11 +25,18 @@ export async function GET() {
       );
     }
 
+    /*
+     * ----------------------------------------------------------
+     * LOAD MEDIA
+     * ----------------------------------------------------------
+     */
+
     const media =
       await prisma.mediaAsset.findMany({
         orderBy: {
           createdAt: "desc",
         },
+
         include: {
           journey: {
             select: {
@@ -30,10 +44,246 @@ export async function GET() {
               title: true,
             },
           },
+
+          blocks: {
+            select: {
+              id: true,
+              type: true,
+
+              journey: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+
+              blog: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+            },
+          },
+
+          encounter: {
+            select: {
+              id: true,
+              title: true,
+
+              journey: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+            },
+          },
         },
       });
 
-    return NextResponse.json(media);
+    /*
+     * ----------------------------------------------------------
+     * LOAD JOURNEY COVERS
+     * ----------------------------------------------------------
+     */
+
+    const journeyCovers =
+      await prisma.journey.findMany({
+        where: {
+          coverImage: {
+            not: null,
+          },
+        },
+
+        select: {
+          id: true,
+          title: true,
+          coverImage: true,
+        },
+      });
+
+    /*
+     * ----------------------------------------------------------
+     * LOAD BLOG COVERS
+     * ----------------------------------------------------------
+     */
+
+    const blogCovers =
+      await prisma.blog.findMany({
+        where: {
+          coverImage: {
+            not: null,
+          },
+        },
+
+        select: {
+          id: true,
+          title: true,
+          coverImage: true,
+        },
+      });
+
+    /*
+     * ----------------------------------------------------------
+     * BUILD USAGE
+     * ----------------------------------------------------------
+     */
+
+    const mediaWithUsage =
+      media.map((item) => {
+        const usage: Array<{
+          type:
+            | "JOURNEY"
+            | "JOURNEY_COVER"
+            | "BLOG_COVER"
+            | "CONTENT_BLOCK"
+            | "ENCOUNTER";
+
+          id: string;
+
+          title?: string;
+
+          blockType?: string;
+
+          journeyId?: string;
+
+          journeyTitle?: string;
+        }> = [];
+
+        /*
+         * JOURNEY ASSIGNMENT
+         */
+
+        if (item.journey) {
+          usage.push({
+            type: "JOURNEY",
+
+            id:
+              item.journey.id,
+
+            title:
+              item.journey.title,
+          });
+        }
+
+        /*
+         * JOURNEY COVER
+         */
+
+        for (
+          const journey of journeyCovers
+        ) {
+          if (
+            journey.coverImage ===
+            item.url
+          ) {
+            usage.push({
+              type:
+                "JOURNEY_COVER",
+
+              id:
+                journey.id,
+
+              title:
+                journey.title,
+            });
+          }
+        }
+
+        /*
+         * BLOG COVER
+         */
+
+        for (
+          const blog of blogCovers
+        ) {
+          if (
+            blog.coverImage ===
+            item.url
+          ) {
+            usage.push({
+              type:
+                "BLOG_COVER",
+
+              id:
+                blog.id,
+
+              title:
+                blog.title,
+            });
+          }
+        }
+
+        /*
+         * CONTENT BLOCKS
+         */
+
+        for (
+          const block of item.blocks
+        ) {
+          usage.push({
+            type:
+              "CONTENT_BLOCK",
+
+            id:
+              block.id,
+
+            title:
+              block.blog?.title,
+
+            blockType:
+              block.type,
+
+            journeyId:
+              block.journey?.id,
+
+            journeyTitle:
+              block.journey?.title,
+          });
+        }
+
+        /*
+         * ENCOUNTER
+         */
+
+        if (item.encounter) {
+          usage.push({
+            type:
+              "ENCOUNTER",
+
+            id:
+              item.encounter.id,
+
+            title:
+              item.encounter.title,
+
+            journeyId:
+              item.encounter
+                .journey?.id,
+
+            journeyTitle:
+              item.encounter
+                .journey?.title,
+          });
+        }
+
+        return {
+          ...item,
+
+          usage,
+
+          usageCount:
+            usage.length,
+
+          isUsed:
+            usage.length > 0,
+        };
+      });
+
+    return NextResponse.json(
+      mediaWithUsage
+    );
   } catch (error) {
     console.error(
       "GET media error:",
@@ -52,11 +302,18 @@ export async function GET() {
   }
 }
 
+/*
+ * ============================================================
+ * POST — UPLOAD MEDIA
+ * ============================================================
+ */
+
 export async function POST(
   request: Request
 ) {
   try {
-    const session = await getSession();
+    const session =
+      await getSession();
 
     if (!session) {
       return NextResponse.json(
@@ -69,6 +326,12 @@ export async function POST(
       );
     }
 
+    /*
+     * ----------------------------------------------------------
+     * FORM DATA
+     * ----------------------------------------------------------
+     */
+
     const formData =
       await request.formData();
 
@@ -76,26 +339,35 @@ export async function POST(
       formData.get("file");
 
     const altText =
-      typeof formData.get("altText") ===
-      "string"
+      typeof formData.get(
+        "altText"
+      ) === "string"
         ? String(
-            formData.get("altText")
+            formData.get(
+              "altText"
+            )
           ).trim()
         : "";
 
     const caption =
-      typeof formData.get("caption") ===
-      "string"
+      typeof formData.get(
+        "caption"
+      ) === "string"
         ? String(
-            formData.get("caption")
+            formData.get(
+              "caption"
+            )
           ).trim()
         : "";
 
     const location =
-      typeof formData.get("location") ===
-      "string"
+      typeof formData.get(
+        "location"
+      ) === "string"
         ? String(
-            formData.get("location")
+            formData.get(
+              "location"
+            )
           ).trim()
         : "";
 
@@ -133,7 +405,9 @@ export async function POST(
         : "";
 
     /*
-     * Validate file.
+     * ----------------------------------------------------------
+     * VALIDATE FILE
+     * ----------------------------------------------------------
      */
 
     if (!(file instanceof File)) {
@@ -148,7 +422,11 @@ export async function POST(
       );
     }
 
-    if (!file.type.startsWith("image/")) {
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
       return NextResponse.json(
         {
           error:
@@ -160,7 +438,10 @@ export async function POST(
       );
     }
 
-    if (file.size > 10 * 1024 * 1024) {
+    if (
+      file.size >
+      10 * 1024 * 1024
+    ) {
       return NextResponse.json(
         {
           error:
@@ -173,7 +454,9 @@ export async function POST(
     }
 
     /*
-     * Alt text is required.
+     * ----------------------------------------------------------
+     * ALT TEXT
+     * ----------------------------------------------------------
      */
 
     if (!altText) {
@@ -189,7 +472,9 @@ export async function POST(
     }
 
     /*
-     * Validate journey if provided.
+     * ----------------------------------------------------------
+     * VALIDATE JOURNEY
+     * ----------------------------------------------------------
      */
 
     let journeyId:
@@ -200,8 +485,10 @@ export async function POST(
       const journey =
         await prisma.journey.findUnique({
           where: {
-            id: journeyIdValue,
+            id:
+              journeyIdValue,
           },
+
           select: {
             id: true,
           },
@@ -219,24 +506,32 @@ export async function POST(
         );
       }
 
-      journeyId = journey.id;
+      journeyId =
+        journey.id;
     }
 
     /*
-     * Upload actual image to Vercel Blob.
+     * ----------------------------------------------------------
+     * UPLOAD TO VERCEL BLOB
+     * ----------------------------------------------------------
      */
 
-    const blob = await put(
-      file.name,
-      file,
-      {
-        access: "public",
-        addRandomSuffix: true,
-      }
-    );
+    const blob =
+      await put(
+        file.name,
+        file,
+        {
+          access: "public",
+
+          addRandomSuffix:
+            true,
+        }
+      );
 
     /*
-     * Convert captured date.
+     * ----------------------------------------------------------
+     * CAPTURE DATE
+     * ----------------------------------------------------------
      */
 
     let capturedDate:
@@ -246,7 +541,7 @@ export async function POST(
     if (capturedDateValue) {
       const parsedDate =
         new Date(
-          capturedDateValue
+          `${capturedDateValue}T00:00:00`
         );
 
       if (
@@ -260,18 +555,16 @@ export async function POST(
     }
 
     /*
-     * Create database record.
-     *
-     * Width / height are intentionally
-     * left null here because the server
-     * does not automatically decode every
-     * image format.
+     * ----------------------------------------------------------
+     * CREATE MEDIA
+     * ----------------------------------------------------------
      */
 
     const media =
       await prisma.mediaAsset.create({
         data: {
-          url: blob.url,
+          url:
+            blob.url,
 
           fileName:
             blob.pathname,
@@ -292,7 +585,8 @@ export async function POST(
             location || null,
 
           photographer:
-            photographer,
+            photographer ||
+            "Aditya Valvi",
 
           capturedDate,
 
@@ -315,11 +609,52 @@ export async function POST(
               title: true,
             },
           },
+
+          blocks: true,
+
+          encounter: true,
         },
       });
 
+    /*
+     * Newly uploaded media has no
+     * cover/content/encounter references yet.
+     */
+
     return NextResponse.json(
-      media,
+      {
+        ...media,
+
+        usage:
+          media.journey
+            ? [
+                {
+                  type:
+                    "JOURNEY",
+
+                  id:
+                    media
+                      .journey
+                      .id,
+
+                  title:
+                    media
+                      .journey
+                      .title,
+                },
+              ]
+            : [],
+
+        usageCount:
+          media.journey
+            ? 1
+            : 0,
+
+        isUsed:
+          Boolean(
+            media.journey
+          ),
+      },
       {
         status: 201,
       }
@@ -342,11 +677,18 @@ export async function POST(
   }
 }
 
-export async function DELETE(
+/*
+ * ============================================================
+ * PATCH — UPDATE MEDIA METADATA
+ * ============================================================
+ */
+
+export async function PATCH(
   request: Request
 ) {
   try {
-    const session = await getSession();
+    const session =
+      await getSession();
 
     if (!session) {
       return NextResponse.json(
@@ -359,11 +701,18 @@ export async function DELETE(
       );
     }
 
+    /*
+     * ----------------------------------------------------------
+     * REQUEST BODY
+     * ----------------------------------------------------------
+     */
+
     const body =
       await request.json();
 
     const id =
-      typeof body.id === "string"
+      typeof body.id ===
+      "string"
         ? body.id.trim()
         : "";
 
@@ -379,10 +728,512 @@ export async function DELETE(
       );
     }
 
+    /*
+     * ----------------------------------------------------------
+     * FIND MEDIA
+     * ----------------------------------------------------------
+     */
+
+    const existingMedia =
+      await prisma.mediaAsset.findUnique({
+        where: {
+          id,
+        },
+      });
+
+    if (!existingMedia) {
+      return NextResponse.json(
+        {
+          error:
+            "Media not found.",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * NORMALIZE FIELDS
+     * ----------------------------------------------------------
+     */
+
+    const altText =
+      typeof body.altText ===
+      "string"
+        ? body.altText.trim()
+        : "";
+
+    const caption =
+      typeof body.caption ===
+      "string"
+        ? body.caption.trim()
+        : "";
+
+    const location =
+      typeof body.location ===
+      "string"
+        ? body.location.trim()
+        : "";
+
+    const photographer =
+      typeof body.photographer ===
+      "string"
+        ? body.photographer.trim()
+        : "";
+
+    const journeyIdValue =
+      typeof body.journeyId ===
+      "string"
+        ? body.journeyId.trim()
+        : "";
+
+    const capturedDateValue =
+      typeof body.capturedDate ===
+      "string"
+        ? body.capturedDate.trim()
+        : "";
+
+    /*
+     * ----------------------------------------------------------
+     * ALT TEXT
+     * ----------------------------------------------------------
+     */
+
+    if (!altText) {
+      return NextResponse.json(
+        {
+          error:
+            "Alt text is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * VALIDATE JOURNEY
+     * ----------------------------------------------------------
+     */
+
+    let journeyId:
+      | string
+      | null = null;
+
+    if (journeyIdValue) {
+      const journey =
+        await prisma.journey.findUnique({
+          where: {
+            id:
+              journeyIdValue,
+          },
+
+          select: {
+            id: true,
+          },
+        });
+
+      if (!journey) {
+        return NextResponse.json(
+          {
+            error:
+              "Selected journey was not found.",
+          },
+          {
+            status: 400,
+          }
+        );
+      }
+
+      journeyId =
+        journey.id;
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * CAPTURED DATE
+     * ----------------------------------------------------------
+     */
+
+    let capturedDate:
+      | Date
+      | null = null;
+
+    if (capturedDateValue) {
+      const parsedDate =
+        new Date(
+          `${capturedDateValue}T00:00:00`
+        );
+
+      if (
+        Number.isNaN(
+          parsedDate.getTime()
+        )
+      ) {
+        return NextResponse.json(
+          {
+            error:
+              "Invalid captured date.",
+          },
+          {
+            status: 400,
+          }
+        );
+      }
+
+      capturedDate =
+        parsedDate;
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * UPDATE DATABASE
+     * ----------------------------------------------------------
+     */
+
+    const media =
+      await prisma.mediaAsset.update({
+        where: {
+          id,
+        },
+
+        data: {
+          altText,
+
+          caption:
+            caption || null,
+
+          location:
+            location || null,
+
+          photographer:
+            photographer ||
+            "Aditya Valvi",
+
+          capturedDate,
+
+          journeyId,
+        },
+
+        include: {
+          journey: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
+
+          blocks: {
+            select: {
+              id: true,
+              type: true,
+
+              journey: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+
+              blog: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+            },
+          },
+
+          encounter: {
+            select: {
+              id: true,
+              title: true,
+
+              journey: {
+                select: {
+                  id: true,
+                  title: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    /*
+     * ----------------------------------------------------------
+     * LOAD COVER REFERENCES
+     * ----------------------------------------------------------
+     */
+
+    const [
+      journeyCovers,
+      blogCovers,
+    ] =
+      await Promise.all([
+        prisma.journey.findMany({
+          where: {
+            coverImage:
+              media.url,
+          },
+
+          select: {
+            id: true,
+            title: true,
+          },
+        }),
+
+        prisma.blog.findMany({
+          where: {
+            coverImage:
+              media.url,
+          },
+
+          select: {
+            id: true,
+            title: true,
+          },
+        }),
+      ]);
+
+    /*
+     * ----------------------------------------------------------
+     * BUILD USAGE
+     * ----------------------------------------------------------
+     */
+
+    const usage: Array<{
+  type:
+    | "JOURNEY"
+    | "JOURNEY_COVER"
+    | "BLOG_COVER"
+    | "CONTENT_BLOCK"
+    | "ENCOUNTER";
+
+  id: string;
+
+  title?: string;
+
+  blockType?: string;
+
+  journeyId?: string;
+
+  journeyTitle?: string;
+}> = [];
+
+    /*
+     * JOURNEY ASSIGNMENT
+     */
+
+    if (media.journey) {
+      usage.push({
+        type:
+          "JOURNEY",
+
+        id:
+          media.journey.id,
+
+        title:
+          media.journey.title,
+      });
+    }
+
+    /*
+     * JOURNEY COVERS
+     */
+
+    for (
+      const journey of journeyCovers
+    ) {
+      usage.push({
+        type:
+          "JOURNEY_COVER",
+
+        id:
+          journey.id,
+
+        title:
+          journey.title,
+      });
+    }
+
+    /*
+     * BLOG COVERS
+     */
+
+    for (
+      const blog of blogCovers
+    ) {
+      usage.push({
+        type:
+          "BLOG_COVER",
+
+        id:
+          blog.id,
+
+        title:
+          blog.title,
+      });
+    }
+
+    /*
+     * CONTENT BLOCKS
+     */
+
+    for (
+      const block of media.blocks
+    ) {
+      usage.push({
+        type:
+          "CONTENT_BLOCK",
+
+        id:
+          block.id,
+
+        title:
+          block.blog?.title,
+
+        blockType:
+          block.type,
+
+        journeyId:
+          block.journey?.id,
+
+        journeyTitle:
+          block.journey?.title,
+      });
+    }
+
+    /*
+     * ENCOUNTER
+     */
+
+    if (media.encounter) {
+      usage.push({
+        type:
+          "ENCOUNTER",
+
+        id:
+          media.encounter.id,
+
+        title:
+          media.encounter.title,
+
+        journeyId:
+          media.encounter
+            .journey?.id,
+
+        journeyTitle:
+          media.encounter
+            .journey?.title,
+      });
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * RETURN UPDATED MEDIA
+     * ----------------------------------------------------------
+     */
+
+    return NextResponse.json({
+      ...media,
+
+      usage,
+
+      usageCount:
+        usage.length,
+
+      isUsed:
+        usage.length > 0,
+    });
+  } catch (error) {
+    console.error(
+      "PATCH media error:",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          "Failed to update media.",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}
+
+/*
+ * ============================================================
+ * DELETE — DELETE MEDIA
+ * ============================================================
+ */
+
+export async function DELETE(
+  request: Request
+) {
+  try {
+    const session =
+      await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * READ MEDIA ID
+     * ----------------------------------------------------------
+     */
+
+    const body =
+      await request.json();
+
+    const id =
+      typeof body.id ===
+      "string"
+        ? body.id.trim()
+        : "";
+
+    if (!id) {
+      return NextResponse.json(
+        {
+          error:
+            "Media ID is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * FIND MEDIA
+     * ----------------------------------------------------------
+     */
+
     const media =
       await prisma.mediaAsset.findUnique({
         where: {
           id,
+        },
+
+        select: {
+          id: true,
+          url: true,
+          fileName: true,
         },
       });
 
@@ -399,21 +1250,216 @@ export async function DELETE(
     }
 
     /*
-     * Delete actual file from
-     * Vercel Blob.
+     * ----------------------------------------------------------
+     * CHECK CONTENT BLOCK
+     * ----------------------------------------------------------
      */
 
-    try {
-      await del(media.url);
-    } catch (blobError) {
-      console.error(
-        "Blob delete error:",
-        blobError
+    const contentBlock =
+      await prisma.contentBlock.findFirst({
+        where: {
+          mediaId: id,
+        },
+
+        select: {
+          id: true,
+          type: true,
+        },
+      });
+
+    if (contentBlock) {
+      return NextResponse.json(
+        {
+          error:
+            "This image is currently used in story content and cannot be deleted. Remove it from the content first.",
+
+          code:
+            "MEDIA_IN_USE",
+
+          usage: {
+            type:
+              "CONTENT_BLOCK",
+
+            blockId:
+              contentBlock.id,
+
+            blockType:
+              contentBlock.type,
+          },
+        },
+        {
+          status: 409,
+        }
       );
     }
 
     /*
-     * Delete database record.
+     * ----------------------------------------------------------
+     * CHECK ENCOUNTER
+     * ----------------------------------------------------------
+     */
+
+    const encounter =
+      await prisma.encounter.findFirst({
+        where: {
+          mediaId: id,
+        },
+
+        select: {
+          id: true,
+          title: true,
+        },
+      });
+
+    if (encounter) {
+      return NextResponse.json(
+        {
+          error:
+            "This image is currently used by an encounter and cannot be deleted. Remove it from the encounter first.",
+
+          code:
+            "MEDIA_IN_USE",
+
+          usage: {
+            type:
+              "ENCOUNTER",
+
+            encounterId:
+              encounter.id,
+
+            title:
+              encounter.title,
+          },
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * CHECK JOURNEY COVER
+     * ----------------------------------------------------------
+     */
+
+    const journey =
+      await prisma.journey.findFirst({
+        where: {
+          coverImage:
+            media.url,
+        },
+
+        select: {
+          id: true,
+          title: true,
+        },
+      });
+
+    if (journey) {
+      return NextResponse.json(
+        {
+          error:
+            "This image is currently used as a journey cover image and cannot be deleted. Change or remove the journey cover image first.",
+
+          code:
+            "MEDIA_IN_USE",
+
+          usage: {
+            type:
+              "JOURNEY_COVER",
+
+            journeyId:
+              journey.id,
+
+            title:
+              journey.title,
+          },
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * CHECK BLOG COVER
+     * ----------------------------------------------------------
+     */
+
+    const blog =
+      await prisma.blog.findFirst({
+        where: {
+          coverImage:
+            media.url,
+        },
+
+        select: {
+          id: true,
+          title: true,
+        },
+      });
+
+    if (blog) {
+      return NextResponse.json(
+        {
+          error:
+            "This image is currently used as a blog cover image and cannot be deleted. Change or remove the blog cover image first.",
+
+          code:
+            "MEDIA_IN_USE",
+
+          usage: {
+            type:
+              "BLOG_COVER",
+
+            blogId:
+              blog.id,
+
+            title:
+              blog.title,
+          },
+        },
+        {
+          status: 409,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * DELETE FROM VERCEL BLOB
+     * ----------------------------------------------------------
+     */
+
+    try {
+      await del(
+        media.url
+      );
+    } catch (
+      blobError
+    ) {
+      console.error(
+        "Blob delete error:",
+        blobError
+      );
+
+      return NextResponse.json(
+        {
+          error:
+            "The image could not be removed from storage. The media record was kept.",
+        },
+        {
+          status: 500,
+        }
+      );
+    }
+
+    /*
+     * ----------------------------------------------------------
+     * DELETE DATABASE RECORD
+     * ----------------------------------------------------------
      */
 
     await prisma.mediaAsset.delete({
@@ -424,6 +1470,9 @@ export async function DELETE(
 
     return NextResponse.json({
       success: true,
+
+      message:
+        "Media deleted successfully.",
     });
   } catch (error) {
     console.error(

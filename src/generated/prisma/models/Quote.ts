@@ -264,9 +264,9 @@ export type QuoteWhereInput = {
   createdById?: Prisma.StringFilter<"Quote"> | string
   createdAt?: Prisma.DateTimeFilter<"Quote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Quote"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }
 
 export type QuoteOrderByWithRelationInput = {
@@ -281,9 +281,9 @@ export type QuoteOrderByWithRelationInput = {
   createdById?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  journey?: Prisma.JourneyOrderByWithRelationInput
   blog?: Prisma.BlogOrderByWithRelationInput
   createdBy?: Prisma.UserOrderByWithRelationInput
+  journey?: Prisma.JourneyOrderByWithRelationInput
 }
 
 export type QuoteWhereUniqueInput = Prisma.AtLeast<{
@@ -301,9 +301,9 @@ export type QuoteWhereUniqueInput = Prisma.AtLeast<{
   createdById?: Prisma.StringFilter<"Quote"> | string
   createdAt?: Prisma.DateTimeFilter<"Quote"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Quote"> | Date | string
-  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
   blog?: Prisma.XOR<Prisma.BlogNullableScalarRelationFilter, Prisma.BlogWhereInput> | null
   createdBy?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  journey?: Prisma.XOR<Prisma.JourneyNullableScalarRelationFilter, Prisma.JourneyWhereInput> | null
 }, "id">
 
 export type QuoteOrderByWithAggregationInput = {
@@ -351,9 +351,9 @@ export type QuoteCreateInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutQuotesInput
   blog?: Prisma.BlogCreateNestedOneWithoutQuotesInput
   createdBy: Prisma.UserCreateNestedOneWithoutQuotesInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutQuotesInput
 }
 
 export type QuoteUncheckedCreateInput = {
@@ -379,9 +379,9 @@ export type QuoteUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutQuotesNestedInput
   blog?: Prisma.BlogUpdateOneWithoutQuotesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutQuotesNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutQuotesNestedInput
 }
 
 export type QuoteUncheckedUpdateInput = {
@@ -632,8 +632,8 @@ export type QuoteCreateWithoutCreatedByInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutQuotesInput
   blog?: Prisma.BlogCreateNestedOneWithoutQuotesInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutQuotesInput
 }
 
 export type QuoteUncheckedCreateWithoutCreatedByInput = {
@@ -753,8 +753,8 @@ export type QuoteCreateWithoutBlogInput = {
   isActive?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
-  journey?: Prisma.JourneyCreateNestedOneWithoutQuotesInput
   createdBy: Prisma.UserCreateNestedOneWithoutQuotesInput
+  journey?: Prisma.JourneyCreateNestedOneWithoutQuotesInput
 }
 
 export type QuoteUncheckedCreateWithoutBlogInput = {
@@ -818,8 +818,8 @@ export type QuoteUpdateWithoutCreatedByInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutQuotesNestedInput
   blog?: Prisma.BlogUpdateOneWithoutQuotesNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutQuotesNestedInput
 }
 
 export type QuoteUncheckedUpdateWithoutCreatedByInput = {
@@ -922,8 +922,8 @@ export type QuoteUpdateWithoutBlogInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  journey?: Prisma.JourneyUpdateOneWithoutQuotesNestedInput
   createdBy?: Prisma.UserUpdateOneRequiredWithoutQuotesNestedInput
+  journey?: Prisma.JourneyUpdateOneWithoutQuotesNestedInput
 }
 
 export type QuoteUncheckedUpdateWithoutBlogInput = {
@@ -966,9 +966,9 @@ export type QuoteSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Quote$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["quote"]>
 
 export type QuoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -983,9 +983,9 @@ export type QuoteSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Quote$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["quote"]>
 
 export type QuoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1000,9 +1000,9 @@ export type QuoteSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   createdById?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Quote$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
 }, ExtArgs["result"]["quote"]>
 
 export type QuoteSelectScalar = {
@@ -1021,27 +1021,27 @@ export type QuoteSelectScalar = {
 
 export type QuoteOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "text" | "author" | "source" | "journeyId" | "blogId" | "position" | "isActive" | "createdById" | "createdAt" | "updatedAt", ExtArgs["result"]["quote"]>
 export type QuoteInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Quote$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
 }
 export type QuoteIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Quote$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
 }
 export type QuoteIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
   blog?: boolean | Prisma.Quote$blogArgs<ExtArgs>
   createdBy?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  journey?: boolean | Prisma.Quote$journeyArgs<ExtArgs>
 }
 
 export type $QuotePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Quote"
   objects: {
-    journey: Prisma.$JourneyPayload<ExtArgs> | null
     blog: Prisma.$BlogPayload<ExtArgs> | null
     createdBy: Prisma.$UserPayload<ExtArgs>
+    journey: Prisma.$JourneyPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1449,9 +1449,9 @@ readonly fields: QuoteFieldRefs;
  */
 export interface Prisma__QuoteClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  journey<T extends Prisma.Quote$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Quote$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   blog<T extends Prisma.Quote$blogArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Quote$blogArgs<ExtArgs>>): Prisma.Prisma__BlogClient<runtime.Types.Result.GetResult<Prisma.$BlogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   createdBy<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  journey<T extends Prisma.Quote$journeyArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Quote$journeyArgs<ExtArgs>>): Prisma.Prisma__JourneyClient<runtime.Types.Result.GetResult<Prisma.$JourneyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1893,25 +1893,6 @@ export type QuoteDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Quote.journey
- */
-export type Quote$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Journey
-   */
-  select?: Prisma.JourneySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Journey
-   */
-  omit?: Prisma.JourneyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.JourneyInclude<ExtArgs> | null
-  where?: Prisma.JourneyWhereInput
-}
-
-/**
  * Quote.blog
  */
 export type Quote$blogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1928,6 +1909,25 @@ export type Quote$blogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   include?: Prisma.BlogInclude<ExtArgs> | null
   where?: Prisma.BlogWhereInput
+}
+
+/**
+ * Quote.journey
+ */
+export type Quote$journeyArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Journey
+   */
+  select?: Prisma.JourneySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Journey
+   */
+  omit?: Prisma.JourneyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JourneyInclude<ExtArgs> | null
+  where?: Prisma.JourneyWhereInput
 }
 
 /**

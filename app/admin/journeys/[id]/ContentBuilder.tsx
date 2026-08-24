@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import type { DragEvent } from "react";
-import MediaPicker from "./editor/MediaPicker";
+import MediaPicker from "../../../../src/components/admin/MediaPicker";
 
 type GalleryImage = {
   mediaId?: string;
