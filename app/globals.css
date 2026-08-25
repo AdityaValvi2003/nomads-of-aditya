@@ -172,6 +172,10 @@ button {
   color: #15110b;
 }
 
+:root[data-theme="light"] .btn.primary {
+  color: #ffffff;
+}
+
 .section {
   padding: 120px 8vw;
 }
@@ -220,6 +224,10 @@ button {
   filter: saturate(0.92);
 }
 
+:root[data-theme="light"] .hero-img {
+  filter: saturate(0.92) brightness(1.08);
+}
+
 .hero::after {
   content: "";
 
@@ -237,6 +245,25 @@ button {
       0deg,
       rgba(5, 5, 4, 0.78),
       transparent 55%
+    );
+
+  pointer-events: none;
+}
+
+/* LIGHT MODE HERO */
+
+:root[data-theme="light"] .hero::after {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 252, 244, 0.72),
+      rgba(255, 252, 244, 0.30) 55%,
+      rgba(255, 252, 244, 0.08)
+    ),
+    linear-gradient(
+      0deg,
+      rgba(255, 252, 244, 0.30),
+      transparent 60%
     );
 }
 
@@ -265,11 +292,46 @@ button {
 .hero p {
   max-width: 620px;
 
-  color: #ddd5c8;
+  color: var(--text);
 
   font-size: 1.08rem;
 }
 
+/* =========================================================
+   HERO TEXT — ALWAYS LIGHT OVER IMAGE
+========================================================= */
+
+.hero,
+.hero h1,
+.hero p {
+  color: #f4f0e8;
+}
+
+.hero .eyebrow {
+  color: var(--accent2);
+}
+
+.hero .btn:not(.primary) {
+  color: #f4f0e8;
+  border-color: var(--accent);
+}
+
+.hero .btn.primary {
+  color: #15110b;
+}
+
+
+/* FEATURED JOURNEY TEXT */
+
+.journey-copy,
+.journey-copy h3,
+.journey-copy p {
+  color: #f4f0e8;
+}
+
+.journey-copy .eyebrow {
+  color: var(--accent2);
+}
 
 /* =========================================================
    HOME — PHILOSOPHY
@@ -343,6 +405,17 @@ button {
       0deg,
       rgba(0, 0, 0, 0.9),
       transparent 65%
+    ),
+    url("/images/aditya-hero.jpeg")
+    center / cover;
+}
+
+:root[data-theme="light"] .journey-feature::before {
+  background:
+    linear-gradient(
+      0deg,
+      rgba(20, 18, 14, 0.65),
+      transparent 70%
     ),
     url("/images/aditya-hero.jpeg")
     center / cover;
@@ -477,6 +550,10 @@ button {
       #263b47,
       #151718
     );
+}
+
+:root[data-theme="light"] .destination {
+  filter: brightness(1.08);
 }
 
 .destination h3 {
@@ -2107,4 +2184,256 @@ footer h2 {
     font-size: 2rem;
   }
 
+}
+
+
+/* =========================================================
+   THEME SYSTEM
+========================================================= */
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease;
+}
+
+
+/* =========================================================
+   HEADER THEME
+========================================================= */
+
+.site-header {
+  color: var(--text);
+}
+
+.site-header a {
+  color: var(--text);
+}
+
+.site-header a:hover {
+  color: var(--accent);
+}
+
+.site-header.scrolled {
+  background: color-mix(
+    in srgb,
+    var(--bg) 88%,
+    transparent
+  );
+}
+
+
+/* =========================================================
+   THEME BUTTON
+========================================================= */
+
+.theme-toggle {
+  width: 34px;
+  height: 34px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--line);
+  border-radius: 50%;
+
+  color: var(--text);
+
+  transition:
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: rotate(15deg);
+}
+
+
+/* =========================================================
+   LIGHT MODE HEADER
+========================================================= */
+
+:root[data-theme="light"] .site-header {
+  color: var(--text);
+}
+
+:root[data-theme="light"] .brand {
+  color: var(--text);
+}
+
+:root[data-theme="light"] .brand span {
+  color: var(--accent);
+}
+
+:root[data-theme="light"] .desktop-nav a {
+  color: var(--text);
+}
+
+:root[data-theme="light"] .desktop-nav a:hover {
+  color: var(--accent);
+}
+
+
+/* =========================================================
+   LIGHT MODE HERO
+========================================================= */
+
+:root[data-theme="light"] .hero-img {
+  filter:
+    saturate(0.9)
+    brightness(1.08);
+}
+
+:root[data-theme="light"] .hero::after {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 252, 244, 0.72),
+      rgba(255, 252, 244, 0.32) 55%,
+      rgba(255, 252, 244, 0.08)
+    ),
+    linear-gradient(
+      0deg,
+      rgba(255, 252, 244, 0.32),
+      transparent 60%
+    );
+}
+
+/* =========================================================
+   HERO TEXT — ALWAYS LIGHT OVER IMAGE
+========================================================= */
+
+.hero,
+.hero h1,
+.hero p {
+  color: #f4f0e8;
+}
+
+.hero .eyebrow {
+  color: var(--accent2);
+}
+
+.hero .btn:not(.primary) {
+  color: #f4f0e8;
+  border-color: var(--accent);
+}
+
+.hero .btn.primary {
+  color: #15110b;
+}
+
+
+/* =========================================================
+   LIGHT MODE FEATURED JOURNEY
+========================================================= */
+
+:root[data-theme="light"]
+  .journey-feature::before {
+  background:
+    linear-gradient(
+      0deg,
+      rgba(15, 14, 12, 0.72),
+      transparent 70%
+    ),
+    url("/images/aditya-hero.jpeg")
+    center / cover;
+}
+
+
+/* =========================================================
+   LIGHT MODE JOURNEY FEATURE TEXT
+========================================================= */
+
+:root[data-theme="light"]
+  .journey-copy {
+  color: #ffffff;
+}
+
+:root[data-theme="light"]
+  .journey-copy p {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+
+/* =========================================================
+   LIGHT MODE JOURNEY LIST
+========================================================= */
+
+:root[data-theme="light"]
+  .journeys-feature-image {
+  filter: brightness(1.05);
+}
+
+:root[data-theme="light"]
+  .journeys-feature-overlay p {
+  color: rgba(255, 255, 255, 0.86);
+}
+
+
+/* =========================================================
+   LIGHT MODE DESTINATIONS
+========================================================= */
+
+:root[data-theme="light"]
+  .destination {
+  filter: brightness(1.08);
+}
+
+
+/* =========================================================
+   LIGHT MODE BUTTON
+========================================================= */
+
+:root[data-theme="light"]
+  .btn.primary {
+  color: #ffffff;
+}
+
+
+/* =========================================================
+   MOBILE THEME PANEL
+========================================================= */
+
+.mobile-panel {
+  color: var(--text);
+}
+
+.mobile-panel a,
+.mobile-panel button {
+  color: var(--text);
+}
+
+.mobile-panel a:hover,
+.mobile-panel button:hover {
+  color: var(--accent);
+}
+
+
+/* =========================================================
+   SMOOTH THEME TRANSITION
+========================================================= */
+
+body,
+.site-header,
+.card,
+.encounter,
+.journey-card,
+.journey-card-empty,
+.journey-summary-item,
+.quick-action,
+.stat,
+.admin-stat,
+.destination,
+.mobile-panel,
+.btn {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease;
 }
