@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+
 import { prisma } from "../../../src/lib/prisma";
 
 type PageProps = {
@@ -31,6 +32,10 @@ type ContentBlock = {
   media: MediaAsset | null;
 };
 
+/* =========================================================
+   METADATA
+========================================================= */
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -55,26 +60,32 @@ export async function generateMetadata({
     journey.shortIntro ||
     `Explore ${journey.title} with Nomads of Aditya.`;
 
-  const metadata: Metadata = {
+  return {
     title,
     description,
+
     alternates: journey.canonicalUrl
       ? {
           canonical: journey.canonicalUrl,
         }
       : undefined,
+
     robots: {
       index: !journey.noIndex,
       follow: !journey.noFollow,
     },
+
     openGraph: {
       title:
         journey.ogTitle?.trim() ||
         title,
+
       description:
         journey.ogDescription?.trim() ||
         description,
+
       type: "article",
+
       images: journey.coverImage
         ? [
             {
@@ -85,9 +96,11 @@ export async function generateMetadata({
         : undefined,
     },
   };
-
-  return metadata;
 }
+
+/* =========================================================
+   PAGE
+========================================================= */
 
 export default async function JourneyPage({
   params,
@@ -98,16 +111,23 @@ export default async function JourneyPage({
     where: {
       slug,
     },
+
     include: {
       contentBlocks: {
         orderBy: {
           position: "asc",
         },
+
         include: {
           media: true,
         },
       },
+
       encounters: {
+        orderBy: {
+          createdAt: "asc",
+        },
+
         include: {
           media: true,
         },
@@ -120,10 +140,10 @@ export default async function JourneyPage({
   }
 
   /*
-  |--------------------------------------------------------------------------
-  | PUBLIC VISIBILITY
-  |--------------------------------------------------------------------------
-  */
+   * ---------------------------------------------------------
+   * PUBLIC VISIBILITY
+   * ---------------------------------------------------------
+   */
 
   if (journey.status !== "PUBLISHED") {
     notFound();
@@ -132,9 +152,9 @@ export default async function JourneyPage({
   return (
     <main className="min-h-screen bg-[#0b0b0b] text-white">
 
-      {/* =========================================================
+      {/* =====================================================
           HERO
-      ========================================================= */}
+      ===================================================== */}
 
       <section className="relative">
 
@@ -198,9 +218,9 @@ export default async function JourneyPage({
 
       </section>
 
-      {/* =========================================================
-          JOURNEY INFO
-      ========================================================= */}
+      {/* =====================================================
+          JOURNEY INFORMATION
+      ===================================================== */}
 
       {(journey.journeyDate ||
         journey.duration ||
@@ -261,9 +281,9 @@ export default async function JourneyPage({
         </section>
       )}
 
-      {/* =========================================================
-          STORY
-      ========================================================= */}
+      {/* =====================================================
+          JOURNEY STORY
+      ===================================================== */}
 
       <article className="mx-auto max-w-5xl px-6 py-16 md:px-10 md:py-24">
 
@@ -282,63 +302,108 @@ export default async function JourneyPage({
 
       </article>
 
-      {/* =========================================================
+      {/* =====================================================
           ENCOUNTERS
-      ========================================================= */}
+      ===================================================== */}
 
       {journey.encounters.length > 0 && (
         <section className="border-t border-white/10">
 
-          <div className="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-24">
+          <div className="mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-28">
 
-            <p className="text-xs uppercase tracking-[0.3em] text-white/30">
-              Encounters
-            </p>
+            {/* SECTION INTRO */}
 
-            <h2 className="mt-3 text-3xl font-medium md:text-4xl">
-              People along the way
-            </h2>
+            <div className="mb-16">
 
-            <div className="mt-10 grid gap-8 md:grid-cols-2">
+              <p className="text-xs uppercase tracking-[0.3em] text-[#D99A3D]">
+                Encounters
+              </p>
+
+              <h2 className="mt-4 max-w-3xl font-serif text-4xl leading-tight md:text-6xl">
+                People along the way.
+              </h2>
+
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/40">
+                Some journeys are remembered for
+                the places. Others are remembered
+                for the people you meet.
+              </p>
+
+            </div>
+
+            {/* ENCOUNTERS */}
+
+            <div className="space-y-24">
 
               {journey.encounters.map(
                 (encounter) => (
-                  <div
+                  <article
                     key={encounter.id}
-                    className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                    className="border-t border-white/10 pt-12"
                   >
 
-                    {encounter.media?.url && (
-                      <img
-                        src={
-                          encounter.media.url
-                        }
-                        alt={
-                          encounter.media
-                            .altText ||
-                          encounter.title
-                        }
-                        className="h-80 w-full object-cover"
-                      />
-                    )}
+                    {/* ENCOUNTER HEADER */}
 
-                    <div className="p-6">
+                    <div className="grid gap-10 md:grid-cols-[1fr_1.4fr]">
 
-                      <h3 className="text-xl font-medium">
-                        {encounter.title}
-                      </h3>
+                      <div>
 
-                      {encounter.shortIntro && (
-                        <p className="mt-3 text-sm leading-6 text-white/50">
-                          {
-                            encounter.shortIntro
-                          }
+                        <p className="text-xs uppercase tracking-[0.25em] text-white/25">
+                          Encounter
                         </p>
+
+                        <h3 className="mt-4 font-serif text-3xl leading-tight md:text-4xl">
+                          {encounter.title}
+                        </h3>
+
+                        {encounter.shortIntro && (
+                          <p className="mt-5 text-base leading-7 text-white/50">
+                            {encounter.shortIntro}
+                          </p>
+                        )}
+
+                      </div>
+
+                      {/* MAIN PHOTOGRAPH */}
+
+                      {encounter.media?.url && (
+                        <figure>
+
+                          <img
+                            src={encounter.media.url}
+                            alt={
+                              encounter.media
+                                .altText ||
+                              encounter.title
+                            }
+                            className="max-h-[650px] w-full rounded-2xl object-cover"
+                          />
+
+                          {encounter.media.caption && (
+                            <figcaption className="mt-3 text-center text-xs text-white/30">
+                              {
+                                encounter.media
+                                  .caption
+                              }
+                            </figcaption>
+                          )}
+
+                        </figure>
                       )}
 
                     </div>
 
-                  </div>
+                    {/* STORY */}
+
+                    <div className="mt-16">
+
+                      <EncounterStoryRenderer
+                        story={encounter.story}
+                      />
+
+                    </div>
+
+                  </article>
                 )
               )}
 
@@ -349,9 +414,9 @@ export default async function JourneyPage({
         </section>
       )}
 
-      {/* =========================================================
+      {/* =====================================================
           FOOTER
-      ========================================================= */}
+      ===================================================== */}
 
       <section className="border-t border-white/10 px-6 py-20 text-center">
 
@@ -360,8 +425,9 @@ export default async function JourneyPage({
         </p>
 
         <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/40">
-          Every journey leaves something behind — a memory,
-          a person, a place, or a story worth carrying forward.
+          Every journey leaves something behind —
+          a memory, a person, a place, or a story
+          worth carrying forward.
         </p>
 
       </section>
@@ -371,7 +437,7 @@ export default async function JourneyPage({
 }
 
 /* =========================================================
-   CONTENT BLOCK RENDERER
+   JOURNEY CONTENT BLOCK RENDERER
 ========================================================= */
 
 function ContentBlockRenderer({
@@ -390,69 +456,89 @@ function ContentBlockRenderer({
 
   switch (block.type) {
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        HEADING
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "HEADING": {
-      const text = getString(data.text);
+      const text =
+        getString(data.text);
 
-      if (!text) return null;
+      if (!text) {
+        return null;
+      }
 
       return (
         <section>
+
           <h2 className="text-3xl font-semibold tracking-tight md:text-5xl">
             {text}
           </h2>
+
         </section>
       );
     }
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        SUBHEADING
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "SUBHEADING": {
-      const text = getString(data.text);
+      const text =
+        getString(data.text);
 
-      if (!text) return null;
+      if (!text) {
+        return null;
+      }
 
       return (
         <section>
+
           <h3 className="text-2xl font-medium md:text-3xl">
             {text}
           </h3>
+
         </section>
       );
     }
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        PARAGRAPH
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "PARAGRAPH": {
-      const text = getString(data.text);
+      const text =
+        getString(data.text);
 
-      if (!text) return null;
+      if (!text) {
+        return null;
+      }
 
       return (
         <section>
+
           <div className="max-w-3xl whitespace-pre-line text-lg leading-9 text-white/70 md:text-xl md:leading-10">
             {text}
           </div>
+
         </section>
       );
     }
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        QUOTE
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "QUOTE": {
-      const text = getString(data.text);
-      const author = getString(data.author);
+      const text =
+        getString(data.text);
 
-      if (!text) return null;
+      const author =
+        getString(data.author);
+
+      if (!text) {
+        return null;
+      }
 
       return (
         <section className="py-6">
@@ -475,21 +561,23 @@ function ContentBlockRenderer({
       );
     }
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        DIVIDER
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "DIVIDER":
 
       return (
         <div className="py-4">
+
           <div className="border-t border-white/10" />
+
         </div>
       );
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        IMAGE
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "IMAGE": {
       const mediaUrl =
@@ -530,9 +618,9 @@ function ContentBlockRenderer({
       );
     }
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        IMAGE + TEXT
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "IMAGE_TEXT": {
       const mediaUrl =
@@ -575,9 +663,9 @@ function ContentBlockRenderer({
       );
     }
 
-    /* ---------------------------------------------------------
+    /* -------------------------------------------------------
        GALLERY
-    --------------------------------------------------------- */
+    ------------------------------------------------------- */
 
     case "GALLERY": {
       const images =
@@ -618,14 +706,12 @@ function ContentBlockRenderer({
                         image.alt ||
                         "Gallery image"
                       }
-                      className="h-full max-h-[650px] min-h-[250px] w-full rounded-2xl object-cover"
+                      className="max-h-[650px] w-full rounded-2xl object-cover"
                     />
 
                     {image.caption && (
-                      <figcaption className="mt-2 text-sm text-white/35">
-                        {
-                          image.caption
-                        }
+                      <figcaption className="mt-3 text-center text-sm text-white/35">
+                        {image.caption}
                       </figcaption>
                     )}
 
@@ -640,254 +726,238 @@ function ContentBlockRenderer({
       );
     }
 
-    /* ---------------------------------------------------------
-       VIDEO
-    --------------------------------------------------------- */
-
-    case "VIDEO": {
-      const url = getString(data.url);
-      const caption = getString(data.caption);
-
-      if (!url) return null;
-
-      return (
-        <figure>
-
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-black">
-
-            <video
-              src={url}
-              controls
-              playsInline
-              className="max-h-[700px] w-full"
-            />
-
-          </div>
-
-          {caption && (
-            <figcaption className="mt-3 text-center text-sm text-white/35">
-              {caption}
-            </figcaption>
-          )}
-
-        </figure>
-      );
-    }
-
-    /* ---------------------------------------------------------
-       LOCATION
-    --------------------------------------------------------- */
-
-    case "LOCATION": {
-      const name = getString(data.name);
-      const address =
-        getString(data.address);
-
-      const latitude =
-        getNumber(data.latitude);
-
-      const longitude =
-        getNumber(data.longitude);
-
-      if (!name && !address) {
-        return null;
-      }
-
-      return (
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
-
-          <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-            Location
-          </p>
-
-          {name && (
-            <h3 className="mt-3 text-2xl font-medium">
-              {name}
-            </h3>
-          )}
-
-          {address && (
-            <p className="mt-2 text-white/50">
-              {address}
-            </p>
-          )}
-
-          {latitude !== null &&
-            longitude !== null && (
-              <p className="mt-5 text-xs text-white/30">
-                {latitude}, {longitude}
-              </p>
-            )}
-
-        </section>
-      );
-    }
-
-    /* ---------------------------------------------------------
-       JOURNEY INFO
-    --------------------------------------------------------- */
-
-    case "JOURNEY_INFO": {
-      const duration =
-        getString(data.duration);
-
-      const distance =
-        getString(data.distance);
-
-      const difficulty =
-        getString(data.difficulty);
-
-      if (
-        !duration &&
-        !distance &&
-        !difficulty
-      ) {
-        return null;
-      }
-
-      return (
-        <section>
-
-          <div className="grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 sm:grid-cols-3">
-
-            <JourneyInfoItem
-              label="Duration"
-              value={duration}
-            />
-
-            <JourneyInfoItem
-              label="Distance"
-              value={distance}
-            />
-
-            <JourneyInfoItem
-              label="Difficulty"
-              value={difficulty}
-            />
-
-          </div>
-
-        </section>
-      );
-    }
-
-    /* ---------------------------------------------------------
-       ENCOUNTER
-    --------------------------------------------------------- */
-
-    case "ENCOUNTER": {
-      const title =
-        getString(data.title);
-
-      const text =
-        getString(data.text);
-
-      if (!title && !text) {
-        return null;
-      }
-
-      return (
-        <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 md:p-8">
-
-          <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-            Encounter
-          </p>
-
-          {title && (
-            <h3 className="mt-4 text-2xl font-medium">
-              {title}
-            </h3>
-          )}
-
-          {text && (
-            <p className="mt-4 whitespace-pre-line text-base leading-8 text-white/60">
-              {text}
-            </p>
-          )}
-
-        </section>
-      );
-    }
-
     default:
       return null;
   }
 }
 
 /* =========================================================
-   HELPERS
+   ENCOUNTER STORY RENDERER
 ========================================================= */
 
-function getString(
-  value: unknown
-): string {
-  return typeof value === "string"
-    ? value
-    : "";
-}
-
-function getNumber(
-  value: unknown
-): number | null {
-  return typeof value === "number" &&
-    Number.isFinite(value)
-    ? value
-    : null;
-}
-
-function getGalleryImages(
-  value: unknown
-): GalleryImage[] {
-  if (!Array.isArray(value)) {
-    return [];
+function EncounterStoryRenderer({
+  story,
+}: {
+  story: unknown;
+}) {
+  if (
+    !story ||
+    typeof story !== "object"
+  ) {
+    return null;
   }
 
-  return value
-    .filter(
-      (item) =>
-        typeof item === "object" &&
-        item !== null
+  const document =
+    story as {
+      type?: string;
+      content?: unknown;
+    };
+
+  if (
+    !Array.isArray(
+      document.content
     )
-    .map((item) => {
-      const image =
-        item as Record<
-          string,
-          unknown
-        >;
+  ) {
+    return null;
+  }
 
-      return {
-        mediaId:
-          getString(image.mediaId) ||
-          undefined,
+  return (
+    <div className="space-y-14">
 
-        url: getString(image.url),
+      {document.content.map(
+        (rawBlock, index) => {
 
-        alt: getString(image.alt),
+          if (
+            !rawBlock ||
+            typeof rawBlock !==
+              "object"
+          ) {
+            return null;
+          }
 
-        caption:
-          getString(
-            image.caption
-          ),
-      };
-    })
-    .filter(
-      (image) =>
-        image.url !== ""
-    );
+          const block =
+            rawBlock as Record<
+              string,
+              unknown
+            >;
+
+          const type =
+            getString(block.type);
+
+          const text =
+            getString(block.text);
+
+          const author =
+            getString(block.author);
+
+          const url =
+            getString(block.url);
+
+          const alt =
+            getString(block.alt) ||
+            "Encounter image";
+
+          const caption =
+            getString(
+              block.caption
+            );
+
+          /* -------------------------------------------------
+             PARAGRAPH
+          ------------------------------------------------- */
+
+          if (
+            type === "paragraph"
+          ) {
+            if (!text) {
+              return null;
+            }
+
+            return (
+              <p
+                key={`encounter-${index}`}
+                className="max-w-3xl whitespace-pre-line text-lg leading-9 text-white/70 md:text-xl md:leading-10"
+              >
+                {text}
+              </p>
+            );
+          }
+
+          /* -------------------------------------------------
+             HEADING
+          ------------------------------------------------- */
+
+          if (
+            type === "heading"
+          ) {
+            if (!text) {
+              return null;
+            }
+
+            return (
+              <h4
+                key={`encounter-${index}`}
+                className="max-w-3xl font-serif text-3xl leading-tight md:text-5xl"
+              >
+                {text}
+              </h4>
+            );
+          }
+
+          /* -------------------------------------------------
+             SUBHEADING
+          ------------------------------------------------- */
+
+          if (
+            type === "subheading"
+          ) {
+            if (!text) {
+              return null;
+            }
+
+            return (
+              <h5
+                key={`encounter-${index}`}
+                className="max-w-3xl text-2xl font-medium leading-tight md:text-3xl"
+              >
+                {text}
+              </h5>
+            );
+          }
+
+          /* -------------------------------------------------
+             QUOTE
+          ------------------------------------------------- */
+
+          if (
+            type === "quote"
+          ) {
+            if (!text) {
+              return null;
+            }
+
+            return (
+              <blockquote
+                key={`encounter-${index}`}
+                className="max-w-4xl border-l-2 border-[#D99A3D] pl-6 md:pl-10"
+              >
+
+                <p className="font-serif text-2xl leading-10 text-white/85 md:text-4xl md:leading-[1.35]">
+                  “{text}”
+                </p>
+
+                {author && (
+                  <footer className="mt-5 text-sm text-white/35">
+                    — {author}
+                  </footer>
+                )}
+
+              </blockquote>
+            );
+          }
+
+          /* -------------------------------------------------
+             IMAGE
+          ------------------------------------------------- */
+
+          if (
+            type === "image"
+          ) {
+            if (!url) {
+              return null;
+            }
+
+            return (
+              <figure
+                key={`encounter-${index}`}
+              >
+
+                <img
+                  src={url}
+                  alt={alt}
+                  className="max-h-[750px] w-full rounded-2xl object-cover"
+                />
+
+                {caption && (
+                  <figcaption className="mt-3 text-center text-sm text-white/30">
+                    {caption}
+                  </figcaption>
+                )}
+
+              </figure>
+            );
+          }
+
+          /* -------------------------------------------------
+             DIVIDER
+          ------------------------------------------------- */
+
+          if (
+            type === "divider"
+          ) {
+            return (
+              <div
+                key={`encounter-${index}`}
+                className="py-4"
+              >
+
+                <div className="border-t border-white/10" />
+
+              </div>
+            );
+          }
+
+          return null;
+        }
+      )}
+
+    </div>
+  );
 }
 
-function formatDate(
-  date: Date
-): string {
-  return new Intl.DateTimeFormat(
-    "en-IN",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  ).format(date);
-}
+/* =========================================================
+   INFO ITEM
+========================================================= */
 
 function InfoItem({
   label,
@@ -897,7 +967,7 @@ function InfoItem({
   value: string;
 }) {
   return (
-    <div className="bg-[#111111] p-5 md:p-6">
+    <div className="bg-[#0b0b0b] px-5 py-6">
 
       <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
         {label}
@@ -911,24 +981,104 @@ function InfoItem({
   );
 }
 
-function JourneyInfoItem({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="bg-[#111111] p-5 md:p-6">
+/* =========================================================
+   FORMAT DATE
+========================================================= */
 
-      <p className="text-xs uppercase tracking-[0.2em] text-white/30">
-        {label}
-      </p>
+function formatDate(
+  value: Date | string
+) {
+  try {
+    return new Intl.DateTimeFormat(
+      "en-IN",
+      {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }
+    ).format(
+      new Date(value)
+    );
+  } catch {
+    return String(value);
+  }
+}
 
-      <p className="mt-2 text-base text-white/70">
-        {value || "—"}
-      </p>
+/* =========================================================
+   GET STRING
+========================================================= */
 
-    </div>
-  );
+function getString(
+  value: unknown
+): string {
+  return typeof value === "string"
+    ? value
+    : "";
+}
+
+/* =========================================================
+   GALLERY PARSER
+========================================================= */
+
+function getGalleryImages(
+  value: unknown
+): GalleryImage[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const images: GalleryImage[] = [];
+
+  for (const item of value) {
+    if (
+      !item ||
+      typeof item !== "object"
+    ) {
+      continue;
+    }
+
+    const image =
+      item as Record<
+        string,
+        unknown
+      >;
+
+    const url =
+      getString(image.url);
+
+    if (!url) {
+      continue;
+    }
+
+    const galleryImage: GalleryImage = {
+      url,
+    };
+
+    const mediaId =
+      getString(image.mediaId);
+
+    const alt =
+      getString(image.alt);
+
+    const caption =
+      getString(image.caption);
+
+    if (mediaId) {
+      galleryImage.mediaId =
+        mediaId;
+    }
+
+    if (alt) {
+      galleryImage.alt = alt;
+    }
+
+    if (caption) {
+      galleryImage.caption =
+        caption;
+    }
+
+    images.push(galleryImage);
+  }
+
+  return images;
 }

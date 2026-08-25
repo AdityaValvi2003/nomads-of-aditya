@@ -15,15 +15,51 @@ type Journey = {
   country: string;
 };
 
+type StoryBlockType =
+  | "paragraph"
+  | "heading"
+  | "subheading"
+  | "quote"
+  | "image"
+  | "divider";
+
+type StoryBlock = {
+  id: string;
+  type: StoryBlockType;
+  text?: string;
+  author?: string;
+  mediaId?: string;
+  url?: string;
+  alt?: string;
+  caption?: string;
+};
+
+function createBlock(
+  type: StoryBlockType
+): StoryBlock {
+  return {
+    id: crypto.randomUUID(),
+    type,
+  };
+}
+
 export default function NewEncounterPage() {
   const [title, setTitle] = useState("");
   const [shortIntro, setShortIntro] = useState("");
-  const [story, setStory] = useState("");
+
+  const [storyBlocks, setStoryBlocks] =
+    useState<StoryBlock[]>([
+      createBlock("paragraph"),
+    ]);
+
   const [journeyId, setJourneyId] = useState("");
+
   const [featuredOnHomepage, setFeaturedOnHomepage] =
     useState(false);
 
-  const [journeys, setJourneys] = useState<Journey[]>([]);
+  const [journeys, setJourneys] =
+    useState<Journey[]>([]);
+
   const [selectedMedia, setSelectedMedia] =
     useState<MediaAsset | null>(null);
 
@@ -33,12 +69,17 @@ export default function NewEncounterPage() {
   const [loadingJourneys, setLoadingJourneys] =
     useState(true);
 
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [saving, setSaving] =
+    useState(false);
 
-  // ============================================================
-  // LOAD JOURNEYS
-  // ============================================================
+  const [error, setError] =
+    useState("");
+
+  /*
+   * ==========================================================
+   * LOAD JOURNEYS
+   * ==========================================================
+   */
 
   useEffect(() => {
     async function loadJourneys() {
@@ -46,19 +87,21 @@ export default function NewEncounterPage() {
         setLoadingJourneys(true);
         setError("");
 
-        const response = await fetch(
-          "/api/admin/journeys",
-          {
-            cache: "no-store",
-          }
-        );
+        const response =
+          await fetch(
+            "/api/admin/journeys",
+            {
+              cache: "no-store",
+            }
+          );
 
-        const data = await response.json();
+        const data =
+          await response.json();
 
         if (!response.ok) {
           throw new Error(
             data.error ||
-              "Failed to load journeys."
+            "Failed to load journeys."
           );
         }
 
@@ -86,76 +129,187 @@ export default function NewEncounterPage() {
     loadJourneys();
   }, []);
 
-  // ============================================================
-  // CREATE
-  // ============================================================
+  /*
+   * ==========================================================
+   * STORY BLOCK HELPERS
+   * ==========================================================
+   */
+
+  function updateBlock(
+    id: string,
+    updates: Partial<StoryBlock>
+  ) {
+    setStoryBlocks(
+      (current) =>
+        current.map((block) =>
+          block.id === id
+            ? {
+              ...block,
+              ...updates,
+            }
+            : block
+        )
+    );
+  }
+
+  function addBlock(
+    type: StoryBlockType
+  ) {
+    setStoryBlocks(
+      (current) => [
+        ...current,
+        createBlock(type),
+      ]
+    );
+  }
+
+  function deleteBlock(
+    id: string
+  ) {
+    setStoryBlocks(
+      (current) =>
+        current.filter(
+          (block) =>
+            block.id !== id
+        )
+    );
+  }
+
+  function moveBlock(
+    index: number,
+    direction: "up" | "down"
+  ) {
+    setStoryBlocks(
+      (current) => {
+        const next = [...current];
+
+        const target =
+          direction === "up"
+            ? index - 1
+            : index + 1;
+
+        if (
+          target < 0 ||
+          target >= next.length
+        ) {
+          return current;
+        }
+
+        const temp =
+          next[index];
+
+        next[index] =
+          next[target];
+
+        next[target] =
+          temp;
+
+        return next;
+      }
+    );
+  }
+
+  /*
+   * ==========================================================
+   * CREATE
+   * ==========================================================
+   */
 
   async function createEncounter() {
     try {
       setError("");
 
       if (!title.trim()) {
-        setError("Please enter an encounter title.");
+        setError(
+          "Please enter an encounter title."
+        );
         return;
       }
 
       if (!journeyId) {
-        setError("Please select a journey.");
+        setError(
+          "Please select a journey."
+        );
         return;
       }
 
-      if (!story.trim()) {
-        setError("Please write the encounter story.");
+      const meaningfulBlocks =
+        storyBlocks.filter(
+          (block) =>
+            block.type ===
+            "divider" ||
+            block.type ===
+            "image" ||
+            Boolean(
+              block.text?.trim()
+            )
+        );
+
+      if (
+        meaningfulBlocks.length ===
+        0
+      ) {
+        setError(
+          "Please add some story content."
+        );
         return;
       }
 
       setSaving(true);
 
-      const response = await fetch(
-        "/api/admin/encounters",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: title.trim(),
+      const story = {
+        type: "document",
+        content:
+          storyBlocks.map(
+            ({
+              id,
+              ...block
+            }) => block
+          ),
+      };
 
-            shortIntro:
-              shortIntro.trim() || null,
-
-            story: {
-              type: "document",
-              content: [
-                {
-                  type: "paragraph",
-                  text: story.trim(),
-                },
-              ],
+      const response =
+        await fetch(
+          "/api/admin/encounters",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
             },
+            body: JSON.stringify({
+              title:
+                title.trim(),
 
-            featuredOnHomepage,
+              shortIntro:
+                shortIntro.trim() ||
+                null,
 
-            journeyId,
+              story,
 
-            mediaId:
-              selectedMedia?.id || null,
-          }),
-        }
-      );
+              featuredOnHomepage,
 
-      const data = await response.json();
+              journeyId,
+
+              mediaId:
+                selectedMedia?.id ||
+                null,
+            }),
+          }
+        );
+
+      const data =
+        await response.json();
 
       if (!response.ok) {
         throw new Error(
           data.error ||
-            "Failed to create encounter."
+          "Failed to create encounter."
         );
       }
 
       window.location.href =
         `/admin/encounters/${data.id}`;
-
     } catch (error) {
       console.error(
         "Create encounter error:",
@@ -171,6 +325,12 @@ export default function NewEncounterPage() {
       setSaving(false);
     }
   }
+
+  /*
+   * ==========================================================
+   * RENDER
+   * ==========================================================
+   */
 
   return (
     <main className="min-h-screen bg-[#0b0b0b] px-6 py-12 text-white md:px-10">
@@ -197,13 +357,14 @@ export default function NewEncounterPage() {
           </h1>
 
           <p className="mt-4 max-w-2xl text-sm leading-6 text-white/40">
-            Capture the people, conversations and
-            unexpected moments discovered during
+            Capture the people,
+            conversations and
+            unexpected moments
+            discovered during
             your journeys.
           </p>
 
         </header>
-
 
         {/* ERROR */}
 
@@ -213,13 +374,11 @@ export default function NewEncounterPage() {
           </div>
         )}
 
-
-        {/* FORM */}
-
         <section className="mt-10 space-y-8">
 
-
-          {/* BASIC INFORMATION */}
+          {/* ==================================================
+              INFORMATION
+          ================================================== */}
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
@@ -230,7 +389,6 @@ export default function NewEncounterPage() {
             <h2 className="mt-2 font-serif text-3xl">
               What happened?
             </h2>
-
 
             <div className="mt-8 space-y-6">
 
@@ -243,14 +401,15 @@ export default function NewEncounterPage() {
                 <input
                   value={title}
                   onChange={(event) =>
-                    setTitle(event.target.value)
+                    setTitle(
+                      event.target.value
+                    )
                   }
                   placeholder="The chai seller who knew every traveller"
                   className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
                 />
 
               </div>
-
 
               <div>
 
@@ -259,7 +418,9 @@ export default function NewEncounterPage() {
                 </label>
 
                 <textarea
-                  value={shortIntro}
+                  value={
+                    shortIntro
+                  }
                   onChange={(event) =>
                     setShortIntro(
                       event.target.value
@@ -276,8 +437,9 @@ export default function NewEncounterPage() {
 
           </div>
 
-
-          {/* JOURNEY */}
+          {/* ==================================================
+              JOURNEY
+          ================================================== */}
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
@@ -296,19 +458,17 @@ export default function NewEncounterPage() {
               </label>
 
               {loadingJourneys ? (
-
                 <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-sm text-white/30">
                   Loading journeys...
                 </div>
-
-              ) : journeys.length === 0 ? (
-
+              ) : journeys.length ===
+                0 ? (
                 <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/[0.03] px-4 py-4 text-sm text-yellow-400">
-                  No journeys found. Create a journey first.
+                  No journeys found.
+                  Create a journey
+                  first.
                 </div>
-
               ) : (
-
                 <select
                   value={journeyId}
                   onChange={(event) =>
@@ -318,7 +478,6 @@ export default function NewEncounterPage() {
                   }
                   className="w-full rounded-xl border border-white/10 bg-[#111111] px-4 py-4 text-white outline-none focus:border-[#D99A3D]/60"
                 >
-
                   <option value="">
                     Select a journey
                   </option>
@@ -326,27 +485,31 @@ export default function NewEncounterPage() {
                   {journeys.map(
                     (journey) => (
                       <option
-                        key={journey.id}
-                        value={journey.id}
+                        key={
+                          journey.id
+                        }
+                        value={
+                          journey.id
+                        }
                       >
-                        {journey.title}
-                        {" — "}
-                        {journey.location},{" "}
-                        {journey.country}
+                        {journey.title}{" "}
+                        ·{" "}
+                        {
+                          journey.location
+                        }
                       </option>
                     )
                   )}
-
                 </select>
-
               )}
 
             </div>
 
           </div>
 
-
-          {/* MEDIA */}
+          {/* ==================================================
+              MEDIA
+          ================================================== */}
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
@@ -358,80 +521,46 @@ export default function NewEncounterPage() {
               Give the encounter a face.
             </h2>
 
-            <p className="mt-3 text-sm text-white/30">
-              Choose an existing photograph from
-              your Media Library.
-            </p>
-
-
             <div className="mt-8">
 
               {selectedMedia ? (
 
                 <div className="overflow-hidden rounded-2xl border border-white/10">
 
-                  <div className="aspect-[16/8] overflow-hidden bg-black">
+                  <img
+                    src={selectedMedia.url}
+                    alt={
+                      selectedMedia.altText ||
+                      selectedMedia.fileName
+                    }
+                    className="h-72 w-full object-cover"
+                  />
 
-                    <img
-                      src={
-                        selectedMedia.url
-                      }
-                      alt={
-                        selectedMedia.altText ||
-                        selectedMedia.fileName
-                      }
-                      className="h-full w-full object-cover"
-                    />
-
-                  </div>
-
-                  <div className="flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
+                  <div className="flex items-center justify-between gap-4 p-4">
 
                     <div>
-
-                      <p className="text-sm text-white/80">
+                      <p className="text-sm">
                         {
                           selectedMedia.fileName
                         }
                       </p>
 
-                      {selectedMedia.location && (
-                        <p className="mt-1 text-xs text-white/30">
-                          {
-                            selectedMedia.location
-                          }
-                        </p>
-                      )}
-
+                      <p className="mt-1 text-xs text-white/30">
+                        Selected photograph
+                      </p>
                     </div>
 
-                    <div className="flex gap-2">
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowMediaPicker(
-                            true
-                          )
-                        }
-                        className="rounded-lg border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.1em] text-white/50 hover:border-[#D99A3D] hover:text-[#D99A3D]"
-                      >
-                        Change
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedMedia(
-                            null
-                          )
-                        }
-                        className="rounded-lg border border-red-500/20 px-4 py-2 text-xs uppercase tracking-[0.1em] text-red-400 hover:bg-red-500/10"
-                      >
-                        Remove
-                      </button>
-
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSelectedMedia(
+                          null
+                        )
+                      }
+                      className="text-xs uppercase tracking-[0.15em] text-red-400 hover:text-red-300"
+                    >
+                      Remove
+                    </button>
 
                   </div>
 
@@ -446,21 +575,9 @@ export default function NewEncounterPage() {
                       true
                     )
                   }
-                  className="flex min-h-56 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/20 text-center transition hover:border-[#D99A3D]/50 hover:bg-white/[0.02]"
+                  className="flex min-h-48 w-full items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/20 text-sm text-white/30 transition hover:border-[#D99A3D]/50 hover:text-white/60"
                 >
-
-                  <span className="text-3xl text-white/20">
-                    +
-                  </span>
-
-                  <span className="mt-3 text-sm text-white/50">
-                    Select photograph
-                  </span>
-
-                  <span className="mt-1 text-xs text-white/20">
-                    Choose from Media Library
-                  </span>
-
+                  + Select Photograph
                 </button>
 
               )}
@@ -469,50 +586,112 @@ export default function NewEncounterPage() {
 
           </div>
 
-
-          {/* STORY */}
+          {/* ==================================================
+              STORY
+          ================================================== */}
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
-            <p className="text-xs uppercase tracking-[0.2em] text-[#D99A3D]">
-              04 · Story
-            </p>
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
 
-            <h2 className="mt-2 font-serif text-3xl">
-              Tell the story.
-            </h2>
+              <div>
 
-            <div className="mt-8">
+                <p className="text-xs uppercase tracking-[0.2em] text-[#D99A3D]">
+                  04 · Story
+                </p>
 
-              <textarea
-                value={story}
-                onChange={(event) =>
-                  setStory(
-                    event.target.value
-                  )
-                }
-                rows={16}
-                placeholder="Write what happened..."
-                className="w-full resize-y rounded-xl border border-white/10 bg-black/30 px-5 py-5 text-sm leading-7 text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+                <h2 className="mt-2 font-serif text-3xl">
+                  Tell the story.
+                </h2>
+
+                <p className="mt-2 max-w-xl text-sm leading-6 text-white/30">
+                  Build the encounter
+                  from individual
+                  story blocks.
+                </p>
+
+              </div>
+
+              <BlockToolbar
+                onAdd={addBlock}
               />
 
-              <p className="mt-2 text-xs text-white/20">
-                The rich story editor will replace
-                this simple field in the next phase.
-              </p>
+            </div>
+
+            <div className="mt-8 space-y-4">
+
+              {storyBlocks.length ===
+                0 ? (
+
+                <div className="rounded-2xl border border-dashed border-white/10 p-10 text-center">
+
+                  <p className="text-sm text-white/30">
+                    Your story is
+                    empty.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      addBlock(
+                        "paragraph"
+                      )
+                    }
+                    className="mt-4 text-xs uppercase tracking-[0.15em] text-[#D99A3D]"
+                  >
+                    + Add paragraph
+                  </button>
+
+                </div>
+
+              ) : (
+
+                storyBlocks.map(
+                  (
+                    block,
+                    index
+                  ) => (
+                    <StoryBlockEditor
+                      key={block.id}
+                      block={block}
+                      index={index}
+                      total={
+                        storyBlocks.length
+                      }
+                      onUpdate={
+                        updateBlock
+                      }
+                      onDelete={
+                        deleteBlock
+                      }
+                      onMove={
+                        moveBlock
+                      }
+                      onSelectMedia={() =>
+                        setShowMediaPicker(
+                          true
+                        )
+                      }
+                    />
+                  )
+                )
+
+              )}
 
             </div>
 
           </div>
 
-
-          {/* FEATURED */}
+          {/* ==================================================
+              FEATURE
+          ================================================== */}
 
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 md:p-8">
 
-            <label className="flex cursor-pointer items-start gap-4">
+            <div className="flex items-start gap-4">
 
               <input
+                id="featured"
                 type="checkbox"
                 checked={
                   featuredOnHomepage
@@ -527,42 +706,46 @@ export default function NewEncounterPage() {
 
               <div>
 
-                <p className="text-sm text-white/80">
+                <label
+                  htmlFor="featured"
+                  className="cursor-pointer text-sm font-medium"
+                >
                   Feature this encounter
-                </p>
+                </label>
 
-                <p className="mt-1 text-xs leading-5 text-white/30">
-                  Allow this encounter to appear
-                  in the homepage featured encounters
-                  section.
+                <p className="mt-1 text-sm leading-6 text-white/30">
+                  Allow this encounter
+                  to appear in the
+                  homepage featured
+                  encounters.
                 </p>
 
               </div>
 
-            </label>
+            </div>
 
           </div>
 
+          {/* ==================================================
+              SAVE
+          ================================================== */}
 
-          {/* ACTIONS */}
-
-          <div className="flex flex-col justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row sm:items-center">
+          <div className="flex flex-col justify-end gap-3 border-t border-white/10 pt-8 sm:flex-row">
 
             <Link
               href="/admin/encounters"
-              className="rounded-xl border border-white/10 px-5 py-3 text-center text-sm text-white/40 transition hover:bg-white/5 hover:text-white"
+              className="rounded-xl border border-white/10 px-6 py-3 text-center text-xs uppercase tracking-[0.15em] text-white/50 transition hover:border-white/20 hover:text-white"
             >
               Cancel
             </Link>
 
             <button
               type="button"
-              onClick={createEncounter}
-              disabled={
-                saving ||
-                loadingJourneys
+              onClick={
+                createEncounter
               }
-              className="rounded-xl bg-[#D99A3D] px-7 py-3 text-sm font-medium text-black transition hover:bg-[#e5aa4d] disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={saving}
+              className="rounded-xl bg-[#D99A3D] px-7 py-3 text-xs font-medium uppercase tracking-[0.15em] text-black transition hover:bg-[#e5aa50] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving
                 ? "Creating..."
@@ -575,21 +758,406 @@ export default function NewEncounterPage() {
 
       </div>
 
-
-      {/* MEDIA PICKER */}
+      {/* ======================================================
+          MEDIA PICKER
+      ====================================================== */}
 
       {showMediaPicker && (
         <MediaPicker
-          onClose={() =>
-            setShowMediaPicker(false)
-          }
           onSelect={(media) => {
-            setSelectedMedia(media);
-            setShowMediaPicker(false);
+            setSelectedMedia(
+              media
+            );
+
+            setShowMediaPicker(
+              false
+            );
           }}
+          onClose={() =>
+            setShowMediaPicker(
+              false
+            )
+          }
         />
       )}
 
     </main>
+  );
+}
+
+/* ============================================================
+   BLOCK TOOLBAR
+============================================================ */
+
+function BlockToolbar({
+  onAdd,
+}: {
+  onAdd: (
+    type: StoryBlockType
+  ) => void;
+}) {
+  const buttons: {
+    type: StoryBlockType;
+    label: string;
+  }[] = [
+      {
+        type: "paragraph",
+        label: "Paragraph",
+      },
+      {
+        type: "heading",
+        label: "Heading",
+      },
+      {
+        type: "subheading",
+        label: "Subheading",
+      },
+      {
+        type: "quote",
+        label: "Quote",
+      },
+      {
+        type: "image",
+        label: "Image",
+      },
+      {
+        type: "divider",
+        label: "Divider",
+      },
+    ];
+
+  return (
+    <div className="flex flex-wrap gap-2">
+
+      {buttons.map(
+        (button) => (
+          <button
+            key={button.type}
+            type="button"
+            onClick={() =>
+              onAdd(
+                button.type
+              )
+            }
+            className="rounded-lg border border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.12em] text-white/40 transition hover:border-[#D99A3D]/50 hover:text-[#D99A3D]"
+          >
+            + {button.label}
+          </button>
+        )
+      )}
+
+    </div>
+  );
+}
+
+/* ============================================================
+   STORY BLOCK EDITOR
+============================================================ */
+
+function StoryBlockEditor({
+  block,
+  index,
+  total,
+  onUpdate,
+  onDelete,
+  onMove,
+  onSelectMedia,
+}: {
+  block: StoryBlock;
+  index: number;
+  total: number;
+  onUpdate: (
+    id: string,
+    updates: Partial<StoryBlock>
+  ) => void;
+  onDelete: (
+    id: string
+  ) => void;
+  onMove: (
+    index: number,
+    direction: "up" | "down"
+  ) => void;
+  onSelectMedia: () => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-white/10 bg-black/20">
+
+      {/* BLOCK HEADER */}
+
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+
+        <div className="flex items-center gap-3">
+
+          <span className="text-[10px] uppercase tracking-[0.15em] text-[#D99A3D]">
+            {block.type}
+          </span>
+
+          <span className="text-[10px] text-white/20">
+            Block {index + 1}
+          </span>
+
+        </div>
+
+        <div className="flex items-center gap-1">
+
+          <button
+            type="button"
+            disabled={index === 0}
+            onClick={() =>
+              onMove(
+                index,
+                "up"
+              )
+            }
+            className="rounded px-2 py-1 text-xs text-white/30 hover:text-white disabled:opacity-20"
+          >
+            ↑
+          </button>
+
+          <button
+            type="button"
+            disabled={
+              index === total - 1
+            }
+            onClick={() =>
+              onMove(
+                index,
+                "down"
+              )
+            }
+            className="rounded px-2 py-1 text-xs text-white/30 hover:text-white disabled:opacity-20"
+          >
+            ↓
+          </button>
+
+          <button
+            type="button"
+            onClick={() =>
+              onDelete(
+                block.id
+              )
+            }
+            className="ml-2 rounded px-2 py-1 text-xs text-red-400/60 hover:text-red-400"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+      {/* CONTENT */}
+
+      <div className="p-5">
+
+        {block.type ===
+          "paragraph" && (
+            <textarea
+              value={
+                block.text || ""
+              }
+              onChange={(event) =>
+                onUpdate(
+                  block.id,
+                  {
+                    text:
+                      event.target
+                        .value,
+                  }
+                )
+              }
+              rows={6}
+              placeholder="Write the story..."
+              className="w-full resize-y rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-base leading-7 text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+            />
+          )}
+
+        {block.type ===
+          "heading" && (
+            <input
+              value={
+                block.text || ""
+              }
+              onChange={(event) =>
+                onUpdate(
+                  block.id,
+                  {
+                    text:
+                      event.target
+                        .value,
+                  }
+                )
+              }
+              placeholder="Section heading"
+              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-4 font-serif text-2xl text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+            />
+          )}
+
+        {block.type ===
+          "subheading" && (
+            <input
+              value={
+                block.text || ""
+              }
+              onChange={(event) =>
+                onUpdate(
+                  block.id,
+                  {
+                    text:
+                      event.target
+                        .value,
+                  }
+                )
+              }
+              placeholder="Section subheading"
+              className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-xl text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+            />
+          )}
+
+        {block.type ===
+          "quote" && (
+            <div className="space-y-4">
+
+              <textarea
+                value={
+                  block.text || ""
+                }
+                onChange={(event) =>
+                  onUpdate(
+                    block.id,
+                    {
+                      text:
+                        event.target
+                          .value,
+                    }
+                  )
+                }
+                rows={4}
+                placeholder="Write the quote..."
+                className="w-full resize-y rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-lg leading-7 text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+              />
+
+              <input
+                value={
+                  block.author || ""
+                }
+                onChange={(event) =>
+                  onUpdate(
+                    block.id,
+                    {
+                      author:
+                        event.target
+                          .value,
+                    }
+                  )
+                }
+                placeholder="Author (optional)"
+                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+              />
+
+            </div>
+          )}
+
+        {block.type ===
+          "image" && (
+            <div className="space-y-4">
+
+              {block.url ? (
+
+                <div className="overflow-hidden rounded-xl border border-white/10">
+
+                  <img
+                    src={block.url}
+                    alt={
+                      block.alt ||
+                      "Story image"
+                    }
+                    className="h-64 w-full object-cover"
+                  />
+
+                </div>
+
+              ) : (
+
+                <button
+                  type="button"
+                  onClick={
+                    onSelectMedia
+                  }
+                  className="flex h-52 w-full items-center justify-center rounded-xl border border-dashed border-white/10 text-sm text-white/30 transition hover:border-[#D99A3D]/50 hover:text-white/60"
+                >
+                  + Select Story Image
+                </button>
+
+              )}
+
+              {block.url && (
+                <button
+                  type="button"
+                  onClick={
+                    onSelectMedia
+                  }
+                  className="text-xs uppercase tracking-[0.15em] text-[#D99A3D]"
+                >
+                  Change image
+                </button>
+              )}
+
+              <input
+                value={
+                  block.alt || ""
+                }
+                onChange={(event) =>
+                  onUpdate(
+                    block.id,
+                    {
+                      alt:
+                        event.target
+                          .value,
+                    }
+                  )
+                }
+                placeholder="Alt text"
+                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+              />
+
+              <input
+                value={
+                  block.caption ||
+                  ""
+                }
+                onChange={(event) =>
+                  onUpdate(
+                    block.id,
+                    {
+                      caption:
+                        event.target
+                          .value,
+                    }
+                  )
+                }
+                placeholder="Caption (optional)"
+                className="w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-[#D99A3D]/60"
+              />
+
+            </div>
+          )}
+
+        {block.type ===
+          "divider" && (
+            <div className="py-6">
+
+              <div className="border-t border-white/10" />
+
+              <p className="mt-3 text-center text-[10px] uppercase tracking-[0.2em] text-white/20">
+                Divider
+              </p>
+
+            </div>
+          )}
+
+      </div>
+
+    </div>
   );
 }
