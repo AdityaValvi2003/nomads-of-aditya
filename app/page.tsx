@@ -22,7 +22,6 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const settings =
     await prisma.siteSettings.findFirst();
-
   const [
     featuredJourney,
     blogs,
@@ -31,26 +30,7 @@ export default async function Home() {
   ] = await Promise.all([
     getFeaturedJourney(settings),
 
-    prisma.blog.findMany({
-      where: {
-        status: "PUBLISHED",
-      },
-
-      orderBy: {
-        publishedAt: "desc",
-      },
-
-      take: 3,
-
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        subtitle: true,
-        shortIntro: true,
-        coverImage: true,
-      },
-    }),
+    getFeaturedBlogs(settings),
 
     prisma.dreamDestination.findMany({
       orderBy: {
@@ -246,11 +226,11 @@ export default async function Home() {
             style={
               featuredJourney.coverImage
                 ? {
-                    backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.9), transparent 65%), url("${featuredJourney.coverImage}")`,
-                    backgroundSize: "cover",
-                    backgroundPosition:
-                      "center",
-                  }
+                  backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.9), transparent 65%), url("${featuredJourney.coverImage}")`,
+                  backgroundSize: "cover",
+                  backgroundPosition:
+                    "center",
+                }
                 : undefined
             }
           >
@@ -392,78 +372,78 @@ export default async function Home() {
     DREAM DESTINATIONS
 ===================================================== */}
 
-<section className="section">
-  <div className="section-head">
-    <div>
-      <span className="eyebrow">
-        PLACES I HAVEN'T SEEN YET
-      </span>
-
-      <h2>Dream Destinations</h2>
-    </div>
-
-    <Link
-      className="btn"
-      href="/dream-destinations"
-    >
-      Explore all →
-    </Link>
-  </div>
-
-  {destinations.length > 0 ? (
-    <div className="destinations">
-      {destinations.map((destination) => (
-        <Link
-          href={`/dream-destinations/${destination.id}`}
-          className="destination group"
-          key={destination.id}
-          style={
-            destination.coverImage
-              ? {
-                  backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.82), transparent 65%), url("${destination.coverImage}")`,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                }
-              : undefined
-          }
-        >
+      <section className="section">
+        <div className="section-head">
           <div>
+            <span className="eyebrow">
+              PLACES I HAVEN'T SEEN YET
+            </span>
+
+            <h2>Dream Destinations</h2>
+          </div>
+
+          <Link
+            className="btn"
+            href="/dream-destinations"
+          >
+            Explore all →
+          </Link>
+        </div>
+
+        {destinations.length > 0 ? (
+          <div className="destinations">
+            {destinations.map((destination) => (
+              <Link
+                href={`/dream-destinations/${destination.id}`}
+                className="destination group"
+                key={destination.id}
+                style={
+                  destination.coverImage
+                    ? {
+                      backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.82), transparent 65%), url("${destination.coverImage}")`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }
+                    : undefined
+                }
+              >
+                <div>
+                  <span className="eyebrow">
+                    ONE DAY
+                  </span>
+
+                  <h3 className="transition group-hover:text-[#D99A3D]">
+                    {destination.name}
+                  </h3>
+
+                  <p className="m-0 text-sm text-white/55">
+                    {destination.country}
+                  </p>
+
+                  <span className="mt-3 inline-block text-xs uppercase tracking-[0.15em] text-white/40 transition group-hover:text-white/80">
+                    Explore →
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="card">
             <span className="eyebrow">
               ONE DAY
             </span>
 
-            <h3 className="transition group-hover:text-[#D99A3D]">
-              {destination.name}
+            <h3>
+              More places are waiting to be added.
             </h3>
 
-            <p className="m-0 text-sm text-white/55">
-              {destination.country}
+            <p>
+              Create dream destinations from the CMS
+              and they will appear here automatically.
             </p>
-
-            <span className="mt-3 inline-block text-xs uppercase tracking-[0.15em] text-white/40 transition group-hover:text-white/80">
-              Explore →
-            </span>
           </div>
-        </Link>
-      ))}
-    </div>
-  ) : (
-    <div className="card">
-      <span className="eyebrow">
-        ONE DAY
-      </span>
-
-      <h3>
-        More places are waiting to be added.
-      </h3>
-
-      <p>
-        Create dream destinations from the CMS
-        and they will appear here automatically.
-      </p>
-    </div>
-  )}
-</section>
+        )}
+      </section>
       {/* =====================================================
           ENCOUNTERS
       ===================================================== */}
@@ -483,7 +463,7 @@ export default async function Home() {
 
           <div>
             {featuredEncounters.length >
-            0 ? (
+              0 ? (
               <div className="space-y-8">
                 {featuredEncounters.map(
                   (encounter) => (
@@ -492,19 +472,19 @@ export default async function Home() {
                     >
                       {encounter.media
                         ?.url && (
-                        <img
-                          src={
-                            encounter.media
-                              .url
-                          }
-                          alt={
-                            encounter.media
-                              .altText ||
-                            encounter.title
-                          }
-                          className="mb-5 max-h-64 w-full object-cover"
-                        />
-                      )}
+                          <img
+                            src={
+                              encounter.media
+                                .url
+                            }
+                            alt={
+                              encounter.media
+                                .altText ||
+                              encounter.title
+                            }
+                            className="mb-5 max-h-64 w-full object-cover"
+                          />
+                        )}
 
                       <span className="eyebrow">
                         ENCOUNTER
@@ -602,12 +582,12 @@ export default async function Home() {
 async function getFeaturedJourney(
   settings: {
     journeyFeatureMode:
-      | "AUTOMATIC"
-      | "MANUAL";
+    | "AUTOMATIC"
+    | "MANUAL";
 
     featuredJourneyId:
-      | string
-      | null;
+    | string
+    | null;
   } | null
 ) {
   /*
@@ -616,7 +596,7 @@ async function getFeaturedJourney(
 
   if (
     settings?.journeyFeatureMode ===
-      "MANUAL" &&
+    "MANUAL" &&
     settings.featuredJourneyId
   ) {
     const manualJourney =
@@ -678,4 +658,90 @@ async function getFeaturedJourney(
       coverImage: true,
     },
   });
+}
+
+async function getFeaturedBlogs(
+  settings: {
+    blogFeatureMode: "AUTOMATIC" | "MANUAL";
+    featuredBlogId: string | null;
+  } | null
+) {
+  const select = {
+    id: true,
+    title: true,
+    slug: true,
+    subtitle: true,
+    shortIntro: true,
+    coverImage: true,
+  };
+
+  /*
+   * MANUAL MODE
+   */
+
+  if (
+    settings?.blogFeatureMode === "MANUAL" &&
+    settings.featuredBlogId
+  ) {
+    const manualBlog = await prisma.blog.findFirst({
+      where: {
+        id: settings.featuredBlogId,
+        status: "PUBLISHED",
+      },
+      select,
+    });
+
+    if (manualBlog) {
+      const remainingBlogs = await prisma.blog.findMany({
+        where: {
+          status: "PUBLISHED",
+          id: {
+            not: manualBlog.id,
+          },
+        },
+        orderBy: [
+          {
+            publishedAt: "desc",
+          },
+          {
+            createdAt: "desc",
+          },
+        ],
+        take: 2,
+        select,
+      });
+
+      return [manualBlog, ...remainingBlogs];
+    }
+  }
+
+  /*
+   * AUTOMATIC MODE
+   *
+   * Priority:
+   *
+   * 1. Featured blog
+   * 2. Latest published blogs
+   */
+
+  const blogs = await prisma.blog.findMany({
+    where: {
+      status: "PUBLISHED",
+    },
+    orderBy: [
+      {
+        isFeatured: "desc",
+      },
+      {
+        publishedAt: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ],
+    take: 3,
+    select,
+  });
+
+  return blogs;
 }

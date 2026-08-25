@@ -2437,3 +2437,252 @@ body,
     border-color 0.35s ease,
     color 0.35s ease;
 }
+
+
+/* =========================================================
+   SETTINGS PAGE
+========================================================= */
+
+.settings-page .admin-content {
+  max-width: 1100px;
+}
+
+.settings-page .admin-section {
+  margin-top: 48px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.settings-page .admin-section-header {
+  margin-bottom: 28px;
+}
+
+.settings-page .admin-section-header h3 {
+  margin-top: 8px;
+}
+
+.settings-page .admin-section-header p {
+  max-width: 650px;
+  margin-top: 10px;
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.7;
+}
+
+/* ---------------------------------------------------------
+   FORM LAYOUT
+--------------------------------------------------------- */
+
+.settings-page .admin-form-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 24px !important;
+}
+
+.settings-page .admin-form-stack {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+}
+
+.settings-page .admin-field {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 9px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.settings-page .admin-field > span {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* ---------------------------------------------------------
+   INPUTS
+--------------------------------------------------------- */
+
+.settings-page .admin-field input,
+.settings-page .admin-field select,
+.settings-page .admin-field textarea {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+
+  background: rgba(255, 255, 255, 0.045) !important;
+  color: white !important;
+
+  padding: 13px 14px !important;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+}
+
+.settings-page .admin-field input,
+.settings-page .admin-field select {
+  height: 48px !important;
+}
+
+.settings-page .admin-field textarea {
+  min-height: 120px !important;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.settings-page .admin-field input:focus,
+.settings-page .admin-field select:focus,
+.settings-page .admin-field textarea:focus {
+  border-color: rgba(217, 154, 61, 0.7) !important;
+  background: rgba(255, 255, 255, 0.065) !important;
+}
+
+.settings-page .admin-field input::placeholder,
+.settings-page .admin-field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.22);
+}
+
+.settings-page .admin-field select option {
+  background: #171717;
+  color: white;
+}
+
+/* ---------------------------------------------------------
+   AUTOMATIC / MANUAL
+--------------------------------------------------------- */
+
+.settings-page .status-options {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 14px !important;
+  width: 100% !important;
+}
+
+.settings-page .status-option {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  min-height: 92px !important;
+  box-sizing: border-box !important;
+
+  padding: 18px !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 12px !important;
+
+  background: rgba(255, 255, 255, 0.025) !important;
+  color: white !important;
+
+  text-align: left !important;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.settings-page .status-option:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  transform: translateY(-1px);
+}
+
+.settings-page .status-option strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.settings-page .status-option small {
+  display: block;
+  margin-top: 5px;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 13px;
+}
+
+.settings-page .status-option.active {
+  border-color: rgba(217, 154, 61, 0.7) !important;
+  background: rgba(217, 154, 61, 0.08) !important;
+}
+
+/* ---------------------------------------------------------
+   COLOR PICKER
+--------------------------------------------------------- */
+
+.settings-page .settings-color-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100%;
+}
+
+.settings-page .settings-color-row input[type="color"] {
+  width: 52px !important;
+  min-width: 52px !important;
+  height: 48px !important;
+  padding: 3px !important;
+
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+
+  background: rgba(255, 255, 255, 0.04) !important;
+  cursor: pointer;
+}
+
+.settings-page .settings-color-row input[type="text"] {
+  flex: 1 !important;
+}
+
+/* ---------------------------------------------------------
+   SAVE
+--------------------------------------------------------- */
+
+.settings-page .settings-save {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+}
+
+.settings-page .settings-save-copy {
+  max-width: 600px;
+}
+
+.settings-page .settings-save-copy p {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+--------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .settings-page .admin-section {
+    padding: 22px;
+  }
+
+  .settings-page .admin-form-grid,
+  .settings-page .status-options {
+    grid-template-columns: 1fr !important;
+  }
+
+  .settings-page .settings-save {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+  }
+}
