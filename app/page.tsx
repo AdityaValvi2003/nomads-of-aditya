@@ -389,83 +389,81 @@ export default async function Home() {
       </section>
 
       {/* =====================================================
-          DREAM DESTINATIONS
-      ===================================================== */}
+    DREAM DESTINATIONS
+===================================================== */}
 
-      <section className="section">
-        <div className="section-head">
+<section className="section">
+  <div className="section-head">
+    <div>
+      <span className="eyebrow">
+        PLACES I HAVEN'T SEEN YET
+      </span>
+
+      <h2>Dream Destinations</h2>
+    </div>
+
+    <Link
+      className="btn"
+      href="/dream-destinations"
+    >
+      Explore all →
+    </Link>
+  </div>
+
+  {destinations.length > 0 ? (
+    <div className="destinations">
+      {destinations.map((destination) => (
+        <Link
+          href={`/dream-destinations/${destination.id}`}
+          className="destination group"
+          key={destination.id}
+          style={
+            destination.coverImage
+              ? {
+                  backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.82), transparent 65%), url("${destination.coverImage}")`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : undefined
+          }
+        >
           <div>
-            <span className="eyebrow">
-              PLACES I HAVEN'T SEEN YET
-            </span>
-
-            <h2>Dream Destinations</h2>
-          </div>
-
-          <Link
-            className="btn"
-            href="/dream-destinations"
-          >
-            Explore all →
-          </Link>
-        </div>
-
-        {destinations.length > 0 ? (
-          <div className="destinations">
-            {destinations.map(
-              (destination) => (
-                <div
-                  className="destination"
-                  key={destination.id}
-                  style={
-                    destination.coverImage
-                      ? {
-                          backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.82), transparent 65%), url("${destination.coverImage}")`,
-                          backgroundSize:
-                            "cover",
-                          backgroundPosition:
-                            "center",
-                        }
-                      : undefined
-                  }
-                >
-                  <div>
-                    <span className="eyebrow">
-                      ONE DAY
-                    </span>
-
-                    <h3>
-                      {destination.name}
-                    </h3>
-
-                    <p className="m-0 text-sm text-white/55">
-                      {destination.country}
-                    </p>
-                  </div>
-                </div>
-              )
-            )}
-          </div>
-        ) : (
-          <div className="card">
             <span className="eyebrow">
               ONE DAY
             </span>
 
-            <h3>
-              More places are waiting to be
-              added.
+            <h3 className="transition group-hover:text-[#D99A3D]">
+              {destination.name}
             </h3>
 
-            <p>
-              Create dream destinations from
-              the CMS and they will appear here
-              automatically.
+            <p className="m-0 text-sm text-white/55">
+              {destination.country}
             </p>
-          </div>
-        )}
-      </section>
 
+            <span className="mt-3 inline-block text-xs uppercase tracking-[0.15em] text-white/40 transition group-hover:text-white/80">
+              Explore →
+            </span>
+          </div>
+        </Link>
+      ))}
+    </div>
+  ) : (
+    <div className="card">
+      <span className="eyebrow">
+        ONE DAY
+      </span>
+
+      <h3>
+        More places are waiting to be added.
+      </h3>
+
+      <p>
+        Create dream destinations from the CMS
+        and they will appear here automatically.
+      </p>
+    </div>
+  )}
+</section>
       {/* =====================================================
           ENCOUNTERS
       ===================================================== */}
