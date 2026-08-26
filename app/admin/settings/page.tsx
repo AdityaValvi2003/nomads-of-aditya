@@ -203,35 +203,35 @@ export default function SettingsPage() {
             featuredBlogId:
               settings.featuredBlogId,
 
-              aboutHeadline:
-  settings.aboutHeadline,
+            aboutHeadline:
+              settings.aboutHeadline,
 
-aboutLead:
-  settings.aboutLead,
+            aboutLead:
+              settings.aboutLead,
 
-aboutStoryTitle:
-  settings.aboutStoryTitle,
+            aboutStoryTitle:
+              settings.aboutStoryTitle,
 
-aboutStoryLeft:
-  settings.aboutStoryLeft,
+            aboutStoryLeft:
+              settings.aboutStoryLeft,
 
-aboutStoryRight:
-  settings.aboutStoryRight,
+            aboutStoryRight:
+              settings.aboutStoryRight,
 
-aboutPhilosophy:
-  settings.aboutPhilosophy,
+            aboutPhilosophy:
+              settings.aboutPhilosophy,
 
-aboutFreedom:
-  settings.aboutFreedom,
+            aboutFreedom:
+              settings.aboutFreedom,
 
-aboutExploration:
-  settings.aboutExploration,
+            aboutExploration:
+              settings.aboutExploration,
 
-aboutPeople:
-  settings.aboutPeople,
+            aboutPeople:
+              settings.aboutPeople,
 
-aboutGrowth:
-  settings.aboutGrowth,
+            aboutGrowth:
+              settings.aboutGrowth,
           }),
         }
       );

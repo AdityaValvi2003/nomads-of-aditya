@@ -1,33 +1,29 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const links = [
   ["Journeys", "/journeys"],
   ["Blog", "/blog"],
-  ["Dream Destinations", "/dream-destinations"],
-  ["About Me", "/about"],
+  ["Destinations", "/dream-destinations"],
+  ["About", "/about"],
   ["Contact", "/contact"],
 ];
 
 export default function Header() {
+  const pathname = usePathname();
+
   const [dark, setDark] = useState(true);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  /*
-   * =========================================================
-   * LOAD SAVED THEME
-   * =========================================================
-   */
-
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
 
-    const shouldBeDark =
-      savedTheme !== "light";
+    const shouldBeDark = savedTheme !== "light";
 
     setDark(shouldBeDark);
 
@@ -37,69 +33,41 @@ export default function Header() {
     setMounted(true);
   }, []);
 
-  /*
-   * =========================================================
-   * APPLY THEME
-   * =========================================================
-   */
-
   useEffect(() => {
     if (!mounted) return;
 
     const theme = dark ? "dark" : "light";
 
-    document.documentElement.dataset.theme =
-      theme;
+    document.documentElement.dataset.theme = theme;
 
-    localStorage.setItem(
-      "theme",
-      theme
-    );
+    localStorage.setItem("theme", theme);
   }, [dark, mounted]);
-
-  /*
-   * =========================================================
-   * SCROLL
-   * =========================================================
-   */
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(
-        window.scrollY > 24
-      );
+      setScrolled(window.scrollY > 40);
     };
 
     handleScroll();
 
-    window.addEventListener(
-      "scroll",
-      handleScroll
-    );
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      window.removeEventListener(
-        "scroll",
-        handleScroll
-      );
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  /*
-   * =========================================================
-   * THEME TOGGLE
-   * =========================================================
-   */
 
   function toggleTheme() {
     setDark((current) => !current);
   }
 
-  /*
-   * =========================================================
-   * RENDER
-   * =========================================================
-   */
+  function isActive(href: string) {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
 
   return (
     <header
@@ -107,89 +75,142 @@ export default function Header() {
         scrolled ? "scrolled" : ""
       }`}
     >
-      {/* BRAND */}
+      <div className="nav-pill">
 
-      <Link
-        className="brand"
-        href="/"
-      >
-        NOMADS{" "}
-        <span>OF ADITYA</span>
-      </Link>
+        {/* BRAND */}
 
-      {/* DESKTOP NAV */}
+        <Link
+          href="/"
+          className="nav-brand"
+          aria-label="Nomads of Aditya home"
+        >
+          <span className="nav-brand-mark">
+            N
+          </span>
 
-      <nav className="desktop-nav">
-        {links.map(
-          ([label, href]) => (
+          <span className="nav-brand-text">
+            NOMADS
+            <span>OF ADITYA</span>
+          </span>
+        </Link>
+
+
+        {/* DESKTOP NAV */}
+
+        <nav
+          className="desktop-nav"
+          aria-label="Main navigation"
+        >
+          {links.map(([label, href]) => (
             <Link
               key={href}
               href={href}
+              className={
+                isActive(href)
+                  ? "active"
+                  : ""
+              }
             >
               {label}
             </Link>
-          )
-        )}
+          ))}
+        </nav>
+
+
+        {/* ACTIONS */}
+
+        <div className="nav-actions">
+
+          <button
+            type="button"
+            aria-label={
+              dark
+                ? "Switch to light mode"
+                : "Switch to dark mode"
+            }
+            className="theme-toggle"
+            onClick={toggleTheme}
+          >
+            <span>
+              {dark ? "☼" : "☾"}
+            </span>
+          </button>
+
+          <Link
+            href="/contact"
+            className="nav-cta"
+          >
+            Get Started
+          </Link>
+
+        </div>
+
+
+        {/* MOBILE */}
 
         <button
           type="button"
-          aria-label={
-            dark
-              ? "Switch to light mode"
-              : "Switch to dark mode"
+          className="mobile-menu"
+          onClick={() =>
+            setOpen((current) => !current)
           }
-          className="theme-toggle"
-          onClick={toggleTheme}
+          aria-label={
+            open
+              ? "Close menu"
+              : "Open menu"
+          }
+          aria-expanded={open}
         >
-          {dark ? "☼" : "☾"}
+          {open ? "×" : "☰"}
         </button>
-      </nav>
 
-      {/* MOBILE MENU BUTTON */}
+      </div>
 
-      <button
-        type="button"
-        className="mobile-menu"
-        onClick={() =>
-          setOpen(
-            (current) => !current
-          )
-        }
-        aria-label={
-          open
-            ? "Close menu"
-            : "Open menu"
-        }
-      >
-        {open ? "×" : "☰"}
-      </button>
 
       {/* MOBILE PANEL */}
 
       {open && (
         <div className="mobile-panel">
-          {links.map(
-            ([label, href]) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() =>
-                  setOpen(false)
-                }
-              >
-                {label}
-              </Link>
-            )
-          )}
 
-          <button
-            type="button"
-            onClick={toggleTheme}
-          >
-            {dark
-              ? "Switch to Light"
-              : "Switch to Dark"}
-          </button>
+          {links.map(([label, href]) => (
+            <Link
+              key={href}
+              href={href}
+              className={
+                isActive(href)
+                  ? "active"
+                  : ""
+              }
+              onClick={() =>
+                setOpen(false)
+              }
+            >
+              {label}
+            </Link>
+          ))}
+
+          <div className="mobile-panel-actions">
+
+            <button
+              type="button"
+              onClick={toggleTheme}
+            >
+              {dark
+                ? "Switch to Light"
+                : "Switch to Dark"}
+            </button>
+
+            <Link
+              href="/contact"
+              onClick={() =>
+                setOpen(false)
+              }
+            >
+              Get Started →
+            </Link>
+
+          </div>
+
         </div>
       )}
     </header>

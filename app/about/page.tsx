@@ -117,34 +117,34 @@ This website is where I keep those moments.`;
                         </span>
 
                         <h2>
-  {aboutStoryTitle}
-</h2>
+                            {aboutStoryTitle}
+                        </h2>
                     </div>
 
                 </div>
 
                 <div className="about-story-grid">
-<div>
-  {aboutStoryLeft
-    .split("\n\n")
-    .map((paragraph, index) => (
-      <p
-        key={index}
-        className={index === 0 ? "lead" : undefined}
-      >
-        {paragraph}
-      </p>
-    ))}
-</div>
-<div>
-  {aboutStoryRight
-    .split("\n\n")
-    .map((paragraph, index) => (
-      <p key={index}>
-        {paragraph}
-      </p>
-    ))}
-</div>
+                    <div>
+                        {aboutStoryLeft
+                            .split("\n\n")
+                            .map((paragraph, index) => (
+                                <p
+                                    key={index}
+                                    className={index === 0 ? "lead" : undefined}
+                                >
+                                    {paragraph}
+                                </p>
+                            ))}
+                    </div>
+                    <div>
+                        {aboutStoryRight
+                            .split("\n\n")
+                            .map((paragraph, index) => (
+                                <p key={index}>
+                                    {paragraph}
+                                </p>
+                            ))}
+                    </div>
 
                 </div>
 
@@ -174,8 +174,8 @@ This website is where I keep those moments.`;
                 <div>
 
                     <p className="philosophy-copy">
-  {aboutPhilosophy}
-</p>
+                        {aboutPhilosophy}
+                    </p>
 
                     <div className="principles">
 
@@ -183,32 +183,32 @@ This website is where I keep those moments.`;
                             <strong>FREEDOM</strong>
 
                             <p>
-  {aboutFreedom}
-</p>
+                                {aboutFreedom}
+                            </p>
                         </div>
 
                         <div className="principle">
                             <strong>EXPLORATION</strong>
 
                             <p>
-  {aboutExploration}
-</p>
+                                {aboutExploration}
+                            </p>
                         </div>
 
                         <div className="principle">
                             <strong>PEOPLE</strong>
 
                             <p>
-  {aboutPeople}
-</p>
+                                {aboutPeople}
+                            </p>
                         </div>
 
                         <div className="principle">
                             <strong>GROWTH</strong>
 
                             <p>
-  {aboutGrowth}
-</p>
+                                {aboutGrowth}
+                            </p>
                         </div>
 
                     </div>
