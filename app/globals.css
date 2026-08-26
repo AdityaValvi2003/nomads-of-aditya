@@ -2686,3 +2686,206 @@ body,
     flex-direction: column !important;
   }
 }
+
+/* =========================================================
+   ABOUT PAGE
+========================================================= */
+
+.about-hero {
+  min-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+.about-title {
+  max-width: 1050px;
+  margin: 22px 0 34px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(64px, 8vw, 120px);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+  font-weight: 400;
+}
+
+.about-lead {
+  max-width: 720px;
+  font-size: 20px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.about-story {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.about-story-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 100px;
+  max-width: 1100px;
+  margin-top: 70px;
+}
+
+.about-story-grid p {
+  max-width: 620px;
+  margin: 0 0 28px;
+  font-size: 17px;
+  line-height: 1.85;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.about-story-grid .lead {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+@media (max-width: 760px) {
+  .about-hero {
+    min-height: auto;
+    padding-top: 90px;
+    padding-bottom: 90px;
+  }
+
+  .about-title {
+    font-size: clamp(52px, 15vw, 82px);
+    margin-top: 18px;
+  }
+
+  .about-lead {
+    font-size: 17px;
+  }
+
+  .about-story-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    margin-top: 45px;
+  }
+
+  .about-story-grid .lead {
+    font-size: 24px;
+  }
+}
+
+/* =========================================================
+   ABOUT — EXPLORE
+========================================================= */
+
+.about-explore-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 70px;
+}
+
+.about-explore-card {
+  position: relative;
+  min-height: 320px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease;
+}
+
+.about-explore-card:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.about-explore-card > span {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #d99a3d;
+  margin-bottom: auto;
+}
+
+.about-explore-card strong {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(36px, 4vw, 56px);
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: -0.035em;
+  color: rgba(255, 255, 255, 0.94);
+  margin-bottom: 22px;
+}
+
+.about-explore-card p {
+  max-width: 440px;
+  margin: 0 0 28px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+.about-explore-card small {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.about-explore-card:hover small {
+  color: #d99a3d;
+}
+
+
+/* =========================================================
+   ABOUT — CLOSING
+========================================================= */
+
+.about-closing {
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.about-closing h2 {
+  max-width: 900px;
+  margin: 22px 0 28px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(64px, 8vw, 118px);
+  line-height: 0.94;
+  letter-spacing: -0.055em;
+  font-weight: 400;
+}
+
+.about-closing .lead {
+  max-width: 520px;
+  margin-bottom: 38px;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.about-explore-grid {
+  grid-template-columns: 1fr;
+  margin-top: 45px;
+}
+
+.about-explore-card {
+  min-height: 270px;
+  padding: 26px;
+}
+
+.about-explore-card strong {
+  font-size: 42px;
+}
+
+.about-closing {
+  min-height: 65vh;
+}
+
+.about-closing h2 {
+  font-size: clamp(56px, 15vw, 82px);
+}
