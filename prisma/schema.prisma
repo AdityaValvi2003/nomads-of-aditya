@@ -288,6 +288,18 @@ model SiteSettings {
   accentColor        String      @default("#D99A3D")
   heroHeadline       String?
   heroSubheadline    String?
+
+  aboutHeadline     String?
+  aboutLead         String?
+  aboutStoryTitle   String?
+  aboutStoryLeft    String?
+  aboutStoryRight   String?
+  aboutPhilosophy   String?
+  aboutFreedom      String?
+  aboutExploration  String?
+  aboutPeople       String?
+  aboutGrowth       String?
+  
   journeyFeatureMode FeatureMode @default(AUTOMATIC)
   featuredJourneyId  String?
   blogFeatureMode    FeatureMode @default(AUTOMATIC)

@@ -207,37 +207,41 @@ export default function DreamDestinationsPage() {
       {/* =====================================================
           NAVIGATION
       ===================================================== */}
+<nav className="admin-navigation">
 
-      <nav className="admin-navigation">
+  <Link href="/admin">
+    Dashboard
+  </Link>
 
-        <Link href="/admin">
-          Dashboard
-        </Link>
+  <Link href="/admin/journeys">
+    Journeys
+  </Link>
 
-        <Link href="/admin/journeys">
-          Journeys
-        </Link>
+  <Link href="/admin/blog">
+    Blog
+  </Link>
 
-        <Link href="/admin/blog">
-          Blog
-        </Link>
+  <Link href="/admin/dream-destinations">
+    Dream Destinations
+  </Link>
 
-        <Link
-          href="/admin/dream-destinations"
-          className="active"
-        >
-          Dream Destinations
-        </Link>
+  <Link href="/admin/encounters">
+    Encounters
+  </Link>
 
-        <Link href="/admin/media">
-          Media
-        </Link>
+  <Link href="/admin/media">
+    Media
+  </Link>
 
-        <Link href="/admin/settings">
-          Settings
-        </Link>
+  <Link href="/admin/contact">
+    Contact Messages
+  </Link>
 
-      </nav>
+  <Link href="/admin/settings">
+    Settings
+  </Link>
+
+</nav>
 
 
       {/* =====================================================

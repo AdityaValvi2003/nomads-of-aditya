@@ -29,6 +29,16 @@ type Settings = {
   featuredJourneyId: string | null;
   blogFeatureMode: "AUTOMATIC" | "MANUAL";
   featuredBlogId: string | null;
+  aboutHeadline: string | null;
+  aboutLead: string | null;
+  aboutStoryTitle: string | null;
+  aboutStoryLeft: string | null;
+  aboutStoryRight: string | null;
+  aboutPhilosophy: string | null;
+  aboutFreedom: string | null;
+  aboutExploration: string | null;
+  aboutPeople: string | null;
+  aboutGrowth: string | null;
 };
 
 export default function SettingsPage() {
@@ -101,16 +111,16 @@ export default function SettingsPage() {
         Array.isArray(journeysData)
           ? journeysData
           : journeysData.journeys ||
-            journeysData.data ||
-            [];
+          journeysData.data ||
+          [];
 
       const blogList =
         Array.isArray(blogsData)
           ? blogsData
           : blogsData.posts ||
-            blogsData.blogs ||
-            blogsData.data ||
-            [];
+          blogsData.blogs ||
+          blogsData.data ||
+          [];
 
       setJourneys(journeyList);
       setBlogs(blogList);
@@ -192,6 +202,36 @@ export default function SettingsPage() {
 
             featuredBlogId:
               settings.featuredBlogId,
+
+              aboutHeadline:
+  settings.aboutHeadline,
+
+aboutLead:
+  settings.aboutLead,
+
+aboutStoryTitle:
+  settings.aboutStoryTitle,
+
+aboutStoryLeft:
+  settings.aboutStoryLeft,
+
+aboutStoryRight:
+  settings.aboutStoryRight,
+
+aboutPhilosophy:
+  settings.aboutPhilosophy,
+
+aboutFreedom:
+  settings.aboutFreedom,
+
+aboutExploration:
+  settings.aboutExploration,
+
+aboutPeople:
+  settings.aboutPeople,
+
+aboutGrowth:
+  settings.aboutGrowth,
           }),
         }
       );
@@ -202,7 +242,7 @@ export default function SettingsPage() {
       if (!response.ok) {
         throw new Error(
           data.error ||
-            "Failed to save settings."
+          "Failed to save settings."
         );
       }
 
@@ -492,7 +532,6 @@ export default function SettingsPage() {
       {/* =====================================================
           NAVIGATION
       ===================================================== */}
-
       <nav className="admin-navigation">
 
         <Link href="/admin">
@@ -511,14 +550,19 @@ export default function SettingsPage() {
           Dream Destinations
         </Link>
 
+        <Link href="/admin/encounters">
+          Encounters
+        </Link>
+
         <Link href="/admin/media">
           Media
         </Link>
 
-        <Link
-          href="/admin/settings"
-          className="active"
-        >
+        <Link href="/admin/contact">
+          Contact Messages
+        </Link>
+
+        <Link href="/admin/settings">
           Settings
         </Link>
 
@@ -714,7 +758,7 @@ export default function SettingsPage() {
                 />
 
                 <input
-                type="text"
+                  type="text"
                   value={
                     settings.accentColor
                   }
@@ -843,7 +887,7 @@ export default function SettingsPage() {
                 type="button"
                 className={
                   settings.journeyFeatureMode ===
-                  "AUTOMATIC"
+                    "AUTOMATIC"
                     ? "status-option active"
                     : "status-option"
                 }
@@ -868,7 +912,7 @@ export default function SettingsPage() {
                 type="button"
                 className={
                   settings.journeyFeatureMode ===
-                  "MANUAL"
+                    "MANUAL"
                     ? "status-option active"
                     : "status-option"
                 }
@@ -893,50 +937,50 @@ export default function SettingsPage() {
 
             {settings.journeyFeatureMode ===
               "MANUAL" && (
-              <label className="admin-field">
+                <label className="admin-field">
 
-                <span>
-                  Featured Journey
-                </span>
+                  <span>
+                    Featured Journey
+                  </span>
 
-                <select
-                  value={
-                    settings.featuredJourneyId ||
-                    ""
-                  }
-                  onChange={(event) =>
-                    updateSetting(
-                      "featuredJourneyId",
-                      event.target.value ||
+                  <select
+                    value={
+                      settings.featuredJourneyId ||
+                      ""
+                    }
+                    onChange={(event) =>
+                      updateSetting(
+                        "featuredJourneyId",
+                        event.target.value ||
                         null
-                    )
-                  }
-                >
-                  <option value="">
-                    Select a journey
-                  </option>
+                      )
+                    }
+                  >
+                    <option value="">
+                      Select a journey
+                    </option>
 
-                  {journeys
-                    .filter(
-                      (journey) =>
-                        journey.status ===
-                        "PUBLISHED"
-                    )
-                    .map((journey) => (
-                      <option
-                        key={journey.id}
-                        value={journey.id}
-                      >
-                        {journey.title}
-                        {journey.location
-                          ? ` — ${journey.location}`
-                          : ""}
-                      </option>
-                    ))}
-                </select>
+                    {journeys
+                      .filter(
+                        (journey) =>
+                          journey.status ===
+                          "PUBLISHED"
+                      )
+                      .map((journey) => (
+                        <option
+                          key={journey.id}
+                          value={journey.id}
+                        >
+                          {journey.title}
+                          {journey.location
+                            ? ` — ${journey.location}`
+                            : ""}
+                        </option>
+                      ))}
+                  </select>
 
-              </label>
-            )}
+                </label>
+              )}
 
           </div>
 
@@ -976,7 +1020,7 @@ export default function SettingsPage() {
                 type="button"
                 className={
                   settings.blogFeatureMode ===
-                  "AUTOMATIC"
+                    "AUTOMATIC"
                     ? "status-option active"
                     : "status-option"
                 }
@@ -1001,7 +1045,7 @@ export default function SettingsPage() {
                 type="button"
                 className={
                   settings.blogFeatureMode ===
-                  "MANUAL"
+                    "MANUAL"
                     ? "status-option active"
                     : "status-option"
                 }
@@ -1026,53 +1070,410 @@ export default function SettingsPage() {
 
             {settings.blogFeatureMode ===
               "MANUAL" && (
-              <label className="admin-field">
+                <label className="admin-field">
 
-                <span>
-                  Featured Blog
-                </span>
+                  <span>
+                    Featured Blog
+                  </span>
 
-                <select
-                  value={
-                    settings.featuredBlogId ||
-                    ""
-                  }
-                  onChange={(event) =>
-                    updateSetting(
-                      "featuredBlogId",
-                      event.target.value ||
+                  <select
+                    value={
+                      settings.featuredBlogId ||
+                      ""
+                    }
+                    onChange={(event) =>
+                      updateSetting(
+                        "featuredBlogId",
+                        event.target.value ||
                         null
-                    )
-                  }
-                >
-                  <option value="">
-                    Select a blog post
-                  </option>
+                      )
+                    }
+                  >
+                    <option value="">
+                      Select a blog post
+                    </option>
 
-                  {blogs
-                    .filter(
-                      (blog) =>
-                        blog.status ===
-                        "PUBLISHED"
-                    )
-                    .map((blog) => (
-                      <option
-                        key={blog.id}
-                        value={blog.id}
-                      >
-                        {blog.title}
-                      </option>
-                    ))}
-                </select>
+                    {blogs
+                      .filter(
+                        (blog) =>
+                          blog.status ===
+                          "PUBLISHED"
+                      )
+                      .map((blog) => (
+                        <option
+                          key={blog.id}
+                          value={blog.id}
+                        >
+                          {blog.title}
+                        </option>
+                      ))}
+                  </select>
 
-              </label>
-            )}
+                </label>
+              )}
 
           </div>
 
         </section>
 
+        {/* =====================================================
+          ABOUT PAGE
+      ===================================================== */}
 
+        <section className="admin-section">
+
+          <div className="admin-section-header">
+
+            <div>
+
+              <span className="admin-eyebrow">
+                ABOUT PAGE
+              </span>
+
+              <h3>
+                Your story.
+              </h3>
+
+              <p>
+                Edit the story, philosophy and principles
+                displayed on your About page.
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+            INTRO
+        ================================================= */}
+
+          <div className="admin-form-stack">
+
+            <div className="admin-field">
+
+              <span>
+                About Headline
+              </span>
+
+              <input
+                value={
+                  settings.aboutHeadline ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutHeadline",
+                    event.target.value
+                  )
+                }
+                placeholder="I'm Aditya. Still figuring it out."
+              />
+
+            </div>
+
+
+            <div className="admin-field">
+
+              <span>
+                Introduction
+              </span>
+
+              <textarea
+                value={
+                  settings.aboutLead ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutLead",
+                    event.target.value
+                  )
+                }
+                rows={5}
+                placeholder="Tell visitors who you are and what this website is about."
+              />
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+            STORY
+        ================================================= */}
+
+          <div
+            className="admin-section-header"
+            style={{
+              marginTop: 48,
+            }}
+          >
+
+            <div>
+
+              <span className="admin-eyebrow">
+                STORY
+              </span>
+
+              <h3>
+                The story behind the site.
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div className="admin-form-stack">
+
+            <div className="admin-field">
+
+              <span>
+                Story Title
+              </span>
+
+              <input
+                value={
+                  settings.aboutStoryTitle ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutStoryTitle",
+                    event.target.value
+                  )
+                }
+                placeholder="This isn't really a travel blog."
+              />
+
+            </div>
+
+
+            <div className="admin-form-grid">
+
+              <div className="admin-field">
+
+                <span>
+                  Story — Left Column
+                </span>
+
+                <textarea
+                  value={
+                    settings.aboutStoryLeft ?? ""
+                  }
+                  onChange={(event) =>
+                    updateSetting(
+                      "aboutStoryLeft",
+                      event.target.value
+                    )
+                  }
+                  rows={10}
+                  placeholder="Write the first part of your story..."
+                />
+
+              </div>
+
+
+              <div className="admin-field">
+
+                <span>
+                  Story — Right Column
+                </span>
+
+                <textarea
+                  value={
+                    settings.aboutStoryRight ?? ""
+                  }
+                  onChange={(event) =>
+                    updateSetting(
+                      "aboutStoryRight",
+                      event.target.value
+                    )
+                  }
+                  rows={10}
+                  placeholder="Continue your story here..."
+                />
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+            PHILOSOPHY
+        ================================================= */}
+
+          <div
+            className="admin-section-header"
+            style={{
+              marginTop: 48,
+            }}
+          >
+
+            <div>
+
+              <span className="admin-eyebrow">
+                PHILOSOPHY
+              </span>
+
+              <h3>
+                What you believe.
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div className="admin-form-stack">
+
+            <div className="admin-field">
+
+              <span>
+                Philosophy
+              </span>
+
+              <textarea
+                value={
+                  settings.aboutPhilosophy ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutPhilosophy",
+                    event.target.value
+                  )
+                }
+                rows={6}
+                placeholder="Write your philosophy..."
+              />
+
+            </div>
+
+          </div>
+
+
+          {/* =================================================
+            PRINCIPLES
+        ================================================= */}
+
+          <div
+            className="admin-section-header"
+            style={{
+              marginTop: 48,
+            }}
+          >
+
+            <div>
+
+              <span className="admin-eyebrow">
+                PRINCIPLES
+              </span>
+
+              <h3>
+                The four things you stand for.
+              </h3>
+
+            </div>
+
+          </div>
+
+
+          <div className="admin-form-grid">
+
+            <div className="admin-field">
+
+              <span>
+                Freedom
+              </span>
+
+              <textarea
+                value={
+                  settings.aboutFreedom ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutFreedom",
+                    event.target.value
+                  )
+                }
+                rows={4}
+                placeholder="Find the courage to choose your own direction."
+              />
+
+            </div>
+
+
+            <div className="admin-field">
+
+              <span>
+                Exploration
+              </span>
+
+              <textarea
+                value={
+                  settings.aboutExploration ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutExploration",
+                    event.target.value
+                  )
+                }
+                rows={4}
+                placeholder="Go see places, cultures and perspectives beyond your routine."
+              />
+
+            </div>
+
+
+            <div className="admin-field">
+
+              <span>
+                People
+              </span>
+
+              <textarea
+                value={
+                  settings.aboutPeople ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutPeople",
+                    event.target.value
+                  )
+                }
+                rows={4}
+                placeholder="Every stranger carries a story worth hearing."
+              />
+
+            </div>
+
+
+            <div className="admin-field">
+
+              <span>
+                Growth
+              </span>
+
+              <textarea
+                value={
+                  settings.aboutGrowth ?? ""
+                }
+                onChange={(event) =>
+                  updateSetting(
+                    "aboutGrowth",
+                    event.target.value
+                  )
+                }
+                rows={4}
+                placeholder="Your path can be slower and still be yours."
+              />
+
+            </div>
+
+          </div>
+
+        </section>
         {/* ===================================================
             SAVE
         =================================================== */}

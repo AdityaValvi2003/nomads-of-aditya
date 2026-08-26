@@ -64,6 +64,16 @@ export async function PUT(request: Request) {
             featuredJourneyId,
             blogFeatureMode,
             featuredBlogId,
+            aboutHeadline,
+            aboutLead,
+            aboutStoryTitle,
+            aboutStoryLeft,
+            aboutStoryRight,
+            aboutPhilosophy,
+            aboutFreedom,
+            aboutExploration,
+            aboutPeople,
+            aboutGrowth,
         } = body;
 
         if (
@@ -130,6 +140,56 @@ export async function PUT(request: Request) {
             heroSubheadline:
                 typeof heroSubheadline === "string"
                     ? heroSubheadline.trim() || null
+                    : null,
+
+                        aboutHeadline:
+                typeof aboutHeadline === "string"
+                    ? aboutHeadline.trim() || null
+                    : null,
+
+            aboutLead:
+                typeof aboutLead === "string"
+                    ? aboutLead.trim() || null
+                    : null,
+
+            aboutStoryTitle:
+                typeof aboutStoryTitle === "string"
+                    ? aboutStoryTitle.trim() || null
+                    : null,
+
+            aboutStoryLeft:
+                typeof aboutStoryLeft === "string"
+                    ? aboutStoryLeft.trim() || null
+                    : null,
+
+            aboutStoryRight:
+                typeof aboutStoryRight === "string"
+                    ? aboutStoryRight.trim() || null
+                    : null,
+
+            aboutPhilosophy:
+                typeof aboutPhilosophy === "string"
+                    ? aboutPhilosophy.trim() || null
+                    : null,
+
+            aboutFreedom:
+                typeof aboutFreedom === "string"
+                    ? aboutFreedom.trim() || null
+                    : null,
+
+            aboutExploration:
+                typeof aboutExploration === "string"
+                    ? aboutExploration.trim() || null
+                    : null,
+
+            aboutPeople:
+                typeof aboutPeople === "string"
+                    ? aboutPeople.trim() || null
+                    : null,
+
+            aboutGrowth:
+                typeof aboutGrowth === "string"
+                    ? aboutGrowth.trim() || null
                     : null,
 
             journeyFeatureMode:

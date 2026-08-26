@@ -32,6 +32,16 @@ export type SiteSettingsMinAggregateOutputType = {
   accentColor: string | null
   heroHeadline: string | null
   heroSubheadline: string | null
+  aboutHeadline: string | null
+  aboutLead: string | null
+  aboutStoryTitle: string | null
+  aboutStoryLeft: string | null
+  aboutStoryRight: string | null
+  aboutPhilosophy: string | null
+  aboutFreedom: string | null
+  aboutExploration: string | null
+  aboutPeople: string | null
+  aboutGrowth: string | null
   journeyFeatureMode: $Enums.FeatureMode | null
   featuredJourneyId: string | null
   blogFeatureMode: $Enums.FeatureMode | null
@@ -47,6 +57,16 @@ export type SiteSettingsMaxAggregateOutputType = {
   accentColor: string | null
   heroHeadline: string | null
   heroSubheadline: string | null
+  aboutHeadline: string | null
+  aboutLead: string | null
+  aboutStoryTitle: string | null
+  aboutStoryLeft: string | null
+  aboutStoryRight: string | null
+  aboutPhilosophy: string | null
+  aboutFreedom: string | null
+  aboutExploration: string | null
+  aboutPeople: string | null
+  aboutGrowth: string | null
   journeyFeatureMode: $Enums.FeatureMode | null
   featuredJourneyId: string | null
   blogFeatureMode: $Enums.FeatureMode | null
@@ -62,6 +82,16 @@ export type SiteSettingsCountAggregateOutputType = {
   accentColor: number
   heroHeadline: number
   heroSubheadline: number
+  aboutHeadline: number
+  aboutLead: number
+  aboutStoryTitle: number
+  aboutStoryLeft: number
+  aboutStoryRight: number
+  aboutPhilosophy: number
+  aboutFreedom: number
+  aboutExploration: number
+  aboutPeople: number
+  aboutGrowth: number
   journeyFeatureMode: number
   featuredJourneyId: number
   blogFeatureMode: number
@@ -79,6 +109,16 @@ export type SiteSettingsMinAggregateInputType = {
   accentColor?: true
   heroHeadline?: true
   heroSubheadline?: true
+  aboutHeadline?: true
+  aboutLead?: true
+  aboutStoryTitle?: true
+  aboutStoryLeft?: true
+  aboutStoryRight?: true
+  aboutPhilosophy?: true
+  aboutFreedom?: true
+  aboutExploration?: true
+  aboutPeople?: true
+  aboutGrowth?: true
   journeyFeatureMode?: true
   featuredJourneyId?: true
   blogFeatureMode?: true
@@ -94,6 +134,16 @@ export type SiteSettingsMaxAggregateInputType = {
   accentColor?: true
   heroHeadline?: true
   heroSubheadline?: true
+  aboutHeadline?: true
+  aboutLead?: true
+  aboutStoryTitle?: true
+  aboutStoryLeft?: true
+  aboutStoryRight?: true
+  aboutPhilosophy?: true
+  aboutFreedom?: true
+  aboutExploration?: true
+  aboutPeople?: true
+  aboutGrowth?: true
   journeyFeatureMode?: true
   featuredJourneyId?: true
   blogFeatureMode?: true
@@ -109,6 +159,16 @@ export type SiteSettingsCountAggregateInputType = {
   accentColor?: true
   heroHeadline?: true
   heroSubheadline?: true
+  aboutHeadline?: true
+  aboutLead?: true
+  aboutStoryTitle?: true
+  aboutStoryLeft?: true
+  aboutStoryRight?: true
+  aboutPhilosophy?: true
+  aboutFreedom?: true
+  aboutExploration?: true
+  aboutPeople?: true
+  aboutGrowth?: true
   journeyFeatureMode?: true
   featuredJourneyId?: true
   blogFeatureMode?: true
@@ -197,6 +257,16 @@ export type SiteSettingsGroupByOutputType = {
   accentColor: string
   heroHeadline: string | null
   heroSubheadline: string | null
+  aboutHeadline: string | null
+  aboutLead: string | null
+  aboutStoryTitle: string | null
+  aboutStoryLeft: string | null
+  aboutStoryRight: string | null
+  aboutPhilosophy: string | null
+  aboutFreedom: string | null
+  aboutExploration: string | null
+  aboutPeople: string | null
+  aboutGrowth: string | null
   journeyFeatureMode: $Enums.FeatureMode
   featuredJourneyId: string | null
   blogFeatureMode: $Enums.FeatureMode
@@ -233,6 +303,16 @@ export type SiteSettingsWhereInput = {
   accentColor?: Prisma.StringFilter<"SiteSettings"> | string
   heroHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   heroSubheadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutLead?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutStoryTitle?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutStoryLeft?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutStoryRight?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutPhilosophy?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutFreedom?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutExploration?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutPeople?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutGrowth?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeFilter<"SiteSettings"> | $Enums.FeatureMode
   featuredJourneyId?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeFilter<"SiteSettings"> | $Enums.FeatureMode
@@ -248,6 +328,16 @@ export type SiteSettingsOrderByWithRelationInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutLead?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutStoryTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutStoryLeft?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutStoryRight?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutPhilosophy?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutFreedom?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutExploration?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutPeople?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutGrowth?: Prisma.SortOrderInput | Prisma.SortOrder
   journeyFeatureMode?: Prisma.SortOrder
   featuredJourneyId?: Prisma.SortOrderInput | Prisma.SortOrder
   blogFeatureMode?: Prisma.SortOrder
@@ -266,6 +356,16 @@ export type SiteSettingsWhereUniqueInput = Prisma.AtLeast<{
   accentColor?: Prisma.StringFilter<"SiteSettings"> | string
   heroHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   heroSubheadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutLead?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutStoryTitle?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutStoryLeft?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutStoryRight?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutPhilosophy?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutFreedom?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutExploration?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutPeople?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  aboutGrowth?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeFilter<"SiteSettings"> | $Enums.FeatureMode
   featuredJourneyId?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeFilter<"SiteSettings"> | $Enums.FeatureMode
@@ -281,6 +381,16 @@ export type SiteSettingsOrderByWithAggregationInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutLead?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutStoryTitle?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutStoryLeft?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutStoryRight?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutPhilosophy?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutFreedom?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutExploration?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutPeople?: Prisma.SortOrderInput | Prisma.SortOrder
+  aboutGrowth?: Prisma.SortOrderInput | Prisma.SortOrder
   journeyFeatureMode?: Prisma.SortOrder
   featuredJourneyId?: Prisma.SortOrderInput | Prisma.SortOrder
   blogFeatureMode?: Prisma.SortOrder
@@ -302,6 +412,16 @@ export type SiteSettingsScalarWhereWithAggregatesInput = {
   accentColor?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
   heroHeadline?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   heroSubheadline?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutHeadline?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutLead?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutStoryTitle?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutStoryLeft?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutStoryRight?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutPhilosophy?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutFreedom?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutExploration?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutPeople?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  aboutGrowth?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeWithAggregatesFilter<"SiteSettings"> | $Enums.FeatureMode
   featuredJourneyId?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeWithAggregatesFilter<"SiteSettings"> | $Enums.FeatureMode
@@ -317,6 +437,16 @@ export type SiteSettingsCreateInput = {
   accentColor?: string
   heroHeadline?: string | null
   heroSubheadline?: string | null
+  aboutHeadline?: string | null
+  aboutLead?: string | null
+  aboutStoryTitle?: string | null
+  aboutStoryLeft?: string | null
+  aboutStoryRight?: string | null
+  aboutPhilosophy?: string | null
+  aboutFreedom?: string | null
+  aboutExploration?: string | null
+  aboutPeople?: string | null
+  aboutGrowth?: string | null
   journeyFeatureMode?: $Enums.FeatureMode
   featuredJourneyId?: string | null
   blogFeatureMode?: $Enums.FeatureMode
@@ -332,6 +462,16 @@ export type SiteSettingsUncheckedCreateInput = {
   accentColor?: string
   heroHeadline?: string | null
   heroSubheadline?: string | null
+  aboutHeadline?: string | null
+  aboutLead?: string | null
+  aboutStoryTitle?: string | null
+  aboutStoryLeft?: string | null
+  aboutStoryRight?: string | null
+  aboutPhilosophy?: string | null
+  aboutFreedom?: string | null
+  aboutExploration?: string | null
+  aboutPeople?: string | null
+  aboutGrowth?: string | null
   journeyFeatureMode?: $Enums.FeatureMode
   featuredJourneyId?: string | null
   blogFeatureMode?: $Enums.FeatureMode
@@ -347,6 +487,16 @@ export type SiteSettingsUpdateInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryLeft?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryRight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPhilosophy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutFreedom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutExploration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPeople?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutGrowth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
   featuredJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
@@ -362,6 +512,16 @@ export type SiteSettingsUncheckedUpdateInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryLeft?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryRight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPhilosophy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutFreedom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutExploration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPeople?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutGrowth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
   featuredJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
@@ -377,6 +537,16 @@ export type SiteSettingsCreateManyInput = {
   accentColor?: string
   heroHeadline?: string | null
   heroSubheadline?: string | null
+  aboutHeadline?: string | null
+  aboutLead?: string | null
+  aboutStoryTitle?: string | null
+  aboutStoryLeft?: string | null
+  aboutStoryRight?: string | null
+  aboutPhilosophy?: string | null
+  aboutFreedom?: string | null
+  aboutExploration?: string | null
+  aboutPeople?: string | null
+  aboutGrowth?: string | null
   journeyFeatureMode?: $Enums.FeatureMode
   featuredJourneyId?: string | null
   blogFeatureMode?: $Enums.FeatureMode
@@ -392,6 +562,16 @@ export type SiteSettingsUpdateManyMutationInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryLeft?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryRight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPhilosophy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutFreedom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutExploration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPeople?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutGrowth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
   featuredJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
@@ -407,6 +587,16 @@ export type SiteSettingsUncheckedUpdateManyInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryLeft?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutStoryRight?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPhilosophy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutFreedom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutExploration?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutPeople?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aboutGrowth?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   journeyFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
   featuredJourneyId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   blogFeatureMode?: Prisma.EnumFeatureModeFieldUpdateOperationsInput | $Enums.FeatureMode
@@ -422,6 +612,16 @@ export type SiteSettingsCountOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrder
+  aboutHeadline?: Prisma.SortOrder
+  aboutLead?: Prisma.SortOrder
+  aboutStoryTitle?: Prisma.SortOrder
+  aboutStoryLeft?: Prisma.SortOrder
+  aboutStoryRight?: Prisma.SortOrder
+  aboutPhilosophy?: Prisma.SortOrder
+  aboutFreedom?: Prisma.SortOrder
+  aboutExploration?: Prisma.SortOrder
+  aboutPeople?: Prisma.SortOrder
+  aboutGrowth?: Prisma.SortOrder
   journeyFeatureMode?: Prisma.SortOrder
   featuredJourneyId?: Prisma.SortOrder
   blogFeatureMode?: Prisma.SortOrder
@@ -437,6 +637,16 @@ export type SiteSettingsMaxOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrder
+  aboutHeadline?: Prisma.SortOrder
+  aboutLead?: Prisma.SortOrder
+  aboutStoryTitle?: Prisma.SortOrder
+  aboutStoryLeft?: Prisma.SortOrder
+  aboutStoryRight?: Prisma.SortOrder
+  aboutPhilosophy?: Prisma.SortOrder
+  aboutFreedom?: Prisma.SortOrder
+  aboutExploration?: Prisma.SortOrder
+  aboutPeople?: Prisma.SortOrder
+  aboutGrowth?: Prisma.SortOrder
   journeyFeatureMode?: Prisma.SortOrder
   featuredJourneyId?: Prisma.SortOrder
   blogFeatureMode?: Prisma.SortOrder
@@ -452,6 +662,16 @@ export type SiteSettingsMinOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrder
+  aboutHeadline?: Prisma.SortOrder
+  aboutLead?: Prisma.SortOrder
+  aboutStoryTitle?: Prisma.SortOrder
+  aboutStoryLeft?: Prisma.SortOrder
+  aboutStoryRight?: Prisma.SortOrder
+  aboutPhilosophy?: Prisma.SortOrder
+  aboutFreedom?: Prisma.SortOrder
+  aboutExploration?: Prisma.SortOrder
+  aboutPeople?: Prisma.SortOrder
+  aboutGrowth?: Prisma.SortOrder
   journeyFeatureMode?: Prisma.SortOrder
   featuredJourneyId?: Prisma.SortOrder
   blogFeatureMode?: Prisma.SortOrder
@@ -473,6 +693,16 @@ export type SiteSettingsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  aboutHeadline?: boolean
+  aboutLead?: boolean
+  aboutStoryTitle?: boolean
+  aboutStoryLeft?: boolean
+  aboutStoryRight?: boolean
+  aboutPhilosophy?: boolean
+  aboutFreedom?: boolean
+  aboutExploration?: boolean
+  aboutPeople?: boolean
+  aboutGrowth?: boolean
   journeyFeatureMode?: boolean
   featuredJourneyId?: boolean
   blogFeatureMode?: boolean
@@ -488,6 +718,16 @@ export type SiteSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  aboutHeadline?: boolean
+  aboutLead?: boolean
+  aboutStoryTitle?: boolean
+  aboutStoryLeft?: boolean
+  aboutStoryRight?: boolean
+  aboutPhilosophy?: boolean
+  aboutFreedom?: boolean
+  aboutExploration?: boolean
+  aboutPeople?: boolean
+  aboutGrowth?: boolean
   journeyFeatureMode?: boolean
   featuredJourneyId?: boolean
   blogFeatureMode?: boolean
@@ -503,6 +743,16 @@ export type SiteSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  aboutHeadline?: boolean
+  aboutLead?: boolean
+  aboutStoryTitle?: boolean
+  aboutStoryLeft?: boolean
+  aboutStoryRight?: boolean
+  aboutPhilosophy?: boolean
+  aboutFreedom?: boolean
+  aboutExploration?: boolean
+  aboutPeople?: boolean
+  aboutGrowth?: boolean
   journeyFeatureMode?: boolean
   featuredJourneyId?: boolean
   blogFeatureMode?: boolean
@@ -518,6 +768,16 @@ export type SiteSettingsSelectScalar = {
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  aboutHeadline?: boolean
+  aboutLead?: boolean
+  aboutStoryTitle?: boolean
+  aboutStoryLeft?: boolean
+  aboutStoryRight?: boolean
+  aboutPhilosophy?: boolean
+  aboutFreedom?: boolean
+  aboutExploration?: boolean
+  aboutPeople?: boolean
+  aboutGrowth?: boolean
   journeyFeatureMode?: boolean
   featuredJourneyId?: boolean
   blogFeatureMode?: boolean
@@ -525,7 +785,7 @@ export type SiteSettingsSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "siteName" | "ownerName" | "defaultTheme" | "accentColor" | "heroHeadline" | "heroSubheadline" | "journeyFeatureMode" | "featuredJourneyId" | "blogFeatureMode" | "featuredBlogId" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "siteName" | "ownerName" | "defaultTheme" | "accentColor" | "heroHeadline" | "heroSubheadline" | "aboutHeadline" | "aboutLead" | "aboutStoryTitle" | "aboutStoryLeft" | "aboutStoryRight" | "aboutPhilosophy" | "aboutFreedom" | "aboutExploration" | "aboutPeople" | "aboutGrowth" | "journeyFeatureMode" | "featuredJourneyId" | "blogFeatureMode" | "featuredBlogId" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
 export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SiteSettings"
@@ -538,6 +798,16 @@ export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     accentColor: string
     heroHeadline: string | null
     heroSubheadline: string | null
+    aboutHeadline: string | null
+    aboutLead: string | null
+    aboutStoryTitle: string | null
+    aboutStoryLeft: string | null
+    aboutStoryRight: string | null
+    aboutPhilosophy: string | null
+    aboutFreedom: string | null
+    aboutExploration: string | null
+    aboutPeople: string | null
+    aboutGrowth: string | null
     journeyFeatureMode: $Enums.FeatureMode
     featuredJourneyId: string | null
     blogFeatureMode: $Enums.FeatureMode
@@ -973,6 +1243,16 @@ export interface SiteSettingsFieldRefs {
   readonly accentColor: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly heroHeadline: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly heroSubheadline: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutHeadline: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutLead: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutStoryTitle: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutStoryLeft: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutStoryRight: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutPhilosophy: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutFreedom: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutExploration: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutPeople: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly aboutGrowth: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly journeyFeatureMode: Prisma.FieldRef<"SiteSettings", 'FeatureMode'>
   readonly featuredJourneyId: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly blogFeatureMode: Prisma.FieldRef<"SiteSettings", 'FeatureMode'>
