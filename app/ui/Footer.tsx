@@ -37,15 +37,11 @@ export default function Footer() {
             await settingsResponse.json();
 
           if (settings.siteName?.trim()) {
-            setSiteName(
-              settings.siteName.trim()
-            );
+            setSiteName(settings.siteName.trim());
           }
 
           if (settings.ownerName?.trim()) {
-            setOwnerName(
-              settings.ownerName.trim()
-            );
+            setOwnerName(settings.ownerName.trim());
           }
         }
 
@@ -53,14 +49,8 @@ export default function Footer() {
           const data =
             await socialLinksResponse.json();
 
-          if (
-            Array.isArray(
-              data.socialLinks
-            )
-          ) {
-            setSocialLinks(
-              data.socialLinks
-            );
+          if (Array.isArray(data.socialLinks)) {
+            setSocialLinks(data.socialLinks);
           }
         }
       } catch (error) {
@@ -74,56 +64,146 @@ export default function Footer() {
     loadFooterData();
   }, []);
 
+  const productLinks = [
+    ["Journeys", "/journeys"],
+    ["Destinations", "/dream-destinations"],
+    ["About Me", "/about"],
+  ];
+
+  const resourceLinks = [
+    ["Blog", "/blog"],
+    ["Contact", "/contact"],
+  ];
+
   return (
-    <footer>
-      <div>
-        <span className="eyebrow">
-          {siteName.toUpperCase()}
-        </span>
+    <footer className="site-footer">
 
-        <h2>
-          Keep exploring.
-        </h2>
+      <div className="site-footer-card">
 
-        <p>
-          Places, people and moments —
-          collected along the way.
-        </p>
+        {/* TOP */}
+
+        <div className="site-footer-main">
+
+          {/* BRAND */}
+
+          <div className="site-footer-brand">
+
+            <Link
+              href="/"
+              className="site-footer-logo"
+              aria-label={`${siteName} home`}
+            >
+              <span className="site-footer-logo-mark">
+                N
+              </span>
+
+              <span>
+                {siteName}
+              </span>
+            </Link>
+
+            <p>
+              Places, people and moments —
+              collected along the way.
+            </p>
+
+            {socialLinks.length > 0 && (
+              <div className="site-footer-socials">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.id}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={social.label}
+                  >
+                    {social.label}
+                  </a>
+                ))}
+              </div>
+            )}
+
+          </div>
+
+
+          {/* PRODUCT */}
+
+          <div className="site-footer-column">
+
+            <span className="site-footer-heading">
+              Product
+            </span>
+
+            {productLinks.map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+              >
+                {label}
+              </Link>
+            ))}
+
+          </div>
+
+
+          {/* RESOURCES */}
+
+          <div className="site-footer-column">
+
+            <span className="site-footer-heading">
+              Resources
+            </span>
+
+            {resourceLinks.map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+              >
+                {label}
+              </Link>
+            ))}
+
+            {socialLinks.map((social) => (
+              <a
+                key={social.id}
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {social.label}
+              </a>
+            ))}
+
+          </div>
+
+        </div>
+
+
+        {/* BOTTOM */}
+
+        <div className="site-footer-bottom">
+
+          <small>
+            © {new Date().getFullYear()}{" "}
+            {ownerName}. All rights reserved.
+          </small>
+
+          <div className="site-footer-legal">
+
+            <Link href="/privacy">
+              Privacy Policy
+            </Link>
+
+            <Link href="/terms">
+              Terms of Service
+            </Link>
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div className="footer-links">
-        <Link href="/journeys">
-          Journeys
-        </Link>
-
-        <Link href="/blog">
-          Blog
-        </Link>
-
-        <Link href="/about">
-          About Me
-        </Link>
-
-        <Link href="/contact">
-          Contact
-        </Link>
-
-        {socialLinks.map((social) => (
-          <a
-            key={social.id}
-            href={social.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {social.label}
-          </a>
-        ))}
-      </div>
-
-      <small>
-        © {new Date().getFullYear()}{" "}
-        {ownerName}
-      </small>
     </footer>
   );
 }

@@ -106,10 +106,8 @@ button {
 .nav-pill {
   pointer-events: auto;
 
-  width: min(
-    calc(100vw - 48px),
-    920px
-  );
+  width: min(calc(100vw - 48px),
+      920px);
 
   min-height: 58px;
 
@@ -123,11 +121,9 @@ button {
   border-radius: 999px;
 
   background:
-    color-mix(
-      in srgb,
+    color-mix(in srgb,
       var(--bg) 62%,
-      transparent
-    );
+      transparent);
 
   backdrop-filter:
     blur(22px) saturate(140%);
@@ -152,19 +148,15 @@ button {
 }
 
 .site-header.scrolled .nav-pill {
-  width: min(
-    calc(100vw - 48px),
-    860px
-  );
+  width: min(calc(100vw - 48px),
+      860px);
 
   min-height: 52px;
 
   background:
-    color-mix(
-      in srgb,
+    color-mix(in srgb,
       var(--bg) 76%,
-      transparent
-    );
+      transparent);
 
   box-shadow:
     0 16px 45px rgba(0, 0, 0, 0.25),
@@ -520,8 +512,7 @@ button {
 
 .section h2 {
   font:
-    clamp(2.3rem, 5vw, 5rem) / 1
-    var(--serif);
+    clamp(2.3rem, 5vw, 5rem) / 1 var(--serif);
 
   margin:
     10px 0;
@@ -553,8 +544,7 @@ button {
   inset: 0;
 
   background:
-    url("/images/aditya-hero.jpeg")
-    center 42% / cover no-repeat;
+    url("/images/aditya-hero.jpeg") center 42% / cover no-repeat;
 
   filter:
     saturate(0.92);
@@ -568,40 +558,31 @@ button {
   inset: 0;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       rgba(5, 5, 4, 0.9),
       rgba(5, 5, 4, 0.42) 55%,
-      rgba(5, 5, 4, 0.15)
-    ),
-    linear-gradient(
-      0deg,
+      rgba(5, 5, 4, 0.15)),
+    linear-gradient(0deg,
       rgba(5, 5, 4, 0.78),
-      transparent 55%
-    );
+      transparent 55%);
 
   pointer-events: none;
 }
 
 :root[data-theme="light"] .hero-img {
   filter:
-    saturate(0.92)
-    brightness(1.08);
+    saturate(0.92) brightness(1.08);
 }
 
 :root[data-theme="light"] .hero::after {
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       rgba(255, 252, 244, 0.72),
       rgba(255, 252, 244, 0.30) 55%,
-      rgba(255, 252, 244, 0.08)
-    ),
-    linear-gradient(
-      0deg,
+      rgba(255, 252, 244, 0.08)),
+    linear-gradient(0deg,
       rgba(255, 252, 244, 0.30),
-      transparent 60%
-    );
+      transparent 60%);
 }
 
 .hero-content {
@@ -617,8 +598,7 @@ button {
 
 .hero h1 {
   font:
-    clamp(3.2rem, 7vw, 7.6rem) / 0.94
-    var(--serif);
+    clamp(3.2rem, 7vw, 7.6rem) / 0.94 var(--serif);
 
   max-width: 1050px;
 
@@ -674,8 +654,7 @@ button {
 
 .philosophy-copy {
   font:
-    clamp(1.6rem, 3vw, 3rem) / 1.2
-    var(--serif);
+    clamp(1.6rem, 3vw, 3rem) / 1.2 var(--serif);
 }
 
 .principles {
@@ -745,13 +724,10 @@ button {
     0;
 
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.9),
-      transparent 65%
-    ),
-    url("/images/aditya-hero.jpeg")
-    center / cover;
+      transparent 65%),
+    url("/images/aditya-hero.jpeg") center / cover;
 }
 
 .journey-copy {
@@ -784,8 +760,7 @@ button {
 
 .journey-copy h3 {
   font:
-    clamp(2.5rem, 5vw, 5rem) / 0.95
-    var(--serif);
+    clamp(2.5rem, 5vw, 5rem) / 0.95 var(--serif);
 
   margin:
     12px 0;
@@ -793,13 +768,10 @@ button {
 
 :root[data-theme="light"] .journey-feature::before {
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(15, 14, 12, 0.72),
-      transparent 70%
-    ),
-    url("/images/aditya-hero.jpeg")
-    center / cover;
+      transparent 70%),
+    url("/images/aditya-hero.jpeg") center / cover;
 }
 
 
@@ -839,11 +811,9 @@ button {
     220px;
 
   background:
-    linear-gradient(
-      135deg,
+    linear-gradient(135deg,
       #2b2923,
-      #161512
-    );
+      #161512);
 
   margin-bottom:
     18px;
@@ -892,44 +862,32 @@ button {
     end;
 
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.82),
-      transparent 65%
-    ),
-    linear-gradient(
-      145deg,
+      transparent 65%),
+    linear-gradient(145deg,
       #354136,
-      #171816
-    );
+      #171816);
 }
 
 .destination:nth-child(2) {
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.82),
-      transparent 65%
-    ),
-    linear-gradient(
-      145deg,
+      transparent 65%),
+    linear-gradient(145deg,
       #3b3023,
-      #171514
-    );
+      #171514);
 }
 
 .destination:nth-child(3) {
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.82),
-      transparent 65%
-    ),
-    linear-gradient(
-      145deg,
+      transparent 65%),
+    linear-gradient(145deg,
       #263b47,
-      #151718
-    );
+      #151718);
 }
 
 .destination h3 {
@@ -975,17 +933,14 @@ button {
     150px 8vw;
 
   background:
-    radial-gradient(
-      circle at 75% 25%,
+    radial-gradient(circle at 75% 25%,
       rgba(217, 154, 61, 0.14),
-      transparent 35%
-    );
+      transparent 35%);
 }
 
 .closing h2 {
   font:
-    clamp(3rem, 7vw, 7rem) / 0.95
-    var(--serif);
+    clamp(3rem, 7vw, 7rem) / 0.95 var(--serif);
 
   max-width:
     1000px;
@@ -999,105 +954,333 @@ button {
    FOOTER
 ========================================================= */
 
-footer {
+.site-footer {
+  padding:
+    100px 8vw 45px;
+
   border-top:
     1px solid var(--line);
+}
+
+.site-footer-card {
+  max-width:
+    1280px;
+
+  margin:
+    0 auto;
 
   padding:
-    80px 8vw 35px;
+    55px 60px 28px;
 
+  border:
+    1px solid var(--line);
+
+  border-radius:
+    28px;
+
+  background:
+    color-mix(
+      in srgb,
+      var(--panel) 88%,
+      transparent
+    );
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.12);
+}
+
+
+/* =========================================================
+   FOOTER MAIN
+========================================================= */
+
+.site-footer-main {
   display:
     grid;
 
   grid-template-columns:
-    minmax(0, 1fr) auto;
+    minmax(280px, 1.7fr)
+    minmax(120px, 0.65fr)
+    minmax(120px, 0.65fr);
 
   gap:
-    80px;
+    70px;
 }
 
-footer h2 {
-  font:
-    3rem var(--serif);
+
+/* =========================================================
+   FOOTER BRAND
+========================================================= */
+
+.site-footer-brand {
+  max-width:
+    430px;
+}
+
+.site-footer-logo {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    11px;
+
+  font-size:
+    0.72rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.12em;
+
+  text-transform:
+    uppercase;
+}
+
+.site-footer-logo-mark {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--text);
+
+  color:
+    var(--bg);
+
+  font-family:
+    var(--serif);
+
+  font-size:
+    1rem;
+}
+
+.site-footer-brand p {
+  max-width:
+    400px;
 
   margin:
-    10px 0;
-}
-.footer-links {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px 24px;
-  align-content: flex-start;
-}
-
-.footer-links a {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  width: max-content;
-  padding: 6px 0;
-  color: var(--text);
-  white-space: nowrap;
-  transition:
-    color 0.25s ease,
-    opacity 0.25s ease;
-}
-
-.footer-links a:hover {
-  color: var(--accent);
-}
-
-.footer-links a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 1px;
-  height: 1px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform 0.25s ease;
-}
-
-.footer-links a:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-.footer-social-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 25px;
-}
-
-.footer-social-links a {
-  color: var(--muted);
-  text-decoration: none;
-  font-size: 13px;
-  transition: color 0.2s ease;
-}
-
-.footer-social-links a:hover {
-  color: var(--text);
-}
-
-.footer-links + small {
-  grid-column:
-    1 / -1;
+    25px 0 0;
 
   color:
     var(--muted);
 
-  border-top:
-    1px solid var(--line);
+  line-height:
+    1.7;
+}
+
+
+/* =========================================================
+   FOOTER SOCIALS
+========================================================= */
+
+.site-footer-socials {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    10px 18px;
+
+  margin-top:
+    28px;
+}
+
+.site-footer-socials a {
+  color:
+    var(--muted);
+
+  font-size:
+    0.76rem;
+
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.site-footer-socials a:hover {
+  color:
+    var(--text);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   FOOTER COLUMNS
+========================================================= */
+
+.site-footer-column {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    flex-start;
+
+  gap:
+    13px;
+}
+
+.site-footer-heading {
+  margin-bottom:
+    8px;
+
+  color:
+    var(--text);
+
+  font-size:
+    0.68rem;
+
+  font-weight:
+    800;
+
+  letter-spacing:
+    0.14em;
+
+  text-transform:
+    uppercase;
+}
+
+.site-footer-column a {
+  position:
+    relative;
+
+  color:
+    var(--muted);
+
+  font-size:
+    0.82rem;
+
+  transition:
+    color 0.2s ease;
+}
+
+.site-footer-column a:hover {
+  color:
+    var(--text);
+}
+
+.site-footer-column a::after {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  left:
+    0;
+
+  right:
+    0;
+
+  bottom:
+    -3px;
+
+  height:
+    1px;
+
+  background:
+    var(--accent);
+
+  transform:
+    scaleX(0);
+
+  transform-origin:
+    right;
+
+  transition:
+    transform 0.2s ease;
+}
+
+.site-footer-column a:hover::after {
+  transform:
+    scaleX(1);
+
+  transform-origin:
+    left;
+}
+
+
+/* =========================================================
+   FOOTER BOTTOM
+========================================================= */
+
+.site-footer-bottom {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    30px;
+
+  margin-top:
+    55px;
 
   padding-top:
     25px;
+
+  border-top:
+    1px solid var(--line);
+}
+
+.site-footer-bottom small {
+  color:
+    var(--muted);
+
+  font-size:
+    0.7rem;
+}
+
+.site-footer-legal {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    22px;
+}
+
+.site-footer-legal a {
+  color:
+    var(--muted);
+
+  font-size:
+    0.68rem;
+
+  transition:
+    color 0.2s ease;
+}
+
+.site-footer-legal a:hover {
+  color:
+    var(--text);
 }
 
 
@@ -1112,8 +1295,7 @@ footer h2 {
 
 .page h1 {
   font:
-    clamp(3rem, 7vw, 7rem) / 0.95
-    var(--serif);
+    clamp(3rem, 7vw, 7rem) / 0.95 var(--serif);
 
   max-width:
     1000px;
@@ -1172,26 +1354,20 @@ footer h2 {
     0;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       rgba(0, 0, 0, 0.88),
       rgba(0, 0, 0, 0.35) 65%,
-      rgba(0, 0, 0, 0.15)
-    ),
-    linear-gradient(
-      0deg,
+      rgba(0, 0, 0, 0.15)),
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.9),
-      transparent 60%
-    ),
-    url("/images/aditya-hero.jpeg")
-    center / cover no-repeat;
+      transparent 60%),
+    url("/images/aditya-hero.jpeg") center / cover no-repeat;
 
   transition:
     transform 0.7s ease;
 }
 
-.journeys-feature:hover
-.journeys-feature-image {
+.journeys-feature:hover .journeys-feature-image {
   transform:
     scale(1.025);
 }
@@ -1218,8 +1394,7 @@ footer h2 {
 
 .journeys-feature-overlay h2 {
   font:
-    clamp(3rem, 6vw, 6.5rem) / 0.94
-    var(--serif);
+    clamp(3rem, 6vw, 6.5rem) / 0.94 var(--serif);
 
   margin:
     18px 0;
@@ -1294,20 +1469,16 @@ footer h2 {
     420px;
 
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.75),
-      transparent 60%
-    ),
-    url("/images/aditya-hero.jpeg")
-    center / cover no-repeat;
+      transparent 60%),
+    url("/images/aditya-hero.jpeg") center / cover no-repeat;
 
   transition:
     transform 0.6s ease;
 }
 
-.journey-card:hover
-.journey-card-image {
+.journey-card:hover .journey-card-image {
   transform:
     scale(1.025);
 }
@@ -1319,8 +1490,7 @@ footer h2 {
 
 .journey-card-content h3 {
   font:
-    clamp(2rem, 3vw, 3rem) / 1
-    var(--serif);
+    clamp(2rem, 3vw, 3rem) / 1 var(--serif);
 
   margin:
     12px 0 15px;
@@ -1348,16 +1518,13 @@ footer h2 {
     end;
 
   background:
-    radial-gradient(
-      circle at 80% 20%,
+    radial-gradient(circle at 80% 20%,
       rgba(217, 154, 61, 0.12),
-      transparent 45%
-    ),
+      transparent 45%),
     var(--panel);
 }
 
-.journey-card-empty
-.journey-card-content {
+.journey-card-empty .journey-card-content {
   padding:
     40px;
 }
@@ -1375,17 +1542,14 @@ footer h2 {
     1px solid var(--line);
 
   background:
-    radial-gradient(
-      circle at 75% 30%,
+    radial-gradient(circle at 75% 30%,
       rgba(217, 154, 61, 0.12),
-      transparent 35%
-    );
+      transparent 35%);
 }
 
 .journey-closing h2 {
   font:
-    clamp(3rem, 7vw, 7rem) / 0.95
-    var(--serif);
+    clamp(3rem, 7vw, 7rem) / 0.95 var(--serif);
 
   max-width:
     950px;
@@ -1407,18 +1571,13 @@ footer h2 {
     relative;
 
   background:
-    linear-gradient(
-      90deg,
+    linear-gradient(90deg,
       rgba(0, 0, 0, 0.82),
-      rgba(0, 0, 0, 0.3) 70%
-    ),
-    linear-gradient(
-      0deg,
+      rgba(0, 0, 0, 0.3) 70%),
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.9),
-      transparent 65%
-    ),
-    url("/images/aditya-hero.jpeg")
-    center / cover no-repeat;
+      transparent 65%),
+    url("/images/aditya-hero.jpeg") center / cover no-repeat;
 }
 
 .detail-hero-content {
@@ -1431,8 +1590,7 @@ footer h2 {
     18px 0 25px;
 
   font:
-    clamp(3.5rem, 7vw, 7.5rem) / 0.92
-    var(--serif);
+    clamp(3.5rem, 7vw, 7.5rem) / 0.92 var(--serif);
 
   color:
     #f4f0e8;
@@ -1472,8 +1630,7 @@ footer h2 {
 
 .journey-story-intro h2 {
   font:
-    clamp(2.5rem, 5vw, 5rem) / 1
-    var(--serif);
+    clamp(2.5rem, 5vw, 5rem) / 1 var(--serif);
 
   margin:
     20px 0 35px;
@@ -1505,8 +1662,7 @@ footer h2 {
 
 .story-section h2 {
   font:
-    clamp(2.3rem, 4.5vw, 4.5rem) / 1
-    var(--serif);
+    clamp(2.3rem, 4.5vw, 4.5rem) / 1 var(--serif);
 
   margin:
     18px 0 30px;
@@ -1588,8 +1744,7 @@ footer h2 {
     100px 0;
 }
 
-.story-image-grid
-.story-image img {
+.story-image-grid .story-image img {
   height:
     600px;
 }
@@ -1608,8 +1763,7 @@ footer h2 {
     var(--accent2);
 
   font:
-    clamp(1.8rem, 3vw, 3rem) / 1.2
-    var(--serif);
+    clamp(1.8rem, 3vw, 3rem) / 1.2 var(--serif);
 }
 
 .story-quote {
@@ -1640,8 +1794,7 @@ footer h2 {
     var(--text);
 
   font:
-    clamp(2.5rem, 5vw, 5rem) / 1
-    var(--serif);
+    clamp(2.5rem, 5vw, 5rem) / 1 var(--serif);
 }
 
 
@@ -1669,7 +1822,7 @@ footer h2 {
     1px solid var(--line);
 }
 
-.journey-facts > div {
+.journey-facts>div {
   padding:
     30px 0;
 }
@@ -1696,11 +1849,9 @@ footer h2 {
     1px solid var(--line);
 
   background:
-    radial-gradient(
-      circle at 75% 30%,
+    radial-gradient(circle at 75% 30%,
       rgba(217, 154, 61, 0.14),
-      transparent 38%
-    );
+      transparent 38%);
 }
 
 .journey-detail-closing h2 {
@@ -1711,8 +1862,7 @@ footer h2 {
     15px 0 25px;
 
   font:
-    clamp(3rem, 7vw, 7rem) / 0.95
-    var(--serif);
+    clamp(3rem, 7vw, 7rem) / 0.95 var(--serif);
 }
 
 
@@ -1734,19 +1884,15 @@ footer h2 {
     0 8vw 80px;
 
   background:
-    linear-gradient(
-      0deg,
+    linear-gradient(0deg,
       rgba(0, 0, 0, 0.85),
-      transparent 60%
-    ),
-    url("/images/aditya-hero.jpeg")
-    center / cover;
+      transparent 60%),
+    url("/images/aditya-hero.jpeg") center / cover;
 }
 
 .detail-hero h1 {
   font:
-    clamp(3rem, 7vw, 7rem) / 0.95
-    var(--serif);
+    clamp(3rem, 7vw, 7rem) / 0.95 var(--serif);
 
   max-width:
     1000px;
@@ -2121,7 +2267,7 @@ footer h2 {
     28px;
 }
 
-.admin-stat > span {
+.admin-stat>span {
   color:
     #aaa39a;
 
@@ -2338,7 +2484,7 @@ footer h2 {
     1.3;
 }
 
-.admin-table-row > span {
+.admin-table-row>span {
   color:
     #aaa39a;
 }
@@ -2454,7 +2600,7 @@ footer h2 {
     30px;
 }
 
-.journey-summary-item > span {
+.journey-summary-item>span {
   color:
     #d99a3d;
 
@@ -2539,7 +2685,7 @@ footer h2 {
     translateY(-3px);
 }
 
-.quick-action > span {
+.quick-action>span {
   color:
     #d99a3d;
 
@@ -2731,8 +2877,7 @@ footer h2 {
     grid;
 
   grid-template-columns:
-    minmax(0, 1.15fr)
-    minmax(280px, 0.85fr);
+    minmax(0, 1.15fr) minmax(280px, 0.85fr);
 
   gap:
     100px;
@@ -2831,14 +2976,12 @@ footer h2 {
 
 .about-explore-card:hover {
   background:
-    color-mix(
-      in srgb,
+    color-mix(in srgb,
       var(--text) 3%,
-      transparent
-    );
+      transparent);
 }
 
-.about-explore-card > span {
+.about-explore-card>span {
   font-size:
     11px;
 
@@ -3045,8 +3188,7 @@ footer h2 {
     grid;
 
   grid-template-columns:
-    minmax(0, 0.9fr)
-    minmax(420px, 1.1fr);
+    minmax(0, 0.9fr) minmax(420px, 1.1fr);
 
   gap:
     100px;
@@ -3075,7 +3217,7 @@ footer h2 {
     var(--text);
 }
 
-.contact-info > p {
+.contact-info>p {
   max-width:
     480px;
 
@@ -3108,7 +3250,7 @@ footer h2 {
     30px;
 }
 
-.contact-details > div {
+.contact-details>div {
   padding-top:
     18px;
 
@@ -3191,7 +3333,7 @@ footer h2 {
     10px;
 }
 
-.contact-field > span {
+.contact-field>span {
   color:
     var(--muted);
 
@@ -3274,11 +3416,9 @@ footer h2 {
     var(--accent);
 
   background:
-    color-mix(
-      in srgb,
+    color-mix(in srgb,
       var(--panel) 94%,
-      var(--accent)
-    );
+      var(--accent));
 }
 
 
@@ -3481,7 +3621,7 @@ footer h2 {
     0 !important;
 }
 
-.settings-page .admin-field > span {
+.settings-page .admin-field>span {
   display:
     block;
 
@@ -3808,10 +3948,7 @@ body,
   .admin-table-header,
   .admin-table-row {
     grid-template-columns:
-      minmax(280px, 2fr)
-      minmax(150px, 1fr)
-      minmax(100px, 0.8fr)
-      minmax(130px, 0.8fr);
+      minmax(280px, 2fr) minmax(150px, 1fr) minmax(100px, 0.8fr) minmax(130px, 0.8fr);
   }
 
   .contact-content {
@@ -3912,137 +4049,135 @@ body,
   }
 
   .mobile-panel {
-  pointer-events: auto;
+    pointer-events: auto;
 
-  display: flex;
-  position: absolute;
+    display: flex;
+    position: absolute;
 
-  top: 76px;
-  left: 14px;
-  right: 14px;
+    top: 76px;
+    left: 14px;
+    right: 14px;
 
-  padding: 18px;
+    padding: 18px;
 
-  flex-direction: column;
-  gap: 2px;
+    flex-direction: column;
+    gap: 2px;
 
-  border: 1px solid var(--glass-border);
-  border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
 
-  background:
-    color-mix(
-      in srgb,
-      var(--bg) 88%,
-      transparent
-    );
+    background:
+      color-mix(in srgb,
+        var(--bg) 88%,
+        transparent);
 
-  backdrop-filter:
-    blur(28px) saturate(140%);
+    backdrop-filter:
+      blur(28px) saturate(140%);
 
-  -webkit-backdrop-filter:
-    blur(28px) saturate(140%);
+    -webkit-backdrop-filter:
+      blur(28px) saturate(140%);
 
-  box-shadow:
-    0 24px 70px rgba(0, 0, 0, 0.32);
+    box-shadow:
+      0 24px 70px rgba(0, 0, 0, 0.32);
 
-  color: var(--text);
+    color: var(--text);
 
-  animation:
-    mobileMenuIn 0.25s ease both;
-}
-
-.mobile-panel a,
-.mobile-panel button {
-  position: relative;
-
-  display: flex;
-  align-items: center;
-
-  min-height: 48px;
-
-  padding: 10px 12px;
-
-  border-radius: 12px;
-
-  text-align: left;
-
-  color: var(--muted);
-
-  font-size: 0.9rem;
-
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    padding-left 0.2s ease;
-}
-
-.mobile-panel a:hover,
-.mobile-panel a.active,
-.mobile-panel button:hover {
-  color: var(--text);
-
-  background: var(--glass-hover);
-
-  padding-left: 16px;
-}
-
-.mobile-panel a.active {
-  color: var(--text);
-}
-
-.mobile-panel a.active::after {
-  content: "";
-
-  position: absolute;
-
-  right: 14px;
-
-  width: 5px;
-  height: 5px;
-
-  border-radius: 50%;
-
-  background: var(--accent);
-}
-
-.mobile-panel-actions {
-  display: flex;
-
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 12px;
-
-  margin-top: 12px;
-  padding-top: 14px;
-
-  border-top: 1px solid var(--line);
-}
-
-.mobile-panel-actions a,
-.mobile-panel-actions button {
-  min-height: auto;
-
-  padding: 10px 12px;
-
-  background: transparent;
-}
-
-.mobile-panel-actions a {
-  color: var(--accent);
-}
-
-@keyframes mobileMenuIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.98);
+    animation:
+      mobileMenuIn 0.25s ease both;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  .mobile-panel a,
+  .mobile-panel button {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    min-height: 48px;
+
+    padding: 10px 12px;
+
+    border-radius: 12px;
+
+    text-align: left;
+
+    color: var(--muted);
+
+    font-size: 0.9rem;
+
+    transition:
+      color 0.2s ease,
+      background 0.2s ease,
+      padding-left 0.2s ease;
   }
-}
+
+  .mobile-panel a:hover,
+  .mobile-panel a.active,
+  .mobile-panel button:hover {
+    color: var(--text);
+
+    background: var(--glass-hover);
+
+    padding-left: 16px;
+  }
+
+  .mobile-panel a.active {
+    color: var(--text);
+  }
+
+  .mobile-panel a.active::after {
+    content: "";
+
+    position: absolute;
+
+    right: 14px;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: var(--accent);
+  }
+
+  .mobile-panel-actions {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-top: 12px;
+    padding-top: 14px;
+
+    border-top: 1px solid var(--line);
+  }
+
+  .mobile-panel-actions a,
+  .mobile-panel-actions button {
+    min-height: auto;
+
+    padding: 10px 12px;
+
+    background: transparent;
+  }
+
+  .mobile-panel-actions a {
+    color: var(--accent);
+  }
+
+  @keyframes mobileMenuIn {
+    from {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
 
   .hero-content {
     padding:
@@ -4082,14 +4217,55 @@ body,
   }
 
   .destinations {
-    grid-template-columns:
-      1fr 1fr;
-  }
+  display:
+    grid;
 
-  .destination {
-    min-height:
-      260px;
-  }
+  grid-template-columns:
+    none;
+
+  grid-auto-flow:
+    column;
+
+  grid-auto-columns:
+    minmax(280px, 78vw);
+
+  gap:
+    20px;
+
+  overflow-x:
+    auto;
+
+  overflow-y:
+    hidden;
+
+  padding-bottom:
+    8px;
+
+  scroll-snap-type:
+    x mandatory;
+
+  overscroll-behavior-x:
+    contain;
+
+  scrollbar-width:
+    none;
+
+  -webkit-overflow-scrolling:
+    touch;
+}
+
+.destinations::-webkit-scrollbar {
+  display:
+    none;
+}
+
+.destination {
+  min-height:
+    470px;
+
+  scroll-snap-align:
+    start;
+}
 
   .journey-copy {
     padding:
@@ -4111,17 +4287,49 @@ body,
       20px;
   }
 
-  footer {
-    grid-template-columns:
-      1fr;
-
+    .site-footer {
     padding:
-      60px 7vw;
+      70px 7vw 30px;
   }
 
-  .footer-links + small {
+  .site-footer-card {
+    padding:
+      38px 28px 24px;
+
+    border-radius:
+      22px;
+  }
+
+  .site-footer-main {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap:
+      45px 35px;
+  }
+
+  .site-footer-brand {
     grid-column:
-      auto;
+      1 / -1;
+  }
+
+  .site-footer-bottom {
+    align-items:
+      flex-start;
+
+    flex-direction:
+      column;
+
+    gap:
+      18px;
+
+    margin-top:
+      40px;
+  }
+
+  .site-footer-legal {
+    flex-wrap:
+      wrap;
   }
 
   .detail-hero {
@@ -4245,8 +4453,7 @@ body,
       70px 0;
   }
 
-  .story-image-grid
-  .story-image img {
+  .story-image-grid .story-image img {
     height:
       420px;
   }
@@ -4283,7 +4490,7 @@ body,
       90px 0 30px;
   }
 
-  .journey-facts > div {
+  .journey-facts>div {
     padding:
       22px 0;
   }
