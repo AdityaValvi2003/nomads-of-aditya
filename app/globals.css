@@ -1256,33 +1256,6 @@ button {
     0.7rem;
 }
 
-.site-footer-legal {
-  display:
-    flex;
-
-  align-items:
-    center;
-
-  gap:
-    22px;
-}
-
-.site-footer-legal a {
-  color:
-    var(--muted);
-
-  font-size:
-    0.68rem;
-
-  transition:
-    color 0.2s ease;
-}
-
-.site-footer-legal a:hover {
-  color:
-    var(--text);
-}
-
 
 /* =========================================================
    GENERIC PAGE
@@ -4325,11 +4298,6 @@ body,
 
     margin-top:
       40px;
-  }
-
-  .site-footer-legal {
-    flex-wrap:
-      wrap;
   }
 
   .detail-hero {

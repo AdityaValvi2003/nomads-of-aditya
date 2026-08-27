@@ -188,18 +188,6 @@ export default function Footer() {
             {ownerName}. All rights reserved.
           </small>
 
-          <div className="site-footer-legal">
-
-            <Link href="/privacy">
-              Privacy Policy
-            </Link>
-
-            <Link href="/terms">
-              Terms of Service
-            </Link>
-
-          </div>
-
         </div>
 
       </div>
