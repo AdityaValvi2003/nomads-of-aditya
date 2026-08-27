@@ -4,6 +4,7 @@ import SiteChrome from "./ui/SiteChrome";
 import Footer from "./ui/Footer";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nomads-of-aditya.vercel.app"),
   title: {
     default: "Nomads of Aditya",
     template: "%s | Nomads of Aditya",
@@ -42,6 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_IN",
+    url: "https://nomads-of-aditya.vercel.app",
     siteName: "Nomads of Aditya",
     title: "Nomads of Aditya",
     description:

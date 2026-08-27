@@ -35,7 +35,6 @@ type ContentBlock = {
 /* =========================================================
    METADATA
 ========================================================= */
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -57,17 +56,29 @@ export async function generateMetadata({
 
   const description =
     journey.seoDescription?.trim() ||
-    journey.shortIntro ||
+    journey.shortIntro?.trim() ||
     `Explore ${journey.title} with Nomads of Aditya.`;
+
+  const ogTitle =
+    journey.ogTitle?.trim() ||
+    title;
+
+  const ogDescription =
+    journey.ogDescription?.trim() ||
+    description;
+
+  const ogImage =
+    journey.ogImage?.trim() ||
+    journey.coverImage?.trim();
 
   return {
     title,
     description,
 
-    alternates: journey.canonicalUrl
+    alternates: journey.canonicalUrl?.trim()
       ? {
-        canonical: journey.canonicalUrl,
-      }
+          canonical: journey.canonicalUrl.trim(),
+        }
       : undefined,
 
     robots: {
@@ -76,28 +87,38 @@ export async function generateMetadata({
     },
 
     openGraph: {
-      title:
-        journey.ogTitle?.trim() ||
-        title,
-
-      description:
-        journey.ogDescription?.trim() ||
-        description,
-
       type: "article",
+      title: ogTitle,
+      description: ogDescription,
 
-      images: journey.coverImage
-        ? [
-          {
-            url: journey.coverImage,
-            alt: journey.title,
-          },
-        ]
-        : undefined,
+      ...(ogImage
+        ? {
+            images: [
+              {
+                url: ogImage,
+                alt: journey.title,
+              },
+            ],
+          }
+        : {}),
+    },
+
+    twitter: {
+      card: ogImage
+        ? "summary_large_image"
+        : "summary",
+
+      title: ogTitle,
+      description: ogDescription,
+
+      ...(ogImage
+        ? {
+            images: [ogImage],
+          }
+        : {}),
     },
   };
 }
-
 /* =========================================================
    PAGE
 ========================================================= */

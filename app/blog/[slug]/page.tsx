@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +12,97 @@ type BlogPostPageProps = {
     slug: string;
   }>;
 };
+
+/* ============================================================
+   METADATA
+============================================================ */
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+
+  const blog = await prisma.blog.findFirst({
+    where: {
+      slug,
+      status: ContentStatus.PUBLISHED,
+    },
+  });
+
+  if (!blog) {
+    return {};
+  }
+
+  const title =
+    blog.seoTitle?.trim() ||
+    blog.title;
+
+  const description =
+    blog.seoDescription?.trim() ||
+    blog.shortIntro?.trim() ||
+    blog.subtitle?.trim() ||
+    `Read ${blog.title} on Nomads of Aditya.`;
+
+  const ogTitle =
+    blog.ogTitle?.trim() ||
+    title;
+
+  const ogDescription =
+    blog.ogDescription?.trim() ||
+    description;
+
+  const ogImage =
+    blog.ogImage?.trim() ||
+    blog.coverImage?.trim();
+
+  return {
+    title,
+    description,
+
+    alternates: blog.canonicalUrl?.trim()
+      ? {
+          canonical: blog.canonicalUrl.trim(),
+        }
+      : undefined,
+
+    robots: {
+      index: !blog.noIndex,
+      follow: !blog.noFollow,
+    },
+
+    openGraph: {
+      type: "article",
+      title: ogTitle,
+      description: ogDescription,
+
+      ...(ogImage
+        ? {
+            images: [
+              {
+                url: ogImage,
+                alt: blog.title,
+              },
+            ],
+          }
+        : {}),
+    },
+
+    twitter: {
+      card: ogImage
+        ? "summary_large_image"
+        : "summary",
+
+      title: ogTitle,
+      description: ogDescription,
+
+      ...(ogImage
+        ? {
+            images: [ogImage],
+          }
+        : {}),
+    },
+  };
+}
 
 function calculateReadingTime(content: string) {
   const words = content
