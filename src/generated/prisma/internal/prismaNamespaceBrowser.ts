@@ -332,6 +332,7 @@ export const SiteSettingsScalarFieldEnum = {
   accentColor: 'accentColor',
   heroHeadline: 'heroHeadline',
   heroSubheadline: 'heroSubheadline',
+  contactEmail: 'contactEmail',
   aboutHeadline: 'aboutHeadline',
   aboutLead: 'aboutLead',
   aboutStoryTitle: 'aboutStoryTitle',

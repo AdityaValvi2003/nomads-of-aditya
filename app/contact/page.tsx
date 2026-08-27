@@ -1,8 +1,11 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export default function ContactPage() {
+  const [contactEmail, setContactEmail] = useState(
+    "hello@nomadsofaditya.com"
+  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -10,6 +13,28 @@ export default function ContactPage() {
   const [sending, setSending] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const response = await fetch("/api/settings");
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+
+        if (data.contactEmail?.trim()) {
+          setContactEmail(data.contactEmail.trim());
+        }
+      } catch {
+        // Keep the fallback email.
+      }
+    }
+
+    loadSettings();
+  }, []);
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
@@ -45,7 +70,7 @@ export default function ContactPage() {
       if (!response.ok) {
         throw new Error(
           data.error ||
-            "Something went wrong."
+          "Something went wrong."
         );
       }
 
@@ -122,8 +147,8 @@ export default function ContactPage() {
                 EMAIL
               </span>
 
-              <a href="mailto:hello@nomadsofaditya.com">
-                hello@nomadsofaditya.com
+              <a href={`mailto:${contactEmail}`}>
+                {contactEmail}
               </a>
             </div>
 

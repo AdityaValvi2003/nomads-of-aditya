@@ -8,14 +8,30 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await prisma.siteSettings.findFirst();
 
-  return {
-    title:
-      settings?.siteName?.trim() ||
-      "Nomads of Aditya",
+  const siteName =
+    settings?.siteName?.trim() ||
+    "Nomads of Aditya";
 
-    description:
-      settings?.heroSubheadline?.trim() ||
-      "Travel stories, journeys, people and moments from Aditya's road.",
+  const description =
+    settings?.heroSubheadline?.trim() ||
+    "Journeys, people, places and thoughts from Aditya Valvi.";
+
+  return {
+    title: siteName,
+
+    description,
+
+    openGraph: {
+      title: siteName,
+      description,
+      type: "website",
+    },
+
+    twitter: {
+      card: "summary_large_image",
+      title: siteName,
+      description,
+    },
   };
 }
 

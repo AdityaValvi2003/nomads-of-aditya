@@ -12,10 +12,30 @@ export async function generateMetadata(): Promise<Metadata> {
         settings?.ownerName?.trim() ||
         "Aditya";
 
+    const siteName =
+        settings?.siteName?.trim() ||
+        "Nomads of Aditya";
+
+    const description =
+        settings?.aboutLead?.trim() ||
+        `The story, philosophy and journey behind ${siteName}.`;
+
     return {
-        title: `About ${ownerName} | Nomads of Aditya`,
-        description:
-            "The story, philosophy and journey behind Nomads of Aditya.",
+        title: `About ${ownerName}`,
+
+        description,
+
+        openGraph: {
+            title: `About ${ownerName}`,
+            description,
+            type: "website",
+        },
+
+        twitter: {
+            card: "summary_large_image",
+            title: `About ${ownerName}`,
+            description,
+        },
     };
 }
 

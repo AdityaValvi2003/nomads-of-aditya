@@ -66,8 +66,8 @@ export async function generateMetadata({
 
     alternates: journey.canonicalUrl
       ? {
-          canonical: journey.canonicalUrl,
-        }
+        canonical: journey.canonicalUrl,
+      }
       : undefined,
 
     robots: {
@@ -88,11 +88,11 @@ export async function generateMetadata({
 
       images: journey.coverImage
         ? [
-            {
-              url: journey.coverImage,
-              alt: journey.title,
-            },
-          ]
+          {
+            url: journey.coverImage,
+            alt: journey.title,
+          },
+        ]
         : undefined,
     },
   };
@@ -150,7 +150,7 @@ export default async function JourneyPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#0b0b0b] text-white">
+    <main className="journey-detail-page min-h-screen">
 
       {/* =====================================================
           HERO
@@ -175,7 +175,7 @@ export default async function JourneyPage({
 
               <div className="mx-auto w-full max-w-6xl px-6 pb-16 md:px-10 md:pb-20">
 
-                <p className="text-sm uppercase tracking-[0.3em] text-white/60">
+                <p className="text-sm uppercase tracking-[0.3em] journey-muted">
                   {journey.location},{" "}
                   {journey.country}
                 </p>
@@ -185,7 +185,7 @@ export default async function JourneyPage({
                 </h1>
 
                 {journey.shortIntro && (
-                  <p className="mt-6 max-w-2xl text-base leading-7 text-white/70 md:text-lg">
+                  <p className="mt-6 max-w-2xl text-base leading-7 journey-muted md:text-lg">
                     {journey.shortIntro}
                   </p>
                 )}
@@ -208,7 +208,7 @@ export default async function JourneyPage({
             </h1>
 
             {journey.shortIntro && (
-              <p className="mt-6 max-w-2xl text-lg leading-8 text-white/60">
+              <p className="mt-6 max-w-2xl text-lg leading-8 journey-muted">
                 {journey.shortIntro}
               </p>
             )}
@@ -228,58 +228,58 @@ export default async function JourneyPage({
         journey.difficulty ||
         journey.companions ||
         journey.placesVisited) && (
-        <section className="border-y border-white/10">
+          <section className="border-y journey-border">
 
-          <div className="mx-auto grid max-w-6xl gap-px bg-white/10 md:grid-cols-3 lg:grid-cols-6">
+            <div className="mx-auto grid max-w-6xl gap-px bg-[var(--line)] md:grid-cols-3 lg:grid-cols-6">
 
-            {journey.journeyDate && (
-              <InfoItem
-                label="Date"
-                value={formatDate(
-                  journey.journeyDate
-                )}
-              />
-            )}
+              {journey.journeyDate && (
+                <InfoItem
+                  label="Date"
+                  value={formatDate(
+                    journey.journeyDate
+                  )}
+                />
+              )}
 
-            {journey.duration && (
-              <InfoItem
-                label="Duration"
-                value={journey.duration}
-              />
-            )}
+              {journey.duration && (
+                <InfoItem
+                  label="Duration"
+                  value={journey.duration}
+                />
+              )}
 
-            {journey.distance && (
-              <InfoItem
-                label="Distance"
-                value={journey.distance}
-              />
-            )}
+              {journey.distance && (
+                <InfoItem
+                  label="Distance"
+                  value={journey.distance}
+                />
+              )}
 
-            {journey.difficulty && (
-              <InfoItem
-                label="Difficulty"
-                value={journey.difficulty}
-              />
-            )}
+              {journey.difficulty && (
+                <InfoItem
+                  label="Difficulty"
+                  value={journey.difficulty}
+                />
+              )}
 
-            {journey.companions && (
-              <InfoItem
-                label="Companions"
-                value={journey.companions}
-              />
-            )}
+              {journey.companions && (
+                <InfoItem
+                  label="Companions"
+                  value={journey.companions}
+                />
+              )}
 
-            {journey.placesVisited && (
-              <InfoItem
-                label="Places"
-                value={journey.placesVisited}
-              />
-            )}
+              {journey.placesVisited && (
+                <InfoItem
+                  label="Places"
+                  value={journey.placesVisited}
+                />
+              )}
 
-          </div>
+            </div>
 
-        </section>
-      )}
+          </section>
+        )}
 
       {/* =====================================================
           JOURNEY STORY
@@ -307,7 +307,7 @@ export default async function JourneyPage({
       ===================================================== */}
 
       {journey.encounters.length > 0 && (
-        <section className="border-t border-white/10">
+        <section className="border-t journey-border">
 
           <div className="mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-28">
 
@@ -323,7 +323,7 @@ export default async function JourneyPage({
                 People along the way.
               </h2>
 
-              <p className="mt-5 max-w-2xl text-base leading-8 text-white/40">
+              <p className="journey-subtle mt-5 max-w-2xl text-base leading-8">
                 Some journeys are remembered for
                 the places. Others are remembered
                 for the people you meet.
@@ -339,7 +339,7 @@ export default async function JourneyPage({
                 (encounter) => (
                   <article
                     key={encounter.id}
-                    className="border-t border-white/10 pt-12"
+                    className="border-t journey-border pt-12"
                   >
 
                     {/* ENCOUNTER HEADER */}
@@ -348,7 +348,7 @@ export default async function JourneyPage({
 
                       <div>
 
-                        <p className="text-xs uppercase tracking-[0.25em] text-white/25">
+                        <p className="text-xs uppercase tracking-[0.25em] journey-faint">
                           Encounter
                         </p>
 
@@ -357,7 +357,7 @@ export default async function JourneyPage({
                         </h3>
 
                         {encounter.shortIntro && (
-                          <p className="mt-5 text-base leading-7 text-white/50">
+                          <p className="mt-5 text-base leading-7 journey-subtle">
                             {encounter.shortIntro}
                           </p>
                         )}
@@ -380,7 +380,7 @@ export default async function JourneyPage({
                           />
 
                           {encounter.media.caption && (
-                            <figcaption className="mt-3 text-center text-xs text-white/30">
+                            <figcaption className="mt-3 text-center text-xs journey-faint">
                               {
                                 encounter.media
                                   .caption
@@ -418,13 +418,13 @@ export default async function JourneyPage({
           FOOTER
       ===================================================== */}
 
-      <section className="border-t border-white/10 px-6 py-20 text-center">
+      <section className="border-t journey-border px-6 py-20 text-center">
 
-        <p className="text-xs uppercase tracking-[0.3em] text-white/25">
+        <p className="text-xs uppercase tracking-[0.3em] journey-faint">
           End of journey
         </p>
 
-        <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-white/40">
+        <p className="mx-auto mt-4 max-w-lg text-sm leading-7 journey-subtle">
           Every journey leaves something behind —
           a memory, a person, a place, or a story
           worth carrying forward.
@@ -447,11 +447,11 @@ function ContentBlockRenderer({
 }) {
   const data =
     block.data &&
-    typeof block.data === "object"
+      typeof block.data === "object"
       ? (block.data as Record<
-          string,
-          unknown
-        >)
+        string,
+        unknown
+      >)
       : {};
 
   switch (block.type) {
@@ -517,7 +517,7 @@ function ContentBlockRenderer({
       return (
         <section>
 
-          <div className="max-w-3xl whitespace-pre-line text-lg leading-9 text-white/70 md:text-xl md:leading-10">
+          <div className="max-w-3xl whitespace-pre-line text-lg leading-9 journey-muted md:text-xl md:leading-10">
             {text}
           </div>
 
@@ -545,12 +545,12 @@ function ContentBlockRenderer({
 
           <blockquote className="border-l-2 border-[#D99A3D] pl-6 md:pl-10">
 
-            <p className="text-2xl leading-10 text-white/85 md:text-4xl md:leading-[1.3]">
+            <p className="journey-quote-text text-2xl leading-10 md:text-4xl md:leading-[1.3]">
               “{text}”
             </p>
 
             {author && (
-              <footer className="mt-5 text-sm text-white/40">
+              <footer className="journey-author mt-5 text-sm">
                 — {author}
               </footer>
             )}
@@ -570,7 +570,7 @@ function ContentBlockRenderer({
       return (
         <div className="py-4">
 
-          <div className="border-t border-white/10" />
+          <div className="border-t journey-border" />
 
         </div>
       );
@@ -609,7 +609,7 @@ function ContentBlockRenderer({
           />
 
           {caption && (
-            <figcaption className="mt-3 text-center text-sm text-white/35">
+            <figcaption className="mt-3 text-center text-sm journey-faint">
               {caption}
             </figcaption>
           )}
@@ -646,13 +646,13 @@ function ContentBlockRenderer({
               className="w-full rounded-2xl object-cover"
             />
           ) : (
-            <div className="aspect-[4/3] rounded-2xl border border-white/10 bg-white/[0.03]" />
+            <div className="journey-placeholder aspect-[4/3] rounded-2xl border journey-border" />
           )}
 
           <div>
 
             {text && (
-              <p className="whitespace-pre-line text-lg leading-8 text-white/65">
+              <p className="journey-muted whitespace-pre-line text-lg leading-8">
                 {text}
               </p>
             )}
@@ -694,7 +694,7 @@ function ContentBlockRenderer({
                     key={`gallery-${index}-${image.mediaId || image.url}`}
                     className={
                       index === 0 &&
-                      images.length > 2
+                        images.length > 2
                         ? "sm:col-span-2"
                         : ""
                     }
@@ -710,7 +710,7 @@ function ContentBlockRenderer({
                     />
 
                     {image.caption && (
-                      <figcaption className="mt-3 text-center text-sm text-white/35">
+                      <figcaption className="mt-3 text-center text-sm journey-faint">
                         {image.caption}
                       </figcaption>
                     )}
@@ -770,7 +770,7 @@ function EncounterStoryRenderer({
           if (
             !rawBlock ||
             typeof rawBlock !==
-              "object"
+            "object"
           ) {
             return null;
           }
@@ -816,7 +816,7 @@ function EncounterStoryRenderer({
             return (
               <p
                 key={`encounter-${index}`}
-                className="max-w-3xl whitespace-pre-line text-lg leading-9 text-white/70 md:text-xl md:leading-10"
+                className="max-w-3xl whitespace-pre-line text-lg leading-9 journey-muted md:text-xl md:leading-10"
               >
                 {text}
               </p>
@@ -882,12 +882,12 @@ function EncounterStoryRenderer({
                 className="max-w-4xl border-l-2 border-[#D99A3D] pl-6 md:pl-10"
               >
 
-                <p className="font-serif text-2xl leading-10 text-white/85 md:text-4xl md:leading-[1.35]">
+                <p className="journey-quote-text font-serif text-2xl leading-10 md:text-4xl md:leading-[1.35]">
                   “{text}”
                 </p>
 
                 {author && (
-                  <footer className="mt-5 text-sm text-white/35">
+                  <footer className="mt-5 text-sm journey-faint">
                     — {author}
                   </footer>
                 )}
@@ -919,7 +919,7 @@ function EncounterStoryRenderer({
                 />
 
                 {caption && (
-                  <figcaption className="mt-3 text-center text-sm text-white/30">
+                  <figcaption className="mt-3 text-center text-sm journey-faint">
                     {caption}
                   </figcaption>
                 )}
@@ -941,7 +941,7 @@ function EncounterStoryRenderer({
                 className="py-4"
               >
 
-                <div className="border-t border-white/10" />
+                <div className="border-t journey-border" />
 
               </div>
             );
@@ -967,13 +967,13 @@ function InfoItem({
   value: string;
 }) {
   return (
-    <div className="bg-[#0b0b0b] px-5 py-6">
+    <div className="journey-surface px-5 py-6">
 
-      <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
+      <p className="journey-faint text-[10px] uppercase tracking-[0.2em]">
         {label}
       </p>
 
-      <p className="mt-2 text-sm text-white/70">
+      <p className="journey-muted mt-2 text-sm">
         {value}
       </p>
 

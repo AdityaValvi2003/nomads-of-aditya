@@ -17,6 +17,16 @@ type Blog = {
   status?: string;
 };
 
+type SocialLink = {
+  id: string;
+  platform: string;
+  label: string;
+  url: string;
+  icon: string | null;
+  position: number;
+  isActive: boolean;
+};
+
 type Settings = {
   id: string;
   siteName: string;
@@ -25,6 +35,7 @@ type Settings = {
   accentColor: string;
   heroHeadline: string | null;
   heroSubheadline: string | null;
+  contactEmail: string | null;
   journeyFeatureMode: "AUTOMATIC" | "MANUAL";
   featuredJourneyId: string | null;
   blogFeatureMode: "AUTOMATIC" | "MANUAL";
@@ -51,6 +62,9 @@ export default function SettingsPage() {
   const [blogs, setBlogs] =
     useState<Blog[]>([]);
 
+  const [socialLinks, setSocialLinks] =
+    useState<SocialLink[]>([]);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -76,10 +90,12 @@ export default function SettingsPage() {
         settingsResponse,
         journeysResponse,
         blogsResponse,
+        socialLinksResponse,
       ] = await Promise.all([
         fetch("/api/admin/settings"),
         fetch("/api/admin/journeys"),
         fetch("/api/admin/blog"),
+        fetch("/api/admin/social-links"),
       ]);
 
       if (!settingsResponse.ok) {
@@ -99,6 +115,11 @@ export default function SettingsPage() {
       const blogsData =
         blogsResponse.ok
           ? await blogsResponse.json()
+          : [];
+
+      const socialLinksData =
+        socialLinksResponse.ok
+          ? await socialLinksResponse.json()
           : [];
 
       setSettings(settingsData);
@@ -124,6 +145,15 @@ export default function SettingsPage() {
 
       setJourneys(journeyList);
       setBlogs(blogList);
+
+      const socialLinkList =
+        Array.isArray(socialLinksData)
+          ? socialLinksData
+          : socialLinksData.socialLinks ||
+          socialLinksData.data ||
+          [];
+
+      setSocialLinks(socialLinkList);
     } catch (err) {
       console.error(err);
 
@@ -155,6 +185,7 @@ export default function SettingsPage() {
   }
 
   async function saveSettings() {
+
     if (!settings) {
       return;
     }
@@ -190,6 +221,9 @@ export default function SettingsPage() {
 
             heroSubheadline:
               settings.heroSubheadline,
+
+            contactEmail:
+              settings.contactEmail,
 
             journeyFeatureMode:
               settings.journeyFeatureMode,
@@ -261,6 +295,163 @@ export default function SettingsPage() {
       );
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function addSocialLink() {
+    try {
+      setError("");
+      setMessage("");
+
+      const response = await fetch(
+        "/api/admin/social-links",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            platform: "Instagram",
+            label: "Instagram",
+            url: "https://instagram.com/",
+            icon: "instagram",
+            position: socialLinks.length,
+            isActive: true,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Failed to create social link."
+        );
+      }
+
+      setSocialLinks((current) => [
+        ...current,
+        data.socialLink,
+      ]);
+
+      setMessage(
+        "Social link added successfully."
+      );
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to create social link."
+      );
+    }
+  }
+
+  async function updateSocialLink(
+    link: SocialLink
+  ) {
+    try {
+      setError("");
+      setMessage("");
+
+      const response = await fetch(
+        "/api/admin/social-links",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify(link),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Failed to update social link."
+        );
+      }
+
+      setSocialLinks((current) =>
+        current.map((item) =>
+          item.id === link.id
+            ? data.socialLink
+            : item
+        )
+      );
+
+      setMessage(
+        "Social link updated successfully."
+      );
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to update social link."
+      );
+    }
+  }
+
+  async function deleteSocialLink(
+    id: string
+  ) {
+    if (
+      !window.confirm(
+        "Delete this social link?"
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setError("");
+      setMessage("");
+
+      const response = await fetch(
+        "/api/admin/social-links",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({ id }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          "Failed to delete social link."
+        );
+      }
+
+      setSocialLinks((current) =>
+        current.filter(
+          (item) => item.id !== id
+        )
+      );
+
+      setMessage(
+        "Social link deleted successfully."
+      );
+    } catch (err) {
+      console.error(err);
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Failed to delete social link."
+      );
     }
   }
 
@@ -658,6 +849,24 @@ export default function SettingsPage() {
                   )
                 }
                 placeholder="Nomads of Aditya"
+              />
+            </label>
+
+            <label className="admin-field">
+              <span>
+                Contact Email
+              </span>
+
+              <input
+                type="email"
+                value={settings.contactEmail || ""}
+                onChange={(event) =>
+                  updateSetting(
+                    "contactEmail",
+                    event.target.value
+                  )
+                }
+                placeholder="hello@example.com"
               />
             </label>
 
@@ -1518,6 +1727,346 @@ export default function SettingsPage() {
           </div>
 
         </section>
+
+      </section>
+
+      {/* ===================================================
+            SOCIAL LINKS
+        =================================================== */}
+
+      <section className="admin-section">
+
+        <div className="admin-section-header">
+
+          <div>
+            <span className="admin-eyebrow">
+              SOCIAL LINKS
+            </span>
+
+            <h3>
+              Where people can find you.
+            </h3>
+
+            <p>
+              Manage the social profiles that
+              appear across your website.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="admin-button primary"
+            onClick={addSocialLink}
+          >
+            + Add Social Link
+          </button>
+
+        </div>
+
+
+        {socialLinks.length === 0 ? (
+
+          <div
+            className="card"
+            style={{
+              padding: "24px",
+              color:
+                "rgba(255,255,255,.45)",
+            }}
+          >
+            No social links yet.
+            Add your first profile above.
+          </div>
+
+        ) : (
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "18px",
+            }}
+          >
+
+            {socialLinks.map((link) => (
+
+              <div
+                key={link.id}
+                className="card"
+                style={{
+                  padding: "22px",
+                }}
+              >
+
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns:
+                      "1fr 1fr",
+                    gap: "18px",
+                  }}
+                >
+
+                  <label className="admin-field">
+                    <span>
+                      Platform
+                    </span>
+
+                    <input
+                      value={link.platform}
+                      onChange={(event) =>
+                        setSocialLinks(
+                          (current) =>
+                            current.map(
+                              (item) =>
+                                item.id ===
+                                  link.id
+                                  ? {
+                                    ...item,
+                                    platform:
+                                      event
+                                        .target
+                                        .value,
+                                  }
+                                  : item
+                            )
+                        )
+                      }
+                    />
+                  </label>
+
+
+                  <label className="admin-field">
+                    <span>
+                      Label
+                    </span>
+
+                    <input
+                      value={link.label}
+                      onChange={(event) =>
+                        setSocialLinks(
+                          (current) =>
+                            current.map(
+                              (item) =>
+                                item.id ===
+                                  link.id
+                                  ? {
+                                    ...item,
+                                    label:
+                                      event
+                                        .target
+                                        .value,
+                                  }
+                                  : item
+                            )
+                        )
+                      }
+                    />
+                  </label>
+
+
+                  <label
+                    className="admin-field"
+                    style={{
+                      gridColumn:
+                        "1 / -1",
+                    }}
+                  >
+                    <span>
+                      URL
+                    </span>
+
+                    <input
+                      type="url"
+                      value={link.url}
+                      onChange={(event) =>
+                        setSocialLinks(
+                          (current) =>
+                            current.map(
+                              (item) =>
+                                item.id ===
+                                  link.id
+                                  ? {
+                                    ...item,
+                                    url:
+                                      event
+                                        .target
+                                        .value,
+                                  }
+                                  : item
+                            )
+                        )
+                      }
+                      placeholder="https://instagram.com/yourusername"
+                    />
+                  </label>
+
+
+                  <label className="admin-field">
+                    <span>
+                      Icon
+                    </span>
+
+                    <input
+                      value={
+                        link.icon ?? ""
+                      }
+                      onChange={(event) =>
+                        setSocialLinks(
+                          (current) =>
+                            current.map(
+                              (item) =>
+                                item.id ===
+                                  link.id
+                                  ? {
+                                    ...item,
+                                    icon:
+                                      event
+                                        .target
+                                        .value ||
+                                      null,
+                                  }
+                                  : item
+                            )
+                        )
+                      }
+                      placeholder="instagram"
+                    />
+                  </label>
+
+
+                  <label className="admin-field">
+                    <span>
+                      Position
+                    </span>
+
+                    <input
+                      type="number"
+                      value={link.position}
+                      onChange={(event) =>
+                        setSocialLinks(
+                          (current) =>
+                            current.map(
+                              (item) =>
+                                item.id ===
+                                  link.id
+                                  ? {
+                                    ...item,
+                                    position:
+                                      Number(
+                                        event
+                                          .target
+                                          .value
+                                      ),
+                                  }
+                                  : item
+                            )
+                        )
+                      }
+                    />
+                  </label>
+
+                </div>
+
+
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent:
+                      "space-between",
+                    gap: "16px",
+                    marginTop: "22px",
+                    paddingTop: "18px",
+                    borderTop:
+                      "1px solid rgba(255,255,255,.07)",
+                    flexWrap: "wrap",
+                  }}
+                >
+
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      cursor: "pointer",
+                    }}
+                  >
+
+                    <input
+                      type="checkbox"
+                      checked={
+                        link.isActive
+                      }
+                      onChange={(event) =>
+                        setSocialLinks(
+                          (current) =>
+                            current.map(
+                              (item) =>
+                                item.id ===
+                                  link.id
+                                  ? {
+                                    ...item,
+                                    isActive:
+                                      event
+                                        .target
+                                        .checked,
+                                  }
+                                  : item
+                            )
+                        )
+                      }
+                    />
+
+                    <span>
+                      Active
+                    </span>
+
+                  </label>
+
+
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: "10px",
+                    }}
+                  >
+
+                    <button
+                      type="button"
+                      className="admin-button primary"
+                      onClick={() =>
+                        updateSocialLink(
+                          link
+                        )
+                      }
+                    >
+                      Save Link
+                    </button>
+
+                    <button
+                      type="button"
+                      className="admin-button"
+                      onClick={() =>
+                        deleteSocialLink(
+                          link.id
+                        )
+                      }
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            ))}
+
+          </div>
+
+        )}
 
       </section>
 

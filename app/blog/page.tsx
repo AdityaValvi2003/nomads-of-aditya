@@ -87,9 +87,9 @@ export default async function BlogPage() {
 
   const remainingPosts = featuredPost
     ? posts.filter(
-        (post) =>
-          post.id !== featuredPost.id
-      )
+      (post) =>
+        post.id !== featuredPost.id
+    )
     : [];
 
   return (
@@ -162,20 +162,20 @@ export default async function BlogPage() {
         }
 
         .featured-placeholder {
-          width: 100%;
-          height: 100%;
-          min-height: 500px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--muted);
-          background:
-            linear-gradient(
-              135deg,
-              #171512,
-              #0d0c0b
-            );
-        }
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background:
+    linear-gradient(
+      135deg,
+      var(--panel),
+      var(--bg)
+    );
+}
 
         .featured-content {
           padding: 55px;
@@ -278,19 +278,19 @@ export default async function BlogPage() {
         }
 
         .post-placeholder {
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--muted);
-          background:
-            linear-gradient(
-              135deg,
-              #171512,
-              #0d0c0b
-            );
-        }
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background:
+    linear-gradient(
+      135deg,
+      var(--panel),
+      var(--bg)
+    );
+}
 
         .post-body {
           padding: 28px;

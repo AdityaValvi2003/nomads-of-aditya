@@ -309,283 +309,366 @@ export default async function BlogPostPage({
     <>
       <style>{`
 
-        .story-page {
-          min-height: 100vh;
-          padding: 150px 6vw 100px;
-        }
+  /* =====================================================
+     BLOG STORY PAGE
+  ===================================================== */
 
-        /* =====================================================
-           HEADER
-        ===================================================== */
+  .story-page {
+    min-height: 100vh;
+    padding: 150px 6vw 100px;
+  }
 
-        .story-header {
-          max-width: 1000px;
-          margin: 0 auto;
-          text-align: center;
-        }
+  /* =====================================================
+     HEADER
+  ===================================================== */
 
-        .story-category {
-          color: var(--accent);
-          font-size: .68rem;
-          letter-spacing: .15em;
-          text-transform: uppercase;
-          font-weight: 700;
-        }
+  .story-header {
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+  }
 
-        .story-title {
-          font:
-            clamp(3.5rem, 8vw, 8rem)
-            / .9
-            var(--serif);
+  .story-category {
+    display: inline-block;
 
-          margin: 20px 0 30px;
-        }
+    color: var(--accent);
 
-        .story-excerpt {
-          max-width: 750px;
-          margin: 0 auto;
+    font-size: 0.68rem;
+    font-weight: 700;
 
-          color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
 
-          font-size: 1.1rem;
-          line-height: 1.8;
-        }
+  .story-title {
+    max-width: 1000px;
 
-        /* =====================================================
-           META
-        ===================================================== */
+    margin: 20px auto 30px;
 
-        .story-meta {
-          display: flex;
-          justify-content: center;
-          align-items: center;
+    color: var(--text);
 
-          flex-wrap: wrap;
-          gap: 12px;
+    font:
+      clamp(3.5rem, 8vw, 8rem) / 0.9
+      var(--serif);
 
-          margin-top: 30px;
+    font-weight: 400;
 
-          color: var(--muted);
+    letter-spacing: -0.035em;
+  }
 
-          font-size: .7rem;
-          letter-spacing: .06em;
-          text-transform: uppercase;
-        }
+  .story-excerpt {
+    max-width: 750px;
 
-        /* =====================================================
-           COVER IMAGE
-        ===================================================== */
+    margin: 0 auto;
 
-        .story-cover {
-          max-width: 1200px;
+    color: var(--muted);
 
-          margin:
-            70px auto
-            80px;
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
 
-          overflow: hidden;
+  /* =====================================================
+     META
+  ===================================================== */
 
-          border: 1px solid var(--line);
+  .story-meta {
+    display: flex;
 
-          background: var(--panel);
-        }
+    justify-content: center;
+    align-items: center;
 
-        .story-cover img {
-          display: block;
+    flex-wrap: wrap;
 
-          width: 100%;
+    gap: 12px;
 
-          max-height: 700px;
+    margin-top: 30px;
 
-          object-fit: cover;
-        }
+    color: var(--muted);
 
-        /* =====================================================
-           CONTENT
-        ===================================================== */
+    font-size: 0.7rem;
 
-        .story-content-wrapper {
-          max-width: 800px;
-          margin: 0 auto;
-        }
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
 
-        .story-content {
-          color: #d8d2c8;
+  /* =====================================================
+     COVER IMAGE
+  ===================================================== */
 
-          font-size: 1.08rem;
+  .story-cover {
+    max-width: 1200px;
 
-          line-height: 1.95;
-        }
+    margin:
+      70px auto
+      80px;
 
-        .story-paragraph {
-          margin:
-            0 0 30px;
-        }
+    overflow: hidden;
 
-        /* =====================================================
-           HEADINGS
-        ===================================================== */
+    border:
+      1px solid var(--line);
 
-        .story-h1 {
-          font:
-            clamp(2rem, 4vw, 3.4rem)
-            / 1.1
-            var(--serif);
+    background:
+      var(--panel);
+  }
 
-          color: var(--text);
+  .story-cover img {
+    display: block;
 
-          margin:
-            60px 0 25px;
-        }
+    width: 100%;
 
-        .story-h2 {
-          font:
-            clamp(1.5rem, 3vw, 2.4rem)
-            / 1.2
-            var(--serif);
+    max-height: 700px;
 
-          color: var(--text);
+    object-fit: cover;
+  }
 
-          margin:
-            50px 0 20px;
-        }
+  /* =====================================================
+     CONTENT
+  ===================================================== */
 
-        .story-content strong {
-          color: var(--text);
-          font-weight: 700;
-        }
+  .story-content-wrapper {
+    max-width: 800px;
 
-        /* =====================================================
-           QUOTE
-        ===================================================== */
+    margin: 0 auto;
+  }
 
-        .story-quote {
-          margin:
-            45px 0;
+  .story-content {
+    color: var(--text);
 
-          padding:
-            25px 30px;
+    font-size: 1.08rem;
 
-          border-left:
-            3px solid var(--accent);
+    line-height: 1.95;
+  }
 
-          color: var(--text);
+  .story-paragraph {
+    margin:
+      0 0 30px;
 
-          font:
-            1.35rem / 1.6
-            var(--serif);
+    color: var(--muted);
+  }
 
-          font-style: italic;
-        }
+  /* =====================================================
+     HEADINGS
+  ===================================================== */
 
-        /* =====================================================
-           DIVIDER
-        ===================================================== */
+  .story-h1 {
+    color: var(--text);
 
-        .story-divider {
-          border: 0;
+    font:
+      clamp(2rem, 4vw, 3.4rem) / 1.1
+      var(--serif);
 
-          border-top:
-            1px solid var(--line);
+    font-weight: 400;
 
-          margin:
-            55px 0;
-        }
+    margin:
+      60px 0 25px;
+  }
 
-        /* =====================================================
-           INLINE STORY IMAGE
-        ===================================================== */
+  .story-h2 {
+    color: var(--text);
 
-        .story-image {
-          margin:
-            55px
-            0;
+    font:
+      clamp(1.5rem, 3vw, 2.4rem) / 1.2
+      var(--serif);
 
-          width: 100%;
-        }
+    font-weight: 400;
 
-        .story-image img {
-          display: block;
+    margin:
+      50px 0 20px;
+  }
 
-          width: 100%;
+  .story-content strong {
+    color: var(--text);
 
-          max-height: 750px;
+    font-weight: 700;
+  }
 
-          object-fit: cover;
-        }
+  /* =====================================================
+     QUOTE
+  ===================================================== */
 
-        /* =====================================================
-           FOOTER
-        ===================================================== */
+  .story-quote {
+    margin:
+      45px 0;
 
-        .story-footer {
-          max-width: 800px;
+    padding:
+      25px 30px;
 
-          margin:
-            80px auto 0;
+    border-left:
+      3px solid var(--accent);
 
-          padding-top:
-            35px;
+    color: var(--accent2);
 
-          border-top:
-            1px solid var(--line);
-        }
+    font:
+      1.35rem / 1.6
+      var(--serif);
 
-        .back-link {
-          display: inline-block;
+    font-style: italic;
+  }
 
-          color: var(--accent);
+  /* =====================================================
+     DIVIDER
+  ===================================================== */
 
-          font-size: .68rem;
+  .story-divider {
+    border: 0;
 
-          letter-spacing: .1em;
+    border-top:
+      1px solid var(--line);
 
-          text-transform: uppercase;
-        }
+    margin:
+      55px 0;
+  }
 
-        .back-link:hover {
-          color: var(--accent2);
-        }
+  /* =====================================================
+     INLINE STORY IMAGE
+  ===================================================== */
 
-        /* =====================================================
-           MOBILE
-        ===================================================== */
+  .story-image {
+    width: 100%;
 
-        @media (max-width: 700px) {
+    margin:
+      55px 0;
+  }
 
-          .story-page {
-            padding:
-              110px
-              7vw
-              70px;
-          }
+  .story-image img {
+    display: block;
 
-          .story-title {
-            font-size: 3.5rem;
-          }
+    width: 100%;
 
-          .story-cover {
-            margin:
-              50px auto
-              55px;
-          }
+    max-height: 750px;
 
-          .story-content {
-            font-size: 1rem;
-          }
+    object-fit: cover;
 
-          .story-quote {
-            padding: 20px;
-          }
+    border:
+      1px solid var(--line);
+  }
 
-          .story-image {
-            margin:
-              40px 0;
-          }
+  /* =====================================================
+     FOOTER
+  ===================================================== */
 
-        }
+  .story-footer {
+    max-width: 800px;
 
-      `}</style>
+    margin:
+      80px auto 0;
+
+    padding-top:
+      35px;
+
+    border-top:
+      1px solid var(--line);
+  }
+
+  .back-link {
+    display: inline-block;
+
+    color: var(--accent);
+
+    font-size: 0.68rem;
+
+    letter-spacing: 0.1em;
+
+    text-transform: uppercase;
+
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--accent2);
+
+    transform:
+      translateX(3px);
+  }
+
+  /* =====================================================
+     LIGHT MODE
+  ===================================================== */
+
+  :root[data-theme="light"] .story-content {
+    color: var(--text);
+  }
+
+  :root[data-theme="light"] .story-paragraph {
+    color: var(--muted);
+  }
+
+  :root[data-theme="light"] .story-excerpt {
+    color: var(--muted);
+  }
+
+  :root[data-theme="light"] .story-meta {
+    color: var(--muted);
+  }
+
+  /* =====================================================
+     MOBILE
+  ===================================================== */
+
+  @media (max-width: 700px) {
+
+    .story-page {
+      padding:
+        110px
+        7vw
+        70px;
+    }
+
+    .story-title {
+      font-size:
+        clamp(3rem, 14vw, 4.5rem);
+
+      letter-spacing:
+        -0.025em;
+    }
+
+    .story-excerpt {
+      font-size: 1rem;
+    }
+
+    .story-cover {
+      margin:
+        50px auto
+        55px;
+    }
+
+    .story-content {
+      font-size: 1rem;
+      line-height: 1.85;
+    }
+
+    .story-h1 {
+      margin-top: 50px;
+    }
+
+    .story-h2 {
+      margin-top: 42px;
+    }
+
+    .story-quote {
+      margin:
+        40px 0;
+
+      padding:
+        20px;
+
+      font-size: 1.2rem;
+    }
+
+    .story-image {
+      margin:
+        40px 0;
+    }
+
+    .story-footer {
+      margin-top: 65px;
+    }
+
+  }
+
+`}</style>
 
       <main className="story-page">
 

@@ -6,9 +6,23 @@ import { prisma } from "../../src/lib/prisma";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Journeys | Nomads of Aditya",
+  title: "Journeys",
   description:
     "Real journeys, places, people, photographs and stories from Aditya's road.",
+
+  openGraph: {
+    title: "Journeys",
+    description:
+      "Real journeys, places, people, photographs and stories from Aditya's road.",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Journeys",
+    description:
+      "Real journeys, places, people, photographs and stories from Aditya's road.",
+  },
 };
 
 export default async function Journeys() {

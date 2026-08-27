@@ -60,6 +60,7 @@ export async function PUT(request: Request) {
             accentColor,
             heroHeadline,
             heroSubheadline,
+            contactEmail,
             journeyFeatureMode,
             featuredJourneyId,
             blogFeatureMode,
@@ -142,7 +143,12 @@ export async function PUT(request: Request) {
                     ? heroSubheadline.trim() || null
                     : null,
 
-                        aboutHeadline:
+            contactEmail:
+                typeof contactEmail === "string"
+                    ? contactEmail.trim() || null
+                    : null,
+
+            aboutHeadline:
                 typeof aboutHeadline === "string"
                     ? aboutHeadline.trim() || null
                     : null,

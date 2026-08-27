@@ -288,6 +288,7 @@ model SiteSettings {
   accentColor        String      @default("#D99A3D")
   heroHeadline       String?
   heroSubheadline    String?
+  contactEmail       String?
 
   aboutHeadline     String?
   aboutLead         String?

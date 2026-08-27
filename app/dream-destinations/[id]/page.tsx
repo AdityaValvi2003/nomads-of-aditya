@@ -73,58 +73,53 @@ export default async function DreamDestinationPage({
   }
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <main className="dream-detail-page">
 
       {/* ===================================================
           HERO
       =================================================== */}
 
-      <section className="relative">
+      <section className="dream-detail-hero">
 
         {destination.coverImage ? (
 
-          <div className="relative min-h-[75vh] overflow-hidden">
+          <div className="dream-detail-hero-image">
 
             <img
               src={destination.coverImage}
               alt={destination.name}
-              className="absolute inset-0 h-full w-full object-cover"
             />
 
-            <div className="absolute inset-0 bg-black/45" />
+            <div className="dream-detail-hero-overlay" />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-black/10" />
+            <div className="dream-detail-hero-gradient" />
 
-            <div className="relative flex min-h-[75vh] items-end">
+            <div className="dream-detail-hero-content">
 
-              <div className="mx-auto w-full max-w-6xl px-6 pb-16 md:px-10 md:pb-24">
+              <Link
+                href="/dream-destinations"
+                className="dream-back-link"
+              >
+                ← Dream Destinations
+              </Link>
 
-                <Link
-                  href="/dream-destinations"
-                  className="mb-10 inline-block text-xs uppercase tracking-[0.2em] text-white/50 transition hover:text-white"
-                >
-                  ← Dream Destinations
-                </Link>
+              <p className="dream-detail-label">
+                ONE DAY
+              </p>
 
-                <p className="text-xs uppercase tracking-[0.3em] text-[#D99A3D]">
-                  ONE DAY
+              <h1>
+                {destination.name}
+              </h1>
+
+              <p className="dream-detail-country">
+                {destination.country}
+              </p>
+
+              {destination.shortNote && (
+                <p className="dream-detail-note">
+                  {destination.shortNote}
                 </p>
-
-                <h1 className="mt-4 max-w-5xl font-serif text-6xl leading-[0.9] text-white md:text-8xl lg:text-[9rem]">
-                  {destination.name}
-                </h1>
-
-                <p className="mt-6 text-sm uppercase tracking-[0.25em] text-white/60">
-                  {destination.country}
-                </p>
-
-                {destination.shortNote && (
-                  <p className="mt-7 max-w-2xl text-base leading-8 text-white/70 md:text-lg">
-                    {destination.shortNote}
-                  </p>
-                )}
-
-              </div>
+              )}
 
             </div>
 
@@ -132,29 +127,29 @@ export default async function DreamDestinationPage({
 
         ) : (
 
-          <div className="page pb-20">
+          <div className="dream-detail-no-image">
 
             <Link
               href="/dream-destinations"
-              className="text-xs uppercase tracking-[0.2em] text-white/40 transition hover:text-white"
+              className="dream-back-link"
             >
               ← Dream Destinations
             </Link>
 
-            <p className="mt-14 text-xs uppercase tracking-[0.3em] text-[#D99A3D]">
+            <p className="dream-detail-label">
               ONE DAY
             </p>
 
-            <h1 className="mt-5 max-w-5xl font-serif text-6xl leading-[0.9] md:text-8xl">
+            <h1>
               {destination.name}
             </h1>
 
-            <p className="mt-6 text-sm uppercase tracking-[0.25em] text-[var(--muted)]">
+            <p className="dream-detail-country">
               {destination.country}
             </p>
 
             {destination.shortNote && (
-              <p className="lead mt-8">
+              <p className="lead">
                 {destination.shortNote}
               </p>
             )}
@@ -170,9 +165,9 @@ export default async function DreamDestinationPage({
           CONTENT
       =================================================== */}
 
-      <article className="mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-32">
+      <article className="dream-detail-content">
 
-        <div className="grid gap-20 md:grid-cols-[0.8fr_1.2fr]">
+        <div className="dream-detail-grid">
 
           {/* LEFT INTRO */}
 
@@ -182,7 +177,7 @@ export default async function DreamDestinationPage({
               THE DREAM
             </span>
 
-            <h2 className="mt-5 font-serif text-4xl leading-tight md:text-5xl">
+            <h2>
               Some places live in your
               imagination long before
               you reach them.
@@ -193,39 +188,43 @@ export default async function DreamDestinationPage({
 
           {/* RIGHT CONTENT */}
 
-          <div className="space-y-16">
+          <div className="dream-detail-sections">
 
             {/* WHY VISIT */}
 
             {destination.whyVisit && (
+
               <section>
 
                 <span className="eyebrow">
                   WHY I WANT TO GO
                 </span>
 
-                <div className="mt-6 whitespace-pre-line text-lg leading-9 text-[var(--muted)] md:text-xl md:leading-10">
+                <div className="dream-detail-text">
                   {destination.whyVisit}
                 </div>
 
               </section>
+
             )}
 
 
             {/* INTERESTS */}
 
             {destination.interests && (
-              <section className="border-t border-[var(--line)] pt-10">
+
+              <section className="dream-detail-section-bordered">
 
                 <span className="eyebrow">
                   WHAT I WANT TO EXPERIENCE
                 </span>
 
-                <div className="mt-6 whitespace-pre-line text-lg leading-9 text-[var(--muted)] md:text-xl md:leading-10">
+                <div className="dream-detail-text">
                   {destination.interests}
                 </div>
 
               </section>
+
             )}
 
           </div>
@@ -241,14 +240,13 @@ export default async function DreamDestinationPage({
 
       {destination.coverImage && (
 
-        <section className="px-6 md:px-10">
+        <section className="dream-detail-visual">
 
-          <figure className="mx-auto max-w-7xl overflow-hidden">
+          <figure>
 
             <img
               src={destination.coverImage}
               alt={destination.name}
-              className="max-h-[750px] w-full object-cover"
             />
 
           </figure>
@@ -304,13 +302,417 @@ export default async function DreamDestinationPage({
           END
       =================================================== */}
 
-      <section className="border-t border-[var(--line)] px-6 py-16 text-center">
+      <section className="dream-detail-end">
 
-        <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">
+        <p>
           NOMADS OF ADITYA
         </p>
 
       </section>
+
+
+      {/* ===================================================
+          PAGE STYLES
+      =================================================== */}
+
+      <style>{`
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .dream-detail-page {
+          min-height: 100vh;
+
+          background: var(--bg);
+
+          color: var(--text);
+        }
+
+        /* =====================================================
+           HERO
+        ===================================================== */
+
+        .dream-detail-hero {
+          position: relative;
+        }
+
+        .dream-detail-hero-image {
+          position: relative;
+
+          min-height: 75vh;
+
+          overflow: hidden;
+        }
+
+        .dream-detail-hero-image > img {
+          position: absolute;
+
+          inset: 0;
+
+          width: 100%;
+          height: 100%;
+
+          object-fit: cover;
+        }
+
+        .dream-detail-hero-overlay {
+          position: absolute;
+
+          inset: 0;
+
+          background:
+            rgba(0, 0, 0, 0.38);
+        }
+
+        .dream-detail-hero-gradient {
+          position: absolute;
+
+          inset: 0;
+
+          background:
+            linear-gradient(
+              0deg,
+              rgba(0, 0, 0, 0.88),
+              rgba(0, 0, 0, 0.12) 70%,
+              rgba(0, 0, 0, 0.2)
+            );
+        }
+
+        .dream-detail-hero-content {
+          position: relative;
+
+          z-index: 2;
+
+          min-height: 75vh;
+
+          max-width: 1200px;
+
+          margin: 0 auto;
+
+          padding:
+            0 6vw
+            80px;
+
+          display: flex;
+
+          flex-direction: column;
+
+          justify-content: flex-end;
+
+          align-items: flex-start;
+        }
+
+        .dream-back-link {
+          margin-bottom: 40px;
+
+          color:
+            rgba(255, 255, 255, 0.6);
+
+          font-size: 0.68rem;
+
+          letter-spacing: 0.15em;
+
+          text-transform: uppercase;
+
+          transition:
+            color 0.2s ease,
+            transform 0.2s ease;
+        }
+
+        .dream-back-link:hover {
+          color:
+            #ffffff;
+
+          transform:
+            translateX(3px);
+        }
+
+        .dream-detail-label {
+          margin: 0;
+
+          color:
+            var(--accent2);
+
+          font-size: 0.68rem;
+
+          font-weight: 700;
+
+          letter-spacing: 0.2em;
+
+          text-transform: uppercase;
+        }
+
+        .dream-detail-hero h1 {
+          max-width: 1100px;
+
+          margin: 15px 0 15px;
+
+          color:
+            #f4f0e8;
+
+          font:
+            clamp(4rem, 8vw, 9rem) / 0.9
+            var(--serif);
+
+          font-weight: 400;
+
+          letter-spacing:
+            -0.04em;
+        }
+
+        .dream-detail-country {
+          margin: 0;
+
+          color:
+            rgba(255, 255, 255, 0.65);
+
+          font-size: 0.72rem;
+
+          letter-spacing: 0.2em;
+
+          text-transform: uppercase;
+        }
+
+        .dream-detail-note {
+          max-width: 650px;
+
+          margin: 25px 0 0;
+
+          color:
+            rgba(255, 255, 255, 0.72);
+
+          font-size: 1rem;
+
+          line-height: 1.75;
+        }
+
+        /* =====================================================
+           NO IMAGE HERO
+        ===================================================== */
+
+        .dream-detail-no-image {
+          max-width: 1200px;
+
+          margin: 0 auto;
+
+          padding:
+            160px 6vw 100px;
+        }
+
+        .dream-detail-no-image .dream-back-link {
+          display: inline-block;
+
+          color: var(--muted);
+        }
+
+        .dream-detail-no-image
+        .dream-back-link:hover {
+          color: var(--accent);
+        }
+
+        .dream-detail-no-image h1 {
+          max-width: 1000px;
+
+          margin: 18px 0;
+
+          color: var(--text);
+
+          font:
+            clamp(4rem, 8vw, 8rem) / 0.9
+            var(--serif);
+
+          font-weight: 400;
+        }
+
+        .dream-detail-no-image
+        .dream-detail-country {
+          color: var(--muted);
+        }
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
+        .dream-detail-content {
+          max-width: 1100px;
+
+          margin: 0 auto;
+
+          padding:
+            120px 6vw 140px;
+        }
+
+        .dream-detail-grid {
+          display: grid;
+
+          grid-template-columns:
+            minmax(0, 0.8fr)
+            minmax(0, 1.2fr);
+
+          gap: 100px;
+        }
+
+        .dream-detail-grid h2 {
+          max-width: 600px;
+
+          margin: 20px 0 0;
+
+          color: var(--text);
+
+          font:
+            clamp(2.5rem, 5vw, 5rem) / 1
+            var(--serif);
+
+          font-weight: 400;
+        }
+
+        .dream-detail-sections {
+          display: flex;
+
+          flex-direction: column;
+
+          gap: 70px;
+        }
+
+        .dream-detail-section-bordered {
+          padding-top: 40px;
+
+          border-top:
+            1px solid var(--line);
+        }
+
+        .dream-detail-text {
+          max-width: 700px;
+
+          margin-top: 25px;
+
+          white-space: pre-line;
+
+          color: var(--muted);
+
+          font-size: 1.1rem;
+
+          line-height: 1.95;
+        }
+
+        /* =====================================================
+           VISUAL
+        ===================================================== */
+
+        .dream-detail-visual {
+          padding:
+            0 6vw 120px;
+        }
+
+        .dream-detail-visual figure {
+          max-width: 1400px;
+
+          margin: 0 auto;
+
+          overflow: hidden;
+
+          border:
+            1px solid var(--line);
+        }
+
+        .dream-detail-visual img {
+          display: block;
+
+          width: 100%;
+
+          max-height: 750px;
+
+          object-fit: cover;
+        }
+
+        /* =====================================================
+           END
+        ===================================================== */
+
+        .dream-detail-end {
+          padding:
+            60px 6vw;
+
+          border-top:
+            1px solid var(--line);
+
+          text-align: center;
+        }
+
+        .dream-detail-end p {
+          margin: 0;
+
+          color: var(--muted);
+
+          font-size: 0.68rem;
+
+          letter-spacing: 0.3em;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 800px) {
+
+          .dream-detail-hero-image,
+          .dream-detail-hero-content {
+            min-height: 78vh;
+          }
+
+          .dream-detail-hero-content {
+            padding:
+              0 7vw
+              60px;
+          }
+
+          .dream-detail-hero h1 {
+            font-size:
+              clamp(3.4rem, 14vw, 6rem);
+          }
+
+          .dream-detail-content {
+            padding:
+              85px 7vw 90px;
+          }
+
+          .dream-detail-grid {
+            grid-template-columns: 1fr;
+
+            gap: 55px;
+          }
+
+          .dream-detail-grid h2 {
+            font-size: 2.7rem;
+          }
+
+          .dream-detail-sections {
+            gap: 50px;
+          }
+
+          .dream-detail-text {
+            font-size: 1rem;
+          }
+
+          .dream-detail-visual {
+            padding:
+              0 7vw 80px;
+          }
+
+          .dream-detail-no-image {
+            padding:
+              120px 7vw 80px;
+          }
+
+          .dream-detail-no-image h1 {
+            font-size:
+              clamp(3.5rem, 14vw, 6rem);
+          }
+
+        }
+
+      `}</style>
 
     </main>
   );

@@ -32,6 +32,7 @@ export type SiteSettingsMinAggregateOutputType = {
   accentColor: string | null
   heroHeadline: string | null
   heroSubheadline: string | null
+  contactEmail: string | null
   aboutHeadline: string | null
   aboutLead: string | null
   aboutStoryTitle: string | null
@@ -57,6 +58,7 @@ export type SiteSettingsMaxAggregateOutputType = {
   accentColor: string | null
   heroHeadline: string | null
   heroSubheadline: string | null
+  contactEmail: string | null
   aboutHeadline: string | null
   aboutLead: string | null
   aboutStoryTitle: string | null
@@ -82,6 +84,7 @@ export type SiteSettingsCountAggregateOutputType = {
   accentColor: number
   heroHeadline: number
   heroSubheadline: number
+  contactEmail: number
   aboutHeadline: number
   aboutLead: number
   aboutStoryTitle: number
@@ -109,6 +112,7 @@ export type SiteSettingsMinAggregateInputType = {
   accentColor?: true
   heroHeadline?: true
   heroSubheadline?: true
+  contactEmail?: true
   aboutHeadline?: true
   aboutLead?: true
   aboutStoryTitle?: true
@@ -134,6 +138,7 @@ export type SiteSettingsMaxAggregateInputType = {
   accentColor?: true
   heroHeadline?: true
   heroSubheadline?: true
+  contactEmail?: true
   aboutHeadline?: true
   aboutLead?: true
   aboutStoryTitle?: true
@@ -159,6 +164,7 @@ export type SiteSettingsCountAggregateInputType = {
   accentColor?: true
   heroHeadline?: true
   heroSubheadline?: true
+  contactEmail?: true
   aboutHeadline?: true
   aboutLead?: true
   aboutStoryTitle?: true
@@ -257,6 +263,7 @@ export type SiteSettingsGroupByOutputType = {
   accentColor: string
   heroHeadline: string | null
   heroSubheadline: string | null
+  contactEmail: string | null
   aboutHeadline: string | null
   aboutLead: string | null
   aboutStoryTitle: string | null
@@ -303,6 +310,7 @@ export type SiteSettingsWhereInput = {
   accentColor?: Prisma.StringFilter<"SiteSettings"> | string
   heroHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   heroSubheadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  contactEmail?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   aboutHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   aboutLead?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   aboutStoryTitle?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
@@ -328,6 +336,7 @@ export type SiteSettingsOrderByWithRelationInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   aboutHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   aboutLead?: Prisma.SortOrderInput | Prisma.SortOrder
   aboutStoryTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -356,6 +365,7 @@ export type SiteSettingsWhereUniqueInput = Prisma.AtLeast<{
   accentColor?: Prisma.StringFilter<"SiteSettings"> | string
   heroHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   heroSubheadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
+  contactEmail?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   aboutHeadline?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   aboutLead?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
   aboutStoryTitle?: Prisma.StringNullableFilter<"SiteSettings"> | string | null
@@ -381,6 +391,7 @@ export type SiteSettingsOrderByWithAggregationInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactEmail?: Prisma.SortOrderInput | Prisma.SortOrder
   aboutHeadline?: Prisma.SortOrderInput | Prisma.SortOrder
   aboutLead?: Prisma.SortOrderInput | Prisma.SortOrder
   aboutStoryTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -412,6 +423,7 @@ export type SiteSettingsScalarWhereWithAggregatesInput = {
   accentColor?: Prisma.StringWithAggregatesFilter<"SiteSettings"> | string
   heroHeadline?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   heroSubheadline?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
+  contactEmail?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   aboutHeadline?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   aboutLead?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
   aboutStoryTitle?: Prisma.StringNullableWithAggregatesFilter<"SiteSettings"> | string | null
@@ -437,6 +449,7 @@ export type SiteSettingsCreateInput = {
   accentColor?: string
   heroHeadline?: string | null
   heroSubheadline?: string | null
+  contactEmail?: string | null
   aboutHeadline?: string | null
   aboutLead?: string | null
   aboutStoryTitle?: string | null
@@ -462,6 +475,7 @@ export type SiteSettingsUncheckedCreateInput = {
   accentColor?: string
   heroHeadline?: string | null
   heroSubheadline?: string | null
+  contactEmail?: string | null
   aboutHeadline?: string | null
   aboutLead?: string | null
   aboutStoryTitle?: string | null
@@ -487,6 +501,7 @@ export type SiteSettingsUpdateInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -512,6 +527,7 @@ export type SiteSettingsUncheckedUpdateInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -537,6 +553,7 @@ export type SiteSettingsCreateManyInput = {
   accentColor?: string
   heroHeadline?: string | null
   heroSubheadline?: string | null
+  contactEmail?: string | null
   aboutHeadline?: string | null
   aboutLead?: string | null
   aboutStoryTitle?: string | null
@@ -562,6 +579,7 @@ export type SiteSettingsUpdateManyMutationInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -587,6 +605,7 @@ export type SiteSettingsUncheckedUpdateManyInput = {
   accentColor?: Prisma.StringFieldUpdateOperationsInput | string
   heroHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   heroSubheadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutHeadline?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutLead?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   aboutStoryTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -612,6 +631,7 @@ export type SiteSettingsCountOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrder
+  contactEmail?: Prisma.SortOrder
   aboutHeadline?: Prisma.SortOrder
   aboutLead?: Prisma.SortOrder
   aboutStoryTitle?: Prisma.SortOrder
@@ -637,6 +657,7 @@ export type SiteSettingsMaxOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrder
+  contactEmail?: Prisma.SortOrder
   aboutHeadline?: Prisma.SortOrder
   aboutLead?: Prisma.SortOrder
   aboutStoryTitle?: Prisma.SortOrder
@@ -662,6 +683,7 @@ export type SiteSettingsMinOrderByAggregateInput = {
   accentColor?: Prisma.SortOrder
   heroHeadline?: Prisma.SortOrder
   heroSubheadline?: Prisma.SortOrder
+  contactEmail?: Prisma.SortOrder
   aboutHeadline?: Prisma.SortOrder
   aboutLead?: Prisma.SortOrder
   aboutStoryTitle?: Prisma.SortOrder
@@ -693,6 +715,7 @@ export type SiteSettingsSelect<ExtArgs extends runtime.Types.Extensions.Internal
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  contactEmail?: boolean
   aboutHeadline?: boolean
   aboutLead?: boolean
   aboutStoryTitle?: boolean
@@ -718,6 +741,7 @@ export type SiteSettingsSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  contactEmail?: boolean
   aboutHeadline?: boolean
   aboutLead?: boolean
   aboutStoryTitle?: boolean
@@ -743,6 +767,7 @@ export type SiteSettingsSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  contactEmail?: boolean
   aboutHeadline?: boolean
   aboutLead?: boolean
   aboutStoryTitle?: boolean
@@ -768,6 +793,7 @@ export type SiteSettingsSelectScalar = {
   accentColor?: boolean
   heroHeadline?: boolean
   heroSubheadline?: boolean
+  contactEmail?: boolean
   aboutHeadline?: boolean
   aboutLead?: boolean
   aboutStoryTitle?: boolean
@@ -785,7 +811,7 @@ export type SiteSettingsSelectScalar = {
   updatedAt?: boolean
 }
 
-export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "siteName" | "ownerName" | "defaultTheme" | "accentColor" | "heroHeadline" | "heroSubheadline" | "aboutHeadline" | "aboutLead" | "aboutStoryTitle" | "aboutStoryLeft" | "aboutStoryRight" | "aboutPhilosophy" | "aboutFreedom" | "aboutExploration" | "aboutPeople" | "aboutGrowth" | "journeyFeatureMode" | "featuredJourneyId" | "blogFeatureMode" | "featuredBlogId" | "updatedAt", ExtArgs["result"]["siteSettings"]>
+export type SiteSettingsOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "siteName" | "ownerName" | "defaultTheme" | "accentColor" | "heroHeadline" | "heroSubheadline" | "contactEmail" | "aboutHeadline" | "aboutLead" | "aboutStoryTitle" | "aboutStoryLeft" | "aboutStoryRight" | "aboutPhilosophy" | "aboutFreedom" | "aboutExploration" | "aboutPeople" | "aboutGrowth" | "journeyFeatureMode" | "featuredJourneyId" | "blogFeatureMode" | "featuredBlogId" | "updatedAt", ExtArgs["result"]["siteSettings"]>
 
 export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "SiteSettings"
@@ -798,6 +824,7 @@ export type $SiteSettingsPayload<ExtArgs extends runtime.Types.Extensions.Intern
     accentColor: string
     heroHeadline: string | null
     heroSubheadline: string | null
+    contactEmail: string | null
     aboutHeadline: string | null
     aboutLead: string | null
     aboutStoryTitle: string | null
@@ -1243,6 +1270,7 @@ export interface SiteSettingsFieldRefs {
   readonly accentColor: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly heroHeadline: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly heroSubheadline: Prisma.FieldRef<"SiteSettings", 'String'>
+  readonly contactEmail: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly aboutHeadline: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly aboutLead: Prisma.FieldRef<"SiteSettings", 'String'>
   readonly aboutStoryTitle: Prisma.FieldRef<"SiteSettings", 'String'>

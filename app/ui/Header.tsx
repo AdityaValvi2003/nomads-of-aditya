@@ -16,21 +16,86 @@ export default function Header() {
   const pathname = usePathname();
 
   const [dark, setDark] = useState(true);
+  const [siteName, setSiteName] =
+    useState("Nomads of Aditya");
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
+    async function loadTheme() {
+      try {
+        const savedTheme =
+          localStorage.getItem("theme");
 
-    const shouldBeDark = savedTheme !== "light";
+        if (savedTheme === "dark" || savedTheme === "light") {
+          const shouldBeDark =
+            savedTheme === "dark";
 
-    setDark(shouldBeDark);
+          setDark(shouldBeDark);
 
-    document.documentElement.dataset.theme =
-      shouldBeDark ? "dark" : "light";
+          document.documentElement.dataset.theme =
+            shouldBeDark ? "dark" : "light";
 
-    setMounted(true);
+          return;
+        }
+
+        const response =
+          await fetch("/api/settings");
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data =
+          await response.json();
+
+        const defaultTheme =
+          data.defaultTheme === "light"
+            ? "light"
+            : "dark";
+
+        const shouldBeDark =
+          defaultTheme === "dark";
+
+        setDark(shouldBeDark);
+
+        document.documentElement.dataset.theme =
+          defaultTheme;
+      } catch {
+        // Keep dark theme fallback.
+      } finally {
+        setMounted(true);
+      }
+    }
+
+    loadTheme();
+  }, []);
+
+  useEffect(() => {
+    async function loadSettings() {
+      try {
+        const response =
+          await fetch("/api/settings");
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data =
+          await response.json();
+
+        if (data.siteName?.trim()) {
+          setSiteName(
+            data.siteName.trim()
+          );
+        }
+      } catch {
+        // Keep the fallback site name.
+      }
+    }
+
+    loadSettings();
   }, []);
 
   useEffect(() => {
@@ -71,9 +136,8 @@ export default function Header() {
 
   return (
     <header
-      className={`site-header ${
-        scrolled ? "scrolled" : ""
-      }`}
+      className={`site-header ${scrolled ? "scrolled" : ""
+        }`}
     >
       <div className="nav-pill">
 
@@ -89,8 +153,7 @@ export default function Header() {
           </span>
 
           <span className="nav-brand-text">
-            NOMADS
-            <span>OF ADITYA</span>
+            {siteName}
           </span>
         </Link>
 
