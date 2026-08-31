@@ -23,6 +23,16 @@ async function updateJourney(
     redirect("/admin/login");
   }
 
+  const journeyBeforeUpdate = await prisma.journey.findUnique({
+  where: {
+    id,
+  },
+});
+
+if (!journeyBeforeUpdate) {
+  throw new Error("Journey not found.");
+}
+
   const title = String(
     formData.get("title") || ""
   ).trim();
@@ -74,6 +84,14 @@ async function updateJourney(
   const status = String(
     formData.get("status") || "DRAFT"
   );
+
+  if (
+    status !== "DRAFT" &&
+    status !== "PUBLISHED" &&
+    status !== "ARCHIVED"
+  ) {
+    throw new Error("Invalid journey status.");
+  }
 
   const isFeatured =
     formData.get("isFeatured") === "on";
@@ -189,10 +207,7 @@ async function updateJourney(
       placesVisited:
         placesVisited || null,
 
-      status: status as
-        | "DRAFT"
-        | "PUBLISHED"
-        | "ARCHIVED",
+      status,
 
       isFeatured,
 
@@ -215,9 +230,9 @@ async function updateJourney(
       noFollow,
 
       publishedAt:
-        status === "PUBLISHED"
-          ? new Date()
-          : null,
+  status === "PUBLISHED"
+    ? journeyBeforeUpdate.publishedAt || new Date()
+    : null,
     },
   });
 
@@ -245,8 +260,8 @@ export default async function EditJourneyPage({
   const journeyDate =
     journey.journeyDate
       ? journey.journeyDate
-          .toISOString()
-          .split("T")[0]
+        .toISOString()
+        .split("T")[0]
       : "";
 
   return (
@@ -392,15 +407,15 @@ export default async function EditJourneyPage({
 
                 {journey.status ===
                   "PUBLISHED" && (
-                  <Link
-                    href={`/journeys/${journey.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hidden rounded-xl border border-[#D99A3D]/40 px-4 py-2.5 text-sm text-[#D99A3D] transition hover:border-[#D99A3D] hover:bg-[#D99A3D]/10 sm:block"
-                  >
-                    View Public Journey ↗
-                  </Link>
-                )}
+                    <Link
+                      href={`/journeys/${journey.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hidden rounded-xl border border-[#D99A3D]/40 px-4 py-2.5 text-sm text-[#D99A3D] transition hover:border-[#D99A3D] hover:bg-[#D99A3D]/10 sm:block"
+                    >
+                      View Public Journey ↗
+                    </Link>
+                  )}
 
                 <div className="hidden text-right sm:block">
 
