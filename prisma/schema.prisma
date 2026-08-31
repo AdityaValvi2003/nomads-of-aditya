@@ -139,7 +139,7 @@ model MediaAsset {
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   blocks       ContentBlock[]
-  encounter    Encounter?
+  encounter    Encounter[]
   journey      Journey?       @relation(fields: [journeyId], references: [id], onDelete: Cascade)
 
   @@index([journeyId])
@@ -152,7 +152,7 @@ model Encounter {
   story              Json
   featuredOnHomepage Boolean     @default(false)
   journeyId          String
-  mediaId            String?     @unique
+  mediaId            String?
   createdAt          DateTime    @default(now())
   updatedAt          DateTime    @updatedAt
   journey            Journey     @relation(fields: [journeyId], references: [id], onDelete: Cascade)
@@ -288,24 +288,28 @@ model SiteSettings {
   accentColor        String      @default("#D99A3D")
   heroHeadline       String?
   heroSubheadline    String?
-  contactEmail       String?
-
-  aboutHeadline     String?
-  aboutLead         String?
-  aboutStoryTitle   String?
-  aboutStoryLeft    String?
-  aboutStoryRight   String?
-  aboutPhilosophy   String?
-  aboutFreedom      String?
-  aboutExploration  String?
-  aboutPeople       String?
-  aboutGrowth       String?
-  
   journeyFeatureMode FeatureMode @default(AUTOMATIC)
   featuredJourneyId  String?
   blogFeatureMode    FeatureMode @default(AUTOMATIC)
   featuredBlogId     String?
   updatedAt          DateTime    @updatedAt
+  aboutHeadline      String?
+  aboutLead          String?
+  aboutStoryTitle    String?
+  aboutStoryLeft     String?
+  aboutStoryRight    String?
+  aboutPhilosophy    String?
+  aboutFreedom       String?
+  aboutExploration   String?
+  aboutPeople        String?
+  aboutGrowth        String?
+  contactEmail       String?
+}
+
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
 }
 
 enum UserRole {

@@ -166,11 +166,85 @@ export default async function JourneyPage({
    * ---------------------------------------------------------
    */
 
-  if (journey.status !== "PUBLISHED") {
+    if (journey.status !== "PUBLISHED") {
     notFound();
   }
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    "https://nomads-of-aditya.vercel.app";
+
+  const journeyUrl =
+    `${siteUrl}/journeys/${journey.slug}`;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+
+    headline: journey.title,
+
+    description:
+      journey.seoDescription?.trim() ||
+      journey.shortIntro?.trim() ||
+      `Explore ${journey.title} with Nomads of Aditya.`,
+
+    url: journeyUrl,
+
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": journeyUrl,
+    },
+
+    author: {
+      "@type": "Person",
+      name: "Aditya Valvi",
+    },
+
+    publisher: {
+      "@type": "Person",
+      name: "Aditya Valvi",
+    },
+
+    ...(journey.coverImage
+      ? {
+          image: [journey.coverImage],
+        }
+      : {}),
+
+    ...(journey.publishedAt
+      ? {
+          datePublished:
+            journey.publishedAt.toISOString(),
+        }
+      : {}),
+
+    dateModified:
+      journey.updatedAt.toISOString(),
+
+    ...(journey.location || journey.country
+      ? {
+          contentLocation: {
+            "@type": "Place",
+            name: [
+              journey.location,
+              journey.country,
+            ]
+              .filter(Boolean)
+              .join(", "),
+          },
+        }
+      : {}),
+  };
+
   return (
+        <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
     <main className="journey-detail-page min-h-screen">
 
       {/* =====================================================
@@ -451,9 +525,10 @@ export default async function JourneyPage({
           worth carrying forward.
         </p>
 
-      </section>
+            </section>
 
     </main>
+    </>
   );
 }
 

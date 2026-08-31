@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteChrome from "./ui/SiteChrome";
 import Footer from "./ui/Footer";
+import StructuredData from "./ui/StructuredData";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://nomads-of-aditya.vercel.app"),
@@ -66,6 +67,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <StructuredData />
+
         <SiteChrome />
 
         {children}

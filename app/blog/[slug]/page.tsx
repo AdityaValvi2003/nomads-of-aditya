@@ -13,6 +13,9 @@ type BlogPostPageProps = {
   }>;
 };
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  "https://nomads-of-aditya.vercel.app";
 /* ============================================================
    METADATA
 ============================================================ */
@@ -377,6 +380,53 @@ export default async function BlogPostPage({
 
   const readingTime = calculateReadingTime(content);
 
+  const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+
+  "@id": `${siteUrl}/blog/${blog.slug}#article`,
+
+  headline: blog.title,
+
+  description:
+    blog.seoDescription?.trim() ||
+    blog.shortIntro?.trim() ||
+    blog.subtitle?.trim() ||
+    `Read ${blog.title} on Nomads of Aditya.`,
+
+  url:
+    blog.canonicalUrl?.trim() ||
+    `${siteUrl}/blog/${blog.slug}`,
+
+  datePublished: (
+    blog.publishedAt ||
+    blog.createdAt
+  ).toISOString(),
+
+  dateModified:
+    blog.updatedAt.toISOString(),
+
+  author: {
+    "@type": "Person",
+    name:
+      blog.author?.name ||
+      "Aditya Valvi",
+    url: siteUrl,
+  },
+
+  publisher: {
+    "@type": "Person",
+    name: "Aditya Valvi",
+    url: siteUrl,
+  },
+
+  ...(blog.coverImage
+    ? {
+        image: [blog.coverImage],
+      }
+    : {}),
+};
+
   /*
    * ==========================================================
    * DATE
@@ -399,6 +449,17 @@ export default async function BlogPostPage({
 
   return (
     <>
+      <script
+
+      type="application/ld+json"
+
+      dangerouslySetInnerHTML={{
+
+        __html: JSON.stringify(articleSchema),
+
+      }}
+
+    />
       <style>{`
 
   /* =====================================================
