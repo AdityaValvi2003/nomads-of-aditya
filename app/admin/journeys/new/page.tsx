@@ -17,7 +17,20 @@ async function createJourney(formData: FormData) {
   const location = String(formData.get("location") || "").trim();
   const country = String(formData.get("country") || "").trim();
   const shortIntro = String(formData.get("shortIntro") || "").trim();
-  const status = String(formData.get("status") || "DRAFT");
+  const statusValue = String(
+  formData.get("status") || "DRAFT"
+).trim();
+
+if (
+  statusValue !== "DRAFT" &&
+  statusValue !== "PUBLISHED" &&
+  statusValue !== "ARCHIVED"
+) {
+  throw new Error("Invalid journey status.");
+}
+
+const status =
+  statusValue as "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
   if (!title || !slug || !location || !country) {
     throw new Error("Required fields are missing.");
@@ -40,8 +53,12 @@ async function createJourney(formData: FormData) {
       location,
       country,
       shortIntro: shortIntro || null,
-      status: status as "DRAFT" | "PUBLISHED" | "ARCHIVED",
-      authorId: session.userId,
+      status,
+authorId: session.userId,
+publishedAt:
+  status === "PUBLISHED"
+    ? new Date()
+    : null,
     },
   });
 

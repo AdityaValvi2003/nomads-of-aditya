@@ -24,14 +24,14 @@ async function updateJourney(
   }
 
   const journeyBeforeUpdate = await prisma.journey.findUnique({
-  where: {
-    id,
-  },
-});
+    where: {
+      id,
+    },
+  });
 
-if (!journeyBeforeUpdate) {
-  throw new Error("Journey not found.");
-}
+  if (!journeyBeforeUpdate) {
+    throw new Error("Journey not found.");
+  }
 
   const title = String(
     formData.get("title") || ""
@@ -84,6 +84,14 @@ if (!journeyBeforeUpdate) {
   const status = String(
     formData.get("status") || "DRAFT"
   );
+
+  if (
+  status !== "DRAFT" &&
+  status !== "PUBLISHED" &&
+  status !== "ARCHIVED"
+) {
+  throw new Error("Invalid journey status.");
+}
 
   if (
     status !== "DRAFT" &&
@@ -230,9 +238,9 @@ if (!journeyBeforeUpdate) {
       noFollow,
 
       publishedAt:
-  status === "PUBLISHED"
-    ? journeyBeforeUpdate.publishedAt || new Date()
-    : null,
+        status === "PUBLISHED"
+          ? journeyBeforeUpdate.publishedAt || new Date()
+          : null,
     },
   });
 
@@ -318,24 +326,10 @@ export default async function EditJourneyPage({
             </Link>
 
             <Link
-              href="/admin/comments"
-              className="block rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
-            >
-              Comments
-            </Link>
-
-            <Link
               href="/admin/media"
               className="block rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
             >
               Media
-            </Link>
-
-            <Link
-              href="/admin/quotes"
-              className="block rounded-lg px-4 py-3 text-sm text-white/55 transition hover:bg-white/5 hover:text-white"
-            >
-              Quotes
             </Link>
 
             <Link
