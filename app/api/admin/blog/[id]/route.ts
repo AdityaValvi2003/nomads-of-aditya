@@ -245,7 +245,38 @@ export async function PUT(
         }
       );
     }
+    const normalizedSlug =
+      slug.trim().toLowerCase();
 
+    const slugPattern =
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+    if (!slugPattern.test(normalizedSlug)) {
+      return NextResponse.json(
+        {
+          error:
+            "Slug must contain only lowercase letters, numbers, and single hyphens.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      normalizedSlug.length < 2 ||
+      normalizedSlug.length > 120
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Slug must be between 2 and 120 characters.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
     if (
       status !== "Draft" &&
       status !== "Published"
@@ -290,8 +321,8 @@ export async function PUT(
     const slugOwner =
       await prisma.blog.findUnique({
         where: {
-          slug: slug.trim(),
-        },
+  slug: normalizedSlug,
+},
       });
 
     if (
@@ -347,6 +378,28 @@ export async function PUT(
           // DELETE OLD CONTENT BLOCKS
           // ----------------------------------------------
 
+          const existingContentBlocks =
+            await tx.contentBlock.findMany({
+              where: {
+                blogId: id,
+              },
+              select: {
+                id: true,
+                type: true,
+              },
+            });
+
+          const hasUnsupportedBlocks =
+            existingContentBlocks.some(
+              (block) => block.type !== "PARAGRAPH"
+            );
+
+          if (hasUnsupportedBlocks) {
+            throw new Error(
+              "This blog contains content blocks that cannot be edited from the current blog editor."
+            );
+          }
+
           await tx.contentBlock.deleteMany({
             where: {
               blogId: id,
@@ -365,17 +418,17 @@ export async function PUT(
             data: {
               title: title.trim(),
 
-              slug: slug.trim(),
+              slug: normalizedSlug,
 
               subtitle:
                 typeof subtitle === "string" &&
-                subtitle.trim()
+                  subtitle.trim()
                   ? subtitle.trim()
                   : null,
 
               shortIntro:
                 typeof shortIntro === "string" &&
-                shortIntro.trim()
+                  shortIntro.trim()
                   ? shortIntro.trim()
                   : null,
 
@@ -391,9 +444,9 @@ export async function PUT(
 
               publishedAt:
                 prismaStatus ===
-                ContentStatus.PUBLISHED
+                  ContentStatus.PUBLISHED
                   ? existingBlog.publishedAt ||
-                    new Date()
+                  new Date()
                   : null,
             },
           });
@@ -463,6 +516,20 @@ export async function PUT(
       blog,
     });
   } catch (error: unknown) {
+    if (
+      error instanceof Error &&
+      error.message ===
+      "This blog contains content blocks that cannot be edited from the current blog editor."
+    ) {
+      return NextResponse.json(
+        {
+          error: error.message,
+        },
+        {
+          status: 409,
+        }
+      );
+    }
     console.error(
       "PUT /api/admin/blog/[id] error:",
       error

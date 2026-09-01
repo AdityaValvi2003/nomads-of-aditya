@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../../../../src/generated/prisma/client";
 import { createSession } from "../../../../src/lib/auth";
+import { checkRateLimit } from "../../../../src/lib/rate-limit";
 
 const connectionString = process.env.DIRECT_URL;
 
@@ -31,6 +32,26 @@ export async function POST(request: Request) {
       typeof body.password === "string"
         ? body.password
         : "";
+    const rateLimit =
+      checkRateLimit(
+        `login:${email}`
+      );
+
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error:
+            "Too many login attempts. Please try again later.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After":
+              String(rateLimit.retryAfter),
+          },
+        }
+      );
+    }
 
     if (!email || !password) {
       return NextResponse.json(

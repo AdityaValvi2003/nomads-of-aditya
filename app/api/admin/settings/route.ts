@@ -7,6 +7,14 @@ import {
     FeatureMode,
 } from "../../../../src/generated/prisma/enums";
 
+const MAX_SITE_NAME_LENGTH = 100;
+const MAX_OWNER_NAME_LENGTH = 100;
+const MAX_ACCENT_COLOR_LENGTH = 20;
+const MAX_HEADLINE_LENGTH = 200;
+const MAX_SUBHEADLINE_LENGTH = 500;
+const MAX_CONTACT_EMAIL_LENGTH = 254;
+const MAX_ABOUT_TEXT_LENGTH = 5000;
+
 export async function GET() {
     try {
         const session = await getSession();
@@ -110,6 +118,165 @@ export async function PUT(request: Request) {
             );
         }
 
+        if (
+            typeof siteName === "string" &&
+            siteName.trim().length > MAX_SITE_NAME_LENGTH
+        ) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Site name must be 100 characters or less.",
+                },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof ownerName === "string" &&
+            ownerName.trim().length > MAX_OWNER_NAME_LENGTH
+        ) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Owner name must be 100 characters or less.",
+                },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof heroHeadline === "string" &&
+            heroHeadline.trim().length > MAX_HEADLINE_LENGTH
+        ) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Hero headline must be 200 characters or less.",
+                },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof heroSubheadline === "string" &&
+            heroSubheadline.trim().length > MAX_SUBHEADLINE_LENGTH
+        ) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Hero subheadline must be 500 characters or less.",
+                },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof contactEmail === "string" &&
+            contactEmail.trim().length > MAX_CONTACT_EMAIL_LENGTH
+        ) {
+            return NextResponse.json(
+                {
+                    error:
+                        "Contact email must be 254 characters or less.",
+                },
+                { status: 400 }
+            );
+        }
+
+        if (
+            typeof contactEmail === "string" &&
+            contactEmail.trim()
+        ) {
+            const email =
+                contactEmail.trim();
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailPattern.test(email)) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "Please provide a valid contact email.",
+                    },
+                    { status: 400 }
+                );
+            }
+        }
+
+        if (
+            typeof accentColor === "string" &&
+            accentColor.trim()
+        ) {
+            const colorPattern =
+                /^#[0-9A-Fa-f]{6}$/;
+
+            if (
+                !colorPattern.test(
+                    accentColor.trim()
+                )
+            ) {
+                return NextResponse.json(
+                    {
+                        error:
+                            "Accent color must be a valid 6-digit hex color.",
+                    },
+                    { status: 400 }
+                );
+            }
+        }
+        if (
+  typeof featuredJourneyId === "string" &&
+  featuredJourneyId.trim()
+) {
+  const featuredJourney =
+    await prisma.journey.findUnique({
+      where: {
+        id: featuredJourneyId.trim(),
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  if (!featuredJourney) {
+    return NextResponse.json(
+      {
+        error:
+          "Selected featured journey was not found.",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+}
+if (
+  typeof featuredBlogId === "string" &&
+  featuredBlogId.trim()
+) {
+  const featuredBlog =
+    await prisma.blog.findUnique({
+      where: {
+        id: featuredBlogId.trim(),
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  if (!featuredBlog) {
+    return NextResponse.json(
+      {
+        error:
+          "Selected featured blog was not found.",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+}
         const existing = await prisma.siteSettings.findFirst();
 
         const data = {

@@ -281,6 +281,21 @@ export async function PATCH(
       }
     }
 
+    if (
+      featuredOnHomepage !== undefined &&
+      typeof featuredOnHomepage !== "boolean"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "featuredOnHomepage must be a boolean.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
     // --------------------------------------------------------
     // BUILD UPDATE DATA
     // --------------------------------------------------------
@@ -301,7 +316,7 @@ export async function PATCH(
     if (shortIntro !== undefined) {
       data.shortIntro =
         typeof shortIntro === "string" &&
-        shortIntro.trim()
+          shortIntro.trim()
           ? shortIntro.trim()
           : null;
     }
@@ -315,9 +330,9 @@ export async function PATCH(
     }
 
     if (featuredOnHomepage !== undefined) {
-      data.featuredOnHomepage =
-        Boolean(featuredOnHomepage);
-    }
+  data.featuredOnHomepage =
+    featuredOnHomepage;
+}
 
     if (journeyId !== undefined) {
       data.journeyId = journeyId;
@@ -326,7 +341,7 @@ export async function PATCH(
     if (mediaId !== undefined) {
       data.mediaId =
         typeof mediaId === "string" &&
-        mediaId.trim()
+          mediaId.trim()
           ? mediaId.trim()
           : null;
     }

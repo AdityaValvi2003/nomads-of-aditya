@@ -46,7 +46,9 @@ export async function POST(request: Request) {
     const title = String(body.title || "").trim();
     const location = String(body.location || "").trim();
     const country = String(body.country || "").trim();
-    const slug = String(body.slug || "").trim();
+    const slug = String(body.slug || "")
+  .trim()
+  .toLowerCase();
 
     const shortIntro = String(
       body.shortIntro || ""
@@ -76,7 +78,31 @@ export async function POST(request: Request) {
       body.placesVisited || ""
     ).trim();
 
-    const status = body.status || "DRAFT";
+    const statusValue =
+  typeof body.status === "string"
+    ? body.status.trim()
+    : "DRAFT";
+
+if (
+  statusValue !== "DRAFT" &&
+  statusValue !== "PUBLISHED" &&
+  statusValue !== "ARCHIVED"
+) {
+  return NextResponse.json(
+    {
+      error: "Invalid journey status.",
+    },
+    {
+      status: 400,
+    }
+  );
+}
+
+const status =
+  statusValue as
+    | "DRAFT"
+    | "PUBLISHED"
+    | "ARCHIVED";
 
     if (
       !title ||
@@ -92,6 +118,31 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+    const slugPattern =
+  /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+if (!slugPattern.test(slug)) {
+  return NextResponse.json(
+    {
+      error:
+        "Slug must contain only lowercase letters, numbers, and single hyphens.",
+    },
+    { status: 400 }
+  );
+}
+
+if (
+  slug.length < 2 ||
+  slug.length > 120
+) {
+  return NextResponse.json(
+    {
+      error:
+        "Slug must be between 2 and 120 characters.",
+    },
+    { status: 400 }
+  );
+}
 
     const existingJourney =
       await prisma.journey.findUnique({

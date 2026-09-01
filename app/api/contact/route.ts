@@ -68,8 +68,48 @@ export async function POST(request: Request) {
     const normalizedEmail =
       email.trim().toLowerCase();
 
-    const normalizedMessage =
+     const normalizedMessage =
       message.trim();
+
+    const rateLimitWindow =
+      5 * 60 * 1000;
+
+    const rateLimitSince =
+      new Date(
+        Date.now() - rateLimitWindow
+      );
+
+    const recentMessage =
+      await prisma.contactMessage.findFirst({
+        where: {
+          email: normalizedEmail,
+          createdAt: {
+            gte: rateLimitSince,
+          },
+        },
+        select: {
+          id: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+    if (recentMessage) {
+      return NextResponse.json(
+        {
+          error:
+            "Please wait a few minutes before sending another message.",
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": "300",
+          },
+        }
+      );
+    }
 
     // =========================================================
     // EMAIL VALIDATION
@@ -93,6 +133,7 @@ export async function POST(request: Request) {
         }
       );
     }
+
 
     // =========================================================
     // LENGTH VALIDATION

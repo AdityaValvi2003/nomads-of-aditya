@@ -13,6 +13,29 @@ type ReorderItem = {
   position: number;
 };
 
+const VALID_BLOCK_TYPES = [
+  "HEADING",
+  "SUBHEADING",
+  "PARAGRAPH",
+  "IMAGE",
+  "IMAGE_TEXT",
+  "GALLERY",
+  "QUOTE",
+  "VIDEO",
+  "LOCATION",
+  "JOURNEY_INFO",
+  "ENCOUNTER",
+  "DIVIDER",
+] as const;
+
+const VALID_IMAGE_DISPLAYS = [
+  "AUTO",
+  "STANDARD",
+  "WIDE",
+  "FULLSCREEN",
+  "SPLIT",
+] as const;
+
 async function getJourney(id: string) {
   return prisma.journey.findUnique({
     where: {
@@ -343,6 +366,39 @@ export async function POST(
         }
       );
     }
+
+    if (
+  !VALID_BLOCK_TYPES.includes(
+    type as (typeof VALID_BLOCK_TYPES)[number]
+  )
+) {
+  return NextResponse.json(
+    {
+      error:
+        "Invalid content block type.",
+    },
+    {
+      status: 400,
+    }
+  );
+}
+
+if (
+  imageDisplay !== null &&
+  !VALID_IMAGE_DISPLAYS.includes(
+    imageDisplay as (typeof VALID_IMAGE_DISPLAYS)[number]
+  )
+) {
+  return NextResponse.json(
+    {
+      error:
+        "Invalid image display mode.",
+    },
+    {
+      status: 400,
+    }
+  );
+}
 
     if (mediaId) {
       const media =

@@ -128,6 +128,20 @@ export async function POST(request: Request) {
         }
       );
     }
+    if (
+      featuredOnHomepage !== undefined &&
+      typeof featuredOnHomepage !== "boolean"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "featuredOnHomepage must be a boolean.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
 
     // --------------------------------------------------------
     // VERIFY JOURNEY
@@ -189,24 +203,24 @@ export async function POST(request: Request) {
 
         shortIntro:
           typeof shortIntro === "string" &&
-          shortIntro.trim()
+            shortIntro.trim()
             ? shortIntro.trim()
             : null,
 
         story:
           story &&
-          typeof story === "object"
+            typeof story === "object"
             ? story
             : {},
 
         featuredOnHomepage:
-          Boolean(featuredOnHomepage),
+          featuredOnHomepage === true,
 
         journeyId,
 
         mediaId:
           typeof mediaId === "string" &&
-          mediaId.trim()
+            mediaId.trim()
             ? mediaId.trim()
             : null,
       },

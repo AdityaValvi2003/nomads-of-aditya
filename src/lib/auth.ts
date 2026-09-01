@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
+import { prisma } from "./prisma";
 
 const secret = process.env.AUTH_SECRET;
 
@@ -52,11 +53,33 @@ export async function getSession(): Promise<SessionPayload | null> {
       return null;
     }
 
-    return {
-      userId: payload.userId,
-      email: payload.email,
-      role: payload.role,
-    };
+    const user = await prisma.user.findUnique({
+  where: {
+    id: payload.userId,
+  },
+  select: {
+    id: true,
+    email: true,
+    role: true,
+  },
+});
+
+if (!user) {
+  return null;
+}
+
+if (
+  user.email !== payload.email ||
+  user.role !== payload.role
+) {
+  return null;
+}
+
+return {
+  userId: user.id,
+  email: user.email,
+  role: user.role,
+};
   } catch {
     return null;
   }

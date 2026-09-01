@@ -3,6 +3,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "../../../../src/lib/prisma";
 import { getSession } from "../../../../src/lib/auth";
 
+
+const MAX_ALT_TEXT_LENGTH = 250;
+const MAX_CAPTION_LENGTH = 1000;
+const MAX_LOCATION_LENGTH = 200;
+const MAX_PHOTOGRAPHER_LENGTH = 200;
+
 /*
  * ============================================================
  * GET — LOAD MEDIA LIBRARY
@@ -134,11 +140,11 @@ export async function GET() {
       media.map((item) => {
         const usage: Array<{
           type:
-            | "JOURNEY"
-            | "JOURNEY_COVER"
-            | "BLOG_COVER"
-            | "CONTENT_BLOCK"
-            | "ENCOUNTER";
+          | "JOURNEY"
+          | "JOURNEY_COVER"
+          | "BLOG_COVER"
+          | "CONTENT_BLOCK"
+          | "ENCOUNTER";
 
           id: string;
 
@@ -343,10 +349,10 @@ export async function POST(
         "altText"
       ) === "string"
         ? String(
-            formData.get(
-              "altText"
-            )
-          ).trim()
+          formData.get(
+            "altText"
+          )
+        ).trim()
         : "";
 
     const caption =
@@ -354,10 +360,10 @@ export async function POST(
         "caption"
       ) === "string"
         ? String(
-            formData.get(
-              "caption"
-            )
-          ).trim()
+          formData.get(
+            "caption"
+          )
+        ).trim()
         : "";
 
     const location =
@@ -365,10 +371,10 @@ export async function POST(
         "location"
       ) === "string"
         ? String(
-            formData.get(
-              "location"
-            )
-          ).trim()
+          formData.get(
+            "location"
+          )
+        ).trim()
         : "";
 
     const photographer =
@@ -376,10 +382,10 @@ export async function POST(
         "photographer"
       ) === "string"
         ? String(
-            formData.get(
-              "photographer"
-            )
-          ).trim()
+          formData.get(
+            "photographer"
+          )
+        ).trim()
         : "";
 
     const capturedDateValue =
@@ -387,10 +393,10 @@ export async function POST(
         "capturedDate"
       ) === "string"
         ? String(
-            formData.get(
-              "capturedDate"
-            )
-          ).trim()
+          formData.get(
+            "capturedDate"
+          )
+        ).trim()
         : "";
 
     const journeyIdValue =
@@ -398,12 +404,66 @@ export async function POST(
         "journeyId"
       ) === "string"
         ? String(
-            formData.get(
-              "journeyId"
-            )
-          ).trim()
+          formData.get(
+            "journeyId"
+          )
+        ).trim()
         : "";
+    const MAX_ALT_TEXT_LENGTH = 250;
+    const MAX_CAPTION_LENGTH = 1000;
+    const MAX_LOCATION_LENGTH = 200;
+    const MAX_PHOTOGRAPHER_LENGTH = 200;
 
+    if (altText.length > MAX_ALT_TEXT_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Alt text must be 250 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (caption.length > MAX_CAPTION_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Caption must be 1000 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (location.length > MAX_LOCATION_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Location must be 200 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      photographer.length >
+      MAX_PHOTOGRAPHER_LENGTH
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Photographer name must be 200 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
     /*
      * ----------------------------------------------------------
      * VALIDATE FILE
@@ -422,15 +482,18 @@ export async function POST(
       );
     }
 
-    if (
-      !file.type.startsWith(
-        "image/"
-      )
-    ) {
+    const allowedImageTypes = new Set([
+      "image/jpeg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ]);
+
+    if (!allowedImageTypes.has(file.type)) {
       return NextResponse.json(
         {
           error:
-            "Only image files are allowed.",
+            "Only JPEG, PNG, WebP, and GIF images are allowed.",
         },
         {
           status: 400,
@@ -464,6 +527,56 @@ export async function POST(
         {
           error:
             "Alt text is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+    if (altText.length > MAX_ALT_TEXT_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Alt text must be 250 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (caption.length > MAX_CAPTION_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Caption must be 1000 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (location.length > MAX_LOCATION_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Location must be 200 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      photographer.length >
+      MAX_PHOTOGRAPHER_LENGTH
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Photographer name must be 200 characters or less.",
         },
         {
           status: 400,
@@ -516,17 +629,37 @@ export async function POST(
      * ----------------------------------------------------------
      */
 
-    const blob =
-      await put(
-        file.name,
-        file,
-        {
-          access: "public",
+    const originalFileName =
+      file.name
+        .split(/[\\/]/)
+        .pop() || "image";
 
-          addRandomSuffix:
-            true,
-        }
-      );
+    const safeFileName =
+      originalFileName
+        .replace(
+          /[^a-zA-Z0-9._-]/g,
+          "-"
+        )
+        .replace(
+          /-+/g,
+          "-"
+        )
+        .slice(0, 120);
+
+    const uploadFileName =
+      safeFileName || "image";
+
+    const blob =
+  await put(
+    uploadFileName,
+    file,
+    {
+      access: "public",
+
+      addRandomSuffix:
+        true,
+    }
+  );
 
     /*
      * ----------------------------------------------------------
@@ -628,21 +761,21 @@ export async function POST(
         usage:
           media.journey
             ? [
-                {
-                  type:
-                    "JOURNEY",
+              {
+                type:
+                  "JOURNEY",
 
-                  id:
-                    media
-                      .journey
-                      .id,
+                id:
+                  media
+                    .journey
+                    .id,
 
-                  title:
-                    media
-                      .journey
-                      .title,
-                },
-              ]
+                title:
+                  media
+                    .journey
+                    .title,
+              },
+            ]
             : [],
 
         usageCount:
@@ -712,7 +845,7 @@ export async function PATCH(
 
     const id =
       typeof body.id ===
-      "string"
+        "string"
         ? body.id.trim()
         : "";
 
@@ -761,37 +894,37 @@ export async function PATCH(
 
     const altText =
       typeof body.altText ===
-      "string"
+        "string"
         ? body.altText.trim()
         : "";
 
     const caption =
       typeof body.caption ===
-      "string"
+        "string"
         ? body.caption.trim()
         : "";
 
     const location =
       typeof body.location ===
-      "string"
+        "string"
         ? body.location.trim()
         : "";
 
     const photographer =
       typeof body.photographer ===
-      "string"
+        "string"
         ? body.photographer.trim()
         : "";
 
     const journeyIdValue =
       typeof body.journeyId ===
-      "string"
+        "string"
         ? body.journeyId.trim()
         : "";
 
     const capturedDateValue =
       typeof body.capturedDate ===
-      "string"
+        "string"
         ? body.capturedDate.trim()
         : "";
 
@@ -806,6 +939,57 @@ export async function PATCH(
         {
           error:
             "Alt text is required.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (altText.length > MAX_ALT_TEXT_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Alt text must be 250 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (caption.length > MAX_CAPTION_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Caption must be 1000 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (location.length > MAX_LOCATION_LENGTH) {
+      return NextResponse.json(
+        {
+          error:
+            "Location must be 200 characters or less.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      photographer.length >
+      MAX_PHOTOGRAPHER_LENGTH
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Photographer name must be 200 characters or less.",
         },
         {
           status: 400,
@@ -1006,23 +1190,23 @@ export async function PATCH(
      */
 
     const usage: Array<{
-  type:
-    | "JOURNEY"
-    | "JOURNEY_COVER"
-    | "BLOG_COVER"
-    | "CONTENT_BLOCK"
-    | "ENCOUNTER";
+      type:
+      | "JOURNEY"
+      | "JOURNEY_COVER"
+      | "BLOG_COVER"
+      | "CONTENT_BLOCK"
+      | "ENCOUNTER";
 
-  id: string;
+      id: string;
 
-  title?: string;
+      title?: string;
 
-  blockType?: string;
+      blockType?: string;
 
-  journeyId?: string;
+      journeyId?: string;
 
-  journeyTitle?: string;
-}> = [];
+      journeyTitle?: string;
+    }> = [];
 
     /*
      * JOURNEY ASSIGNMENT
@@ -1202,7 +1386,7 @@ export async function DELETE(
 
     const id =
       typeof body.id ===
-      "string"
+        "string"
         ? body.id.trim()
         : "";
 
@@ -1438,7 +1622,7 @@ export async function DELETE(
         media.url
       );
     } catch (
-      blobError
+    blobError
     ) {
       console.error(
         "Blob delete error:",

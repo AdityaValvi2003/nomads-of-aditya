@@ -1,3 +1,4 @@
+import { del } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { getSession } from "../../../../../src/lib/auth";
 import { prisma } from "../../../../../src/lib/prisma";
@@ -25,11 +26,19 @@ export async function DELETE(
     const { id } = await params;
 
     const journey =
-      await prisma.journey.findUnique({
-        where: {
-          id,
+  await prisma.journey.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      media: {
+        select: {
+          id: true,
+          url: true,
         },
-      });
+      },
+    },
+  });
 
     if (!journey) {
       return NextResponse.json(
@@ -38,6 +47,95 @@ export async function DELETE(
       );
     }
 
+    const mediaUrlsToDelete: string[] = [];
+
+for (const media of journey.media) {
+  const externalBlock =
+    await prisma.contentBlock.findFirst({
+      where: {
+        mediaId: media.id,
+        OR: [
+          {
+            journeyId: {
+              not: journey.id,
+            },
+          },
+          {
+            blogId: {
+              not: null,
+            },
+          },
+        ],
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  const externalEncounter =
+    await prisma.encounter.findFirst({
+      where: {
+        mediaId: media.id,
+        journeyId: {
+          not: journey.id,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  const usedByOtherJourney =
+    await prisma.journey.findFirst({
+      where: {
+        id: {
+          not: journey.id,
+        },
+        coverImage: media.url,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  const usedByBlog =
+    await prisma.blog.findFirst({
+      where: {
+        coverImage: media.url,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+  if (
+    !externalBlock &&
+    !externalEncounter &&
+    !usedByOtherJourney &&
+    !usedByBlog
+  ) {
+    mediaUrlsToDelete.push(media.url);
+  }
+}
+
+for (const url of mediaUrlsToDelete) {
+  try {
+    await del(url);
+  } catch (blobError) {
+    console.error(
+      "Journey media Blob deletion error:",
+      blobError
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          "The journey could not be deleted because one or more media files could not be removed from storage.",
+      },
+      { status: 500 }
+    );
+  }
+}
     await prisma.journey.delete({
       where: {
         id,

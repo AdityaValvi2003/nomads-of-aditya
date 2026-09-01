@@ -117,21 +117,21 @@ export async function GET() {
           date:
             blog.publishedAt
               ? blog.publishedAt.toLocaleDateString(
-                  "en-IN",
-                  {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  }
-                )
+                "en-IN",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }
+              )
               : blog.createdAt.toLocaleDateString(
-                  "en-IN",
-                  {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                  }
-                ),
+                "en-IN",
+                {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                }
+              ),
 
           readTime:
             `${readTime} min read`,
@@ -259,6 +259,8 @@ export async function POST(
       );
     }
 
+
+
     if (
       status !== "Draft" &&
       status !== "Published"
@@ -267,6 +269,39 @@ export async function POST(
         {
           error:
             "Status must be Draft or Published.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    const normalizedSlug =
+      slug.trim().toLowerCase();
+
+    const slugPattern =
+      /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+    if (!slugPattern.test(normalizedSlug)) {
+      return NextResponse.json(
+        {
+          error:
+            "Slug must contain only lowercase letters, numbers, and single hyphens.",
+        },
+        {
+          status: 400,
+        }
+      );
+    }
+
+    if (
+      normalizedSlug.length < 2 ||
+      normalizedSlug.length > 120
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Slug must be between 2 and 120 characters.",
         },
         {
           status: 400,
@@ -283,7 +318,7 @@ export async function POST(
 
     if (
       typeof coverImage ===
-        "string" &&
+      "string" &&
       coverImage.trim()
     ) {
       finalCoverImage =
@@ -297,7 +332,7 @@ export async function POST(
     const existingBlog =
       await prisma.blog.findUnique({
         where: {
-          slug: slug.trim(),
+          slug: normalizedSlug,
         },
       });
 
@@ -360,7 +395,7 @@ export async function POST(
             title.trim(),
 
           slug:
-            slug.trim(),
+  normalizedSlug,
 
           // --------------------------------------------------
           // CATEGORY
@@ -369,7 +404,7 @@ export async function POST(
           subtitle:
             typeof subtitle ===
               "string" &&
-            subtitle.trim()
+              subtitle.trim()
               ? subtitle.trim()
               : null,
 
@@ -380,7 +415,7 @@ export async function POST(
           shortIntro:
             typeof shortIntro ===
               "string" &&
-            shortIntro.trim()
+              shortIntro.trim()
               ? shortIntro.trim()
               : null,
 
@@ -397,7 +432,7 @@ export async function POST(
 
           isFeatured:
             typeof isFeatured ===
-            "boolean"
+              "boolean"
               ? isFeatured
               : false,
 
@@ -421,7 +456,7 @@ export async function POST(
 
           publishedAt:
             prismaStatus ===
-            ContentStatus.PUBLISHED
+              ContentStatus.PUBLISHED
               ? new Date()
               : null,
 
@@ -431,21 +466,21 @@ export async function POST(
 
           contentBlocks:
             typeof content ===
-                "string" &&
+              "string" &&
               content.trim()
               ? {
-                  create: {
-                    type:
-                      ContentBlockType.PARAGRAPH,
+                create: {
+                  type:
+                    ContentBlockType.PARAGRAPH,
 
-                    position: 0,
+                  position: 0,
 
-                    data: {
-                      text:
-                        content,
-                    },
+                  data: {
+                    text:
+                      content,
                   },
-                }
+                },
+              }
               : undefined,
         },
 
@@ -474,7 +509,7 @@ export async function POST(
       {
         message:
           status ===
-          "Published"
+            "Published"
             ? "Blog post published successfully."
             : "Blog draft saved successfully.",
 
@@ -496,7 +531,7 @@ export async function POST(
 
     if (
       typeof error ===
-        "object" &&
+      "object" &&
       error !== null &&
       "code" in error &&
       error.code === "P2002"
