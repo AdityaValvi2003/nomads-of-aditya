@@ -714,20 +714,20 @@ button {
 }
 
 .journey-feature::before {
-  content:
-    "";
+  content: "";
 
-  position:
-    absolute;
+  position: absolute;
 
-  inset:
-    0;
+  inset: 0;
 
   background:
-    linear-gradient(0deg,
+    linear-gradient(
+      0deg,
       rgba(0, 0, 0, 0.9),
-      transparent 65%),
-    url("/images/aditya-hero.jpeg") center / cover;
+      transparent 65%
+    );
+
+  pointer-events: none;
 }
 
 .journey-copy {
@@ -768,10 +768,11 @@ button {
 
 :root[data-theme="light"] .journey-feature::before {
   background:
-    linear-gradient(0deg,
+    linear-gradient(
+      0deg,
       rgba(15, 14, 12, 0.72),
-      transparent 70%),
-    url("/images/aditya-hero.jpeg") center / cover;
+      transparent 70%
+    );
 }
 
 

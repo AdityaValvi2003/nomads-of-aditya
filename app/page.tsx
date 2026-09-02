@@ -239,16 +239,11 @@ export default async function Home() {
         {featuredJourney ? (
           <div
             className="journey-feature"
-            style={
-              featuredJourney.coverImage
-                ? {
-                  backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.9), transparent 65%), url("${featuredJourney.coverImage}")`,
-                  backgroundSize: "cover",
-                  backgroundPosition:
-                    "center",
-                }
-                : undefined
-            }
+            style={{
+              backgroundImage: `linear-gradient(0deg, rgba(0,0,0,.9), transparent 65%), url("${featuredJourney.coverImage || "/images/aditya-hero.jpeg"}")`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
           >
             <div className="journey-copy">
               <span className="eyebrow">
