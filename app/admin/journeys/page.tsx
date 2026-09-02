@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { prisma } from "../../../src/lib/prisma";
 import { getSession } from "../../../src/lib/auth";
+import DeleteJourneyButton from "./DeleteJourneyButton";
 
 export default async function AdminJourneysPage() {
   const session = await getSession();
@@ -376,6 +377,10 @@ export default async function AdminJourneysPage() {
                         View ↗
                       </Link>
                     )}
+                    <DeleteJourneyButton
+                      journeyId={journey.id}
+                      journeyTitle={journey.title}
+                    />
 
                   </div>
 

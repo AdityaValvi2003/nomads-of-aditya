@@ -4,6 +4,7 @@ import { prisma } from "../../../../src/lib/prisma";
 import { getSession } from "../../../../src/lib/auth";
 import ContentBuilder from "./ContentBuilder";
 import CoverImageField from "./CoverImageField";
+import DeleteJourneyButton from "../DeleteJourneyButton";
 
 type PageProps = {
   params: Promise<{
@@ -23,11 +24,12 @@ async function updateJourney(
     redirect("/admin/login");
   }
 
-  const journeyBeforeUpdate = await prisma.journey.findUnique({
-    where: {
-      id,
-    },
-  });
+  const journeyBeforeUpdate =
+    await prisma.journey.findUnique({
+      where: {
+        id,
+      },
+    });
 
   if (!journeyBeforeUpdate) {
     throw new Error("Journey not found.");
@@ -84,14 +86,6 @@ async function updateJourney(
   const status = String(
     formData.get("status") || "DRAFT"
   );
-
-  if (
-  status !== "DRAFT" &&
-  status !== "PUBLISHED" &&
-  status !== "ARCHIVED"
-) {
-  throw new Error("Invalid journey status.");
-}
 
   if (
     status !== "DRAFT" &&
@@ -239,7 +233,8 @@ async function updateJourney(
 
       publishedAt:
         status === "PUBLISHED"
-          ? journeyBeforeUpdate.publishedAt || new Date()
+          ? journeyBeforeUpdate.publishedAt ||
+            new Date()
           : null,
     },
   });
@@ -268,8 +263,8 @@ export default async function EditJourneyPage({
   const journeyDate =
     journey.journeyDate
       ? journey.journeyDate
-        .toISOString()
-        .split("T")[0]
+          .toISOString()
+          .split("T")[0]
       : "";
 
   return (
@@ -401,15 +396,20 @@ export default async function EditJourneyPage({
 
                 {journey.status ===
                   "PUBLISHED" && (
-                    <Link
-                      href={`/journeys/${journey.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hidden rounded-xl border border-[#D99A3D]/40 px-4 py-2.5 text-sm text-[#D99A3D] transition hover:border-[#D99A3D] hover:bg-[#D99A3D]/10 sm:block"
-                    >
-                      View Public Journey ↗
-                    </Link>
-                  )}
+                  <Link
+                    href={`/journeys/${journey.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hidden rounded-xl border border-[#D99A3D]/40 px-4 py-2.5 text-sm text-[#D99A3D] transition hover:border-[#D99A3D] hover:bg-[#D99A3D]/10 sm:block"
+                  >
+                    View Public Journey ↗
+                  </Link>
+                )}
+
+                <DeleteJourneyButton
+                  journeyId={journey.id}
+                  journeyTitle={journey.title}
+                />
 
                 <div className="hidden text-right sm:block">
 
@@ -1067,7 +1067,7 @@ export default async function EditJourneyPage({
                         journey.ogDescription ??
                         ""
                       }
-                      className="w-full resize-none rounded-xl border border-white/10 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
+                      className="w-full resize-none rounded-xl border border-white/10 bg-black/30 bg-black/30 px-4 py-3 outline-none focus:border-white/30"
                     />
 
                   </div>
